@@ -1,0 +1,20 @@
+<package>
+  <description brief="tobot_goal_groovy">
+
+     tobot_goal_groovy
+
+  </description>
+  <author>Malcolm Mielle</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/tobot_goal_groovy</url>
+  <depend package="std_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="move_base_msgs"/>
+  <depend package="actionlib"/>
+  <depend package="roscpp"/>
+  <depend package="tf"/>
+
+</package>
+
+
