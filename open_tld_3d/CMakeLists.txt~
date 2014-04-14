@@ -91,7 +91,7 @@ include_directories(src/libopentld/imacq
 ## Generate services in the 'srv' folder
  add_service_files(
    FILES
-   AddTwoInts.srv
+   model.srv
 #   Service2.srv
  )
 
@@ -141,7 +141,7 @@ add_library(3dlib
 	include/open_tld_3d/handler3D.cpp
 	include/open_tld_3d/handler3D.hpp)
 
-target_link_libraries(3dlib ${PCL_LIBRARIES})
+target_link_libraries(3dlib ${PCL_LIBRARIES} ${OpenCV_LIBS})
 
 add_library(3Dcvblobs
     src/3rdparty/cvblobs/blob.cpp
@@ -222,12 +222,19 @@ target_link_libraries(3Dmain 3Dlibopentld 3Dcvblobs 3Dconfig++ 3dlib ${PCL_LIBRA
 #    src/libopentld/tld/detector/cuda/CuEnsembleClassifier.cpp
 #    src/libopentld/tld/detector/cuda/CuVarianceFilter.cpp)
 
-add_executable(OpenTLD3D src/opentld/OpenTLD3d.cpp)
+add_executable(pruningt src/Test/pruning.cpp)
+target_link_libraries(pruningt 3dlib ${OpenCV_LIBS} ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
 
+add_executable(windowSize src/Test/windowSize.cpp)
+target_link_libraries(windowSize 3Dmain 3Dcvblobs 3Dlibopentld 3Dconfig++ 3dlib ${OpenCV_LIBS} ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
+
+add_executable(reception src/Test/reception.cpp)
+target_link_libraries(reception 3dlib ${OpenCV_LIBS} ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
+
+add_executable(OpenTLD3D src/opentld/OpenTLD3d.cpp)
 target_link_libraries(OpenTLD3D 3Dmain 3Dcvblobs 3Dlibopentld 3Dconfig++ 3dlib ${OpenCV_LIBS} ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
 add_executable(pcltrying src/3D/test.cpp)
-
 target_link_libraries(pcltrying 3Dmain 3Dcvblobs 3Dlibopentld 3Dconfig++ ${OpenCV_LIBS} ${catkin_LIBRARIES} )
 ## Declare a cpp executable
 # add_executable(open_ltd_ros_node src/opentld/OpenTLD.cpp)

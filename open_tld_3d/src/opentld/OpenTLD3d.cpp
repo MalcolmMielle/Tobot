@@ -39,9 +39,6 @@
 #include "open_tld_3d/model.h"
 using namespace message_filters;
 
-
-
-
 int main (int argc, char **argv){
 	/************************Ros stuff************************/
 	ros::init(argc, argv, "Point_Cloud");
@@ -64,6 +61,7 @@ int main (int argc, char **argv){
 	//Publisher and Subscriber
 	ros::Publisher poete=my_node.advertise<geometry_msgs::PolygonStamped>("/tracking2D", 1000);
 	ros::Publisher pilote=my_node.advertise<geometry_msgs::PointStamped>("/tracking3D", 1000);
+	ros::Publisher ciel=my_node.advertise<sensor_msgs::PointCloud2>("/cloud_filtered", 1000);
 	ros::Subscriber scribe_cloud;
 	/****OLD version***/
 	
@@ -74,7 +72,7 @@ int main (int argc, char **argv){
 	}
 	
 	image_transport::ImageTransport it(my_node);
-	image_transport::CameraSubscriber scribe_image = it.subscribeCamera("camera/rgb/image", que, boost::bind(&Main::doWork, main, _1));
+	image_transport::Subscriber scribe_image = it.subscribe("camera/rgb/image", que, boost::bind(&Main::doWork, main, _1));
 	
 
 	/*
@@ -87,9 +85,12 @@ int main (int argc, char **argv){
 	Subscriber<sensor_msgs::Image> image_sub(my_node, "/camera/rgb/image", 100);
 	Synchronizer<MySyncPolicy> sync(MySyncPolicy(100), image_sub, cloud_sub);
 	sync.registerCallback(boost::bind(&Main::doWork, main, _1, _2));*/
-
+	
+	//Publisher in the handler
 	theHandler->pilote=pilote;
+	theHandler->ciel=ciel;
 
+	//Main setup
 	main->gui = gui;
 	main->poete = &poete;
 	main->handy = theHandler;
