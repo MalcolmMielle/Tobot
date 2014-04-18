@@ -101,23 +101,56 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  src
+  src/Test
   include/stalker/reckon_pipeline
+  include/stalker
+  include/stalker/Gui
 )
 
+find_package(VTK REQUIRED)
+include( ${VTK_USE_FILE} )
 ## Declare a cpp library
 # add_library(stalker
 #   src/${PROJECT_NAME}/stalker.cpp
 # )
 
+add_library(basic
+	include/stalker/Shape3D.cpp
+	include/stalker/Shape3D.hpp)
+target_link_libraries(basic ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+	
+
+	
+add_library(gui
+	include/stalker/Gui/Gui.cpp
+	include/stalker/Gui/Gui.hpp)
+
+target_link_libraries(gui basic ${catkin_LIBRARIES} ${PCL_LIBRARIES} vtkHybrid vtkRendering)
+
 add_library(3Dreckon
 	include/stalker/reckon_pipeline/Main.cpp
-	)
+	include/stalker/reckon_pipeline/Main.hpp
+	include/stalker/reckon_pipeline/CorrespGrouping.cpp
+	include/stalker/reckon_pipeline/CorrespGrouping.hpp)
+target_link_libraries(3Dreckon gui basic ${catkin_LIBRARIES} ${PCL_LIBRARIES} )
 
 ## Declare a cpp executable
 # add_executable(stalker_node src/stalker_node.cpp)
+add_executable(guit src/Test/gui.cpp)
+target_link_libraries(guit gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
+
+add_executable(st src/Test/shapet.cpp)
+target_link_libraries(st gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
+
+add_executable(coresgroupt src/Test/coresgroupt.cpp)
+target_link_libraries(coresgroupt gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
+
+add_executable(maint src/Test/main.cpp)
+target_link_libraries(maint gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
 
 add_executable(stalker_node src/Stalker.cpp)
-target_link_libraries(stalker_node ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+target_link_libraries(stalker_node gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} )
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

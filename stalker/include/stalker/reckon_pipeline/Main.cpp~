@@ -1,0 +1,20 @@
+#include "Main.hpp"
+
+
+void Main::doWork(const sensor_msgs::PointCloud2ConstPtr& cloudy){
+	pcl::fromROSMsg(*cloudy, *_scene);
+	_pipeline->setScene(_scene);
+	doWork();
+}
+
+
+void Main::doWork(){
+	std::cout<<"doWork"<<std::endl;
+	//TODO processing here
+	
+	/**************************MAIN PIPELINE OF RECOGNITION**********************/
+	_pipeline->doPipeline();
+	
+	//TODO Post Processing here
+
+}
