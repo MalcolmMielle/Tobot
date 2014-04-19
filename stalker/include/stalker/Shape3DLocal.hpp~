@@ -8,7 +8,7 @@ class ShapeLocal : public Shape<T> {
 	public :
 	bool resol;
 	
-	ShapeLocal() : Shape<T>(), resol(false){};
+	ShapeLocal(std::string& name) : Shape<T>(name), resol(false){};
 
 	//update Shape state
 	
@@ -35,7 +35,7 @@ inline void ShapeLocal<T>::computeDescriptors(){
 }
 
 template <typename T>
-inline void ShapeLocal<T>::update(){
+inline void ShapeLocal<T>::compute(){
 	if(resol==true){
 		std::cout << "Rosulation"<<std::endl;
 		resolutionInvariance();

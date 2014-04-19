@@ -8,7 +8,7 @@ class ShapeLocal : public Shape<T> {
 	public :
 	bool resol;
 	
-	ShapeLocal() : Shape<T>(), resol(false){};
+	ShapeLocal(const std::string& name) : Shape<T>(name), resol(false){};
 
 	//update Shape state
 	

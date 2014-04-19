@@ -29,7 +29,7 @@ class Main{
 	Main() : 
 	_scene(new pcl::PointCloud<T>()), 
 	_object(new pcl::PointCloud<T>()), 
-	_pipeline(new CorrespGrouping<T>(new ShapeLocal<T>(), new ShapeLocal<T>())) 
+	_pipeline(new CorrespGrouping<T>(new ShapeLocal<T>("object"), new ShapeLocal<T>("scene"))) 
 	{
 		std::cout<<"buiding the main awith nothing"<<std::endl;
 	}
@@ -38,7 +38,7 @@ class Main{
 	Main(typename pcl::PointCloud<T>::Ptr object, typename pcl::PointCloud<T>::Ptr scene) : 
 	_scene(scene), 
 	_object(object), 
-	_pipeline(new CorrespGrouping<T>(new ShapeLocal<T>(), new ShapeLocal<T>()))
+	_pipeline(new CorrespGrouping<T>(new ShapeLocal<T>("object"), new ShapeLocal<T>("scene")))
 	{
 		std::cout<<"buiding the main"<<std::endl;
 		initPipeline();

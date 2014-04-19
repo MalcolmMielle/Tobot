@@ -10,6 +10,6 @@
 
 BOOST_AUTO_TEST_CASE(trying)
 {
-	CorrespGrouping<pcl::PointXYZRGBA> cg(new ShapeLocal<pcl::PointXYZRGBA>, new ShapeLocal<pcl::PointXYZRGBA>);
+	CorrespGrouping<pcl::PointXYZRGBA> cg(new ShapeLocal<pcl::PointXYZRGBA>("bob1"), new ShapeLocal<pcl::PointXYZRGBA>("bob2"));
 	
 }

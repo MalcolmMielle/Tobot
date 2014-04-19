@@ -5,8 +5,8 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/correspondence.h>
-#include <pcl/recognition/cg/hough_3d.h>
-#include <pcl/recognition/cg/geometric_consistency.h>
+//#include <pcl/recognition/cg/hough_3d.h>
+//#include <pcl/recognition/cg/geometric_consistency.h>
 
 template <typename T>
 class CorrespGrouping : public Pipeline<T> {
@@ -56,7 +56,7 @@ inline void CorrespGrouping<T>::point2PointCorrespondance(){
 
 
 template <typename T>
-inline void clusteringHough(){
+inline void CorrespGrouping<T>::clusteringHough(){
 	    //
 	//  Compute (Keypoints) Reference Frames only for Hough
 	/*

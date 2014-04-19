@@ -34,7 +34,7 @@ class Shape{
 	float cg_thresh_ ;
 	
 	public :
-	Shape(std::string& name) : _id(name), _shape(new pcl::PointCloud<T>()),_shape_keypoints(new pcl::PointCloud<T>()),_shape_normals(new pcl::PointCloud<NormalType>()), _desc(new pcl::PointCloud<DescriptorType>()), _descrRad(0.02f), _shape_ss (0.01f), cg_size_ (0.01f),cg_thresh_ (5.0f){};
+	Shape(const std::string& name) : _id(name), _shape(new pcl::PointCloud<T>()),_shape_keypoints(new pcl::PointCloud<T>()),_shape_normals(new pcl::PointCloud<NormalType>()), _desc(new pcl::PointCloud<DescriptorType>()), _descrRad(0.02f), _shape_ss (0.01f), cg_size_ (0.01f),cg_thresh_ (5.0f){};
 
 	virtual ~Shape(){
 		std::cout<<"delete shape"<<std::endl;
