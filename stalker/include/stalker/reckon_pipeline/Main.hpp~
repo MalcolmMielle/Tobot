@@ -14,11 +14,11 @@
 template <typename T>
 class Main{
 	protected : 
-	typename pcl::PointCloud<T>::Ptr _scene; //Or a Shape here ? to solve the problem. The thing is as stuff is for now you'll need to free only one of the shape in Pipeline and it sucks. It's better if Main and Pipeline got exactly the same pointers so you can free all here. Just transform in shape in doWork.
-	//Or maybe it's better to have a Point Cloud here and do all the transformation in between here and Pipeline and free there.
-	//You'll see.
+	typename pcl::PointCloud<T>::Ptr _scene; //Last Scene receive
+	typename pcl::PointCloud<T>::Ptr _object; //Last Object receive
 	
-	typename pcl::PointCloud<T>::Ptr _object; //Maybe write a PointCloud here ?
+	std::deque<typename pcl::PointCloud<T>::Ptr> _objects; //Beta List of all objects receive
+	std::deque<typename pcl::PointCloud<T>::Ptr> _scenes; //Beta List of all scene receive
 	
 	/*I chose the point cloud because it's easier to have something general of use if we receive a Point Cloud through Ros nodes*/
 	Pipeline<T>* _pipeline;
@@ -67,6 +67,8 @@ class Main{
 	virtual ~Main(){
 		std::cout<<"deleting the main"<<std::endl;
 		delete _pipeline;
+		clearObjects();
+		clearScenes();
 	}
 
 	
@@ -96,7 +98,16 @@ class Main{
 	void setScene(typename pcl::PointCloud<T>::Ptr c);
 	void setObject(typename pcl::PointCloud<T>::Ptr s);
 	void setPipeline(Pipeline<T>* p){delete _pipeline; _pipeline=p;}
-
+	
+	//New interface
+	void addObject(typename pcl::PointCloud<T>::Ptr c){_objects.push_front(c);_pipeline->addObject(c);}
+	void addScene(typename pcl::PointCloud<T>::Ptr c){_scenes.push_front(c);_pipeline->addScene(c);}
+	void removeObject(typename pcl::PointCloud<T>::Ptr c);
+	void removeScene(typename pcl::PointCloud<T>::Ptr c);
+	void clearObjects();
+	void clearScenes();
+	const std::deque<typename pcl::PointCloud<T>::Ptr>& getAllObjects(){return _objects;}
+	const std::deque<typename pcl::PointCloud<T>::Ptr>& getAllScenes(){return _scenes;}
 	
 	virtual void doWork(const sensor_msgs::PointCloud2ConstPtr& cloudy); 
 	virtual void doWork();
@@ -113,12 +124,53 @@ inline void Main<T>::setObject(typename pcl::PointCloud<T>::Ptr s){
 	_pipeline->setObject(_object);
 }
 
+template <typename T>
+inline void Main<T>::removeObject(typename pcl::PointCloud<T>::Ptr c){
+	for (typename std::deque<typename pcl::PointCloud<T>::Ptr>::iterator it = _objects.begin(); it!=_objects.end();){
+		if((*it)==c){
+			delete(*it);//I think this is wrong because it's not a pointer...
+			_objects.erase(it);
+		}
+		else{
+			it++;
+		}
+	}
+}
+
+template <typename T>
+inline void Main<T>::removeScene(typename pcl::PointCloud<T>::Ptr c){
+	for (typename std::deque<typename pcl::PointCloud<T>::Ptr>::iterator it = _scenes.begin(); it!=_scenes.end();){
+		if((*it)==c){
+			delete(*it);
+			_scenes.erase(it);
+		}
+		else{
+			it++;
+		}
+	}
+}
+
+template <typename T>
+inline void Main<T>::clearObjects(){
+	for(typename std::deque<typename pcl::PointCloud<T>::Ptr>::iterator it = _objects.begin(); it!=_objects.end();){
+		_objects.erase(it);
+	}	
+}
+
+template <typename T>
+inline void Main<T>::clearScenes(){
+	for(typename std::deque<typename pcl::PointCloud<T>::Ptr>::iterator it = _scenes.begin(); it!=_scenes.end();){
+		_scenes.erase(it);
+	}
+}
 
 /**********************DO WORK FUNCTIONS***************/
 template <typename T>
 inline void Main<T>::doWork(const sensor_msgs::PointCloud2ConstPtr& cloudy){
 	pcl::fromROSMsg(*cloudy, *_scene);
-	_pipeline->setScene(_scene);
+	addScene(_scene);
+	_pipeline->setScene(_scene); 
+	_pipeline->addScene(_scene); //Need to figure out how to change and know the shape's names !! Maybe a yaml file...
 	doWork();
 }
 

@@ -34,7 +34,7 @@ class Shape{
 	float cg_thresh_ ;
 	
 	public :
-	Shape(std::string& name) : _id(name), _shape(new pcl::PointCloud<T>()),_shape_keypoints(new pcl::PointCloud<T>()),_shape_normals(new pcl::PointCloud<NormalType>()), _desc(new pcl::PointCloud<DescriptorType>()), _descrRad(0.02f), _shape_ss (0.01f), cg_size_ (0.01f),cg_thresh_ (5.0f){};
+	Shape(const std::string& name) : _id(name), _shape(new pcl::PointCloud<T>()),_shape_keypoints(new pcl::PointCloud<T>()),_shape_normals(new pcl::PointCloud<NormalType>()), _desc(new pcl::PointCloud<DescriptorType>()), _descrRad(0.02f), _shape_ss (0.01f), cg_size_ (0.01f),cg_thresh_ (5.0f){};
 
 	virtual ~Shape(){
 		std::cout<<"delete shape"<<std::endl;
@@ -46,6 +46,7 @@ class Shape{
 	virtual pcl::PointCloud<DescriptorType>::Ptr& getDescr(){return _desc;}
 	virtual float getRadius(){return _descrRad;}
 	virtual float getSamplingSize(){return _shape_ss;}
+	virtual const std::string
 	
 	virtual void set(typename pcl::PointCloud<T>::Ptr& p){_shape=p;}
 	virtual void setRadius(float r){_descrRad=r;}

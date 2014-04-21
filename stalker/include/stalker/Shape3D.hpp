@@ -46,6 +46,7 @@ class Shape{
 	virtual pcl::PointCloud<DescriptorType>::Ptr& getDescr(){return _desc;}
 	virtual float getRadius(){return _descrRad;}
 	virtual float getSamplingSize(){return _shape_ss;}
+	virtual const std::string& getName(){return _id;}
 	
 	virtual void set(typename pcl::PointCloud<T>::Ptr& p){_shape=p;}
 	virtual void setRadius(float r){_descrRad=r;}

@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(trying)
 
 	CorrespGrouping<pcl::PointXYZRGBA>* p = new CorrespGrouping<pcl::PointXYZRGBA>(new ShapeLocal<pcl::PointXYZRGBA>("object"), new ShapeLocal<pcl::PointXYZRGBA>("scene"));
 	
-	Main<pcl::PointXYZRGBA> mg(cloud, cloud2);
+	Main<pcl::PointXYZRGBA> mg(cloud, cloud2);//Mem lek
 	
 	mg.setScene(cloud);
 	mg.setObject(cloud);
@@ -34,4 +34,22 @@ BOOST_AUTO_TEST_CASE(trying)
 	
 	Main<pcl::PointXYZRGBA> mg3(cloud, cloud, new CorrespGrouping<pcl::PointXYZRGBA>(new ShapeLocal<pcl::PointXYZRGBA>("object"), new ShapeLocal<pcl::PointXYZRGBA>("scene")));
 	mg3.doWork();
-}
+	
+	///////////////////////////////////////////////
+	//MEMORY LEAKS SOMEWHERE
+	Main<pcl::PointXYZRGBA> mainly; //Mem leak
+	mainly.addObject(cloud);
+	mainly.addScene(cloud);
+	BOOST_CHECK_EQUAL(mainly.getAllObjects().size(),1);
+	//mainly.addObject(cloud); <- Doesn't work because of the name...
+	BOOST_CHECK_EQUAL(mainly.getPipeline()->getAllObjects().size(),1);
+	BOOST_CHECK_EQUAL(mainly.getPipeline()->getAllScenes().size(),1);
+	BOOST_CHECK_EQUAL(mainly.getAllScenes().size(),1);
+	//Don't work
+	//mainly.removeObject(cloud);
+	//BOOST_CHECK_EQUAL(mainly.getAllObjects().size(),0);
+	
+	/////////////////////////////
+	CorrespGrouping<pcl::PointXYZRGBA>* cp=new CorrespGrouping<pcl::PointXYZRGBA>(new ShapeLocal<pcl::PointXYZRGBA>("1"), new ShapeLocal<pcl::PointXYZRGBA>("2"));
+	Main<pcl::PointXYZRGBA> meanie(cp);
+};
