@@ -50,6 +50,6 @@ BOOST_AUTO_TEST_CASE(trying)
 	//BOOST_CHECK_EQUAL(mainly.getAllObjects().size(),0);
 	
 	/////////////////////////////
-	CorrespGrouping<pcl::PointXYZRGBA>* cp=new CorrespGrouping<pcl::PointXYZRGBA>(new ShapeLocal<pcl::PointXYZRGBA>(), new ShapeLocal<pcl::PointXYZRGBA>());
+	CorrespGrouping<pcl::PointXYZRGBA>* cp=new CorrespGrouping<pcl::PointXYZRGBA>(new ShapeLocal<pcl::PointXYZRGBA>("1"), new ShapeLocal<pcl::PointXYZRGBA>("2"));
 	Main<pcl::PointXYZRGBA> meanie(cp);
 };

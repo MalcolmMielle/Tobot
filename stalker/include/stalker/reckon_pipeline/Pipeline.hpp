@@ -83,13 +83,16 @@ inline void Pipeline<PointType>::addScene(Shape<PointType>* o){
 
 template <typename PointType>
 inline void Pipeline<PointType>::addObject(typename pcl::PointCloud<PointType>::Ptr o){
-	_objects.push_front(new ShapeLocal<PointType>("newobj"));
+	
+	std::string name="newobj"+boost::lexical_cast<std::string>( _objects.size() );
+	_objects.push_front(new ShapeLocal<PointType>(name));
 	_objects[0]->update(o);
 }
+
 template <typename PointType>
 inline void Pipeline<PointType>::addScene(typename pcl::PointCloud<PointType>::Ptr o){
 	std::string name="newsce";
-	name=name+boost::lexical_cast<string>( _scenes.size() );
+	name=name+boost::lexical_cast<std::string>( _scenes.size() );
 	_scenes.push_front(new ShapeLocal<PointType>(name));
 	_scenes[0]->update(o);
 }
