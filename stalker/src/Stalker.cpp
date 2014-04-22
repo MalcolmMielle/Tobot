@@ -7,9 +7,8 @@
 #include <pcl/ros/conversions.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-
+#include "CorrespGrouping.hpp"
 #include "Main.hpp"
-#include "Gui.hpp"
 int main (int argc, char **argv){
 	ros::init(argc, argv, "Stalker");
 	ros::NodeHandle my_node;

@@ -8,7 +8,7 @@ class ShapeLocal : public Shape<T> {
 	public :
 	bool resol;
 	
-	ShapeLocal(std::string& name) : Shape<T>(name), resol(false){};
+	ShapeLocal(const std::string& name) : Shape<T>(name), resol(false){};
 
 	//update Shape state
 	
@@ -43,7 +43,7 @@ inline void ShapeLocal<T>::compute(){
 		std::cout << "Normal"<<std::endl;
 	this->estimNormal();
 		std::cout << "DownSample"<<std::endl;
-	this->downsample();
+	//this->downsample();
 		std::cout << "Descriptors"<<std::endl;
 	this->computeDescriptors();
 }

@@ -1,0 +1,13 @@
+#include <iostream>
+#define BOOST_TEST_DYN_LINK
+
+#define BOOST_TEST_MODULE MyTest
+#include <time.h>
+#include <cstdlib>
+
+
+
+int main(){
+	int* u=new int;
+	return 0;
+}

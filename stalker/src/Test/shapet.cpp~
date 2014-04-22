@@ -10,11 +10,11 @@
 
 BOOST_AUTO_TEST_CASE(trying)
 {
-	ShapeLocal<pcl::PointXYZRGBA> st;
+	ShapeLocal<pcl::PointXYZRGBA> st("test");
 	pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
-	pcl::io::loadPCDFile ("/home/ros/catkin_ws/src/Tobot/stalker/src/Test/milk.pcd", *cloud);
+	pcl::io::loadPCDFile ("/home/ros/groovy_ws/catkin_ws/src/Tobot/stalker/src/Test/milk.pcd", *cloud);
 	st.update(cloud);
-	st.loadMesh("/home/ros/catkin_ws/src/Tobot/stalker/src/Test/milk.pcd");
+	st.loadMesh("/home/ros/groovy_ws//catkin_ws/src/Tobot/stalker/src/Test/milk.pcd");
 	st.compute();
 	st.update(cloud);	
 	st.setRadius(3);

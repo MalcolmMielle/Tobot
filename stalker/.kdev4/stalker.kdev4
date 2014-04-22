@@ -2,16 +2,8 @@
 BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\x0e\x00s\x00t\x00a\x00l\x00k\x00e\x00r)
 
 [CMake]
-BuildDirs[$e]=$HOME/catkin_ws/src/Tobot/stalker/build
 CMakeDir=/usr/share/cmake-2.8/Modules
-Current CMake Binary=file:///usr/bin/cmake
-CurrentBuildDir=file:///home/ros/catkin_ws/src/Tobot/stalker/build
-CurrentBuildType=Debug
-CurrentInstallDir=file:///usr/local
 ProjectRootRelative=./
-
-[MakeBuilder]
-Number Of Jobs=1
 
 [Project]
 VersionControlSupport=kdevgit

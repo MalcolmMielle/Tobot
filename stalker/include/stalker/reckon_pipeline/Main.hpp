@@ -1,10 +1,10 @@
-#ifndef RECKON_MAIN_H
-#define RECKON_MAIN_H
+#ifndef RECKON_MAIN_OPEN_H
+#define RECKON_MAIN_OPEN_H
 
 #include <iostream>
 #include <stdio.h>
 #include "sensor_msgs/PointCloud2.h"
-
+#include <vector>
 #include <Shape3DLocal.hpp>
 #include <CorrespGrouping.hpp>
 #include <Shape3D.hpp>
@@ -17,8 +17,8 @@ class Main{
 	typename pcl::PointCloud<T>::Ptr _scene; //Last Scene receive
 	typename pcl::PointCloud<T>::Ptr _object; //Last Object receive
 	
-	std::deque<typename pcl::PointCloud<T>::Ptr> _objects; //Beta List of all objects receive
-	std::deque<typename pcl::PointCloud<T>::Ptr> _scenes; //Beta List of all scene receive
+	std::vector<typename pcl::PointCloud<T>::Ptr> _objects; //Beta List of all objects receive
+	std::vector<typename pcl::PointCloud<T>::Ptr> _scenes; //Beta List of all scene receive
 	
 	/*I chose the point cloud because it's easier to have something general of use if we receive a Point Cloud through Ros nodes*/
 	Pipeline<T>* _pipeline;
@@ -41,7 +41,7 @@ class Main{
 	_pipeline(new CorrespGrouping<T>(new ShapeLocal<T>("object"), new ShapeLocal<T>("scene")))
 	{
 		std::cout<<"buiding the main"<<std::endl;
-		initPipeline();
+		initPipeline(); //Mem leak
 	}
 	
 	/********you have the Pipeline CONSTRCTOR***********/
@@ -86,7 +86,7 @@ class Main{
 	
 	void initPipeline(){
 		//_pipeline->init(cloud, cloud2);
-		_pipeline->setObject(_object);
+		_pipeline->setObject(_object); //Mem leak
 		_pipeline->setScene(_scene);
 	}
 	
@@ -95,40 +95,44 @@ class Main{
 	typename pcl::PointCloud<T>::Ptr getShape(){return _object;}
 	Pipeline<T>* getPipeline(){return _pipeline;}
 	
-	void setScene(typename pcl::PointCloud<T>::Ptr c);
-	void setObject(typename pcl::PointCloud<T>::Ptr s);
+	void setScene(typename pcl::PointCloud<T>::Ptr& c);
+	void setObject(typename pcl::PointCloud<T>::Ptr& s);
 	void setPipeline(Pipeline<T>* p){delete _pipeline; _pipeline=p;}
 	
 	//New interface
-	void addObject(typename pcl::PointCloud<T>::Ptr c){_objects.push_front(c);_pipeline->addObject(c);}
-	void addScene(typename pcl::PointCloud<T>::Ptr c){_scenes.push_front(c);_pipeline->addScene(c);}
-	void removeObject(typename pcl::PointCloud<T>::Ptr c);
-	void removeScene(typename pcl::PointCloud<T>::Ptr c);
+	void addObject(typename pcl::PointCloud<T>::Ptr& c){_objects.push_back(c);_pipeline->addObject(c);}
+	void addScene(typename pcl::PointCloud<T>::Ptr& c){
+	_scenes.push_back(c);
+	_pipeline->addScene(c);
+		
+	}
+	void removeObject(typename pcl::PointCloud<T>::Ptr& c);
+	void removeScene(typename pcl::PointCloud<T>::Ptr& c);
 	void clearObjects();
 	void clearScenes();
-	const std::deque<typename pcl::PointCloud<T>::Ptr>& getAllObjects(){return _objects;}
-	const std::deque<typename pcl::PointCloud<T>::Ptr>& getAllScenes(){return _scenes;}
+	const std::vector<typename pcl::PointCloud<T>::Ptr>& getAllObjects(){return _objects;}
+	const std::vector<typename pcl::PointCloud<T>::Ptr>& getAllScenes(){return _scenes;}
 	
 	virtual void doWork(const sensor_msgs::PointCloud2ConstPtr& cloudy); 
 	virtual void doWork();
 	
 };
 template <typename T>
-inline void Main<T>::setScene(typename pcl::PointCloud<T>::Ptr c){
+inline void Main<T>::setScene(typename pcl::PointCloud<T>::Ptr& c){
 	this->_scene=c; 
 	this->_pipeline->setScene(_scene);
 }
 template <typename T>
-inline void Main<T>::setObject(typename pcl::PointCloud<T>::Ptr s){
-	_object=s; 
-	_pipeline->setObject(_object);
+inline void Main<T>::setObject(typename pcl::PointCloud<T>::Ptr& s){
+	this->_object=s; 
+	this->_pipeline->setObject(_object);
 }
 
 template <typename T>
-inline void Main<T>::removeObject(typename pcl::PointCloud<T>::Ptr c){
-	for (typename std::deque<typename pcl::PointCloud<T>::Ptr>::iterator it = _objects.begin(); it!=_objects.end();){
+inline void Main<T>::removeObject(typename pcl::PointCloud<T>::Ptr& c){
+	for (typename std::vector<typename pcl::PointCloud<T>::Ptr>::iterator it = _objects.begin(); it!=_objects.end();){
 		if((*it)==c){
-			delete(*it);//I think this is wrong because it's not a pointer...
+			//delete(*it);//I think this is wrong because it's not a pointer...
 			_objects.erase(it);
 		}
 		else{
@@ -138,10 +142,10 @@ inline void Main<T>::removeObject(typename pcl::PointCloud<T>::Ptr c){
 }
 
 template <typename T>
-inline void Main<T>::removeScene(typename pcl::PointCloud<T>::Ptr c){
-	for (typename std::deque<typename pcl::PointCloud<T>::Ptr>::iterator it = _scenes.begin(); it!=_scenes.end();){
+inline void Main<T>::removeScene(typename pcl::PointCloud<T>::Ptr& c){
+	for (typename std::vector<typename pcl::PointCloud<T>::Ptr>::iterator it = _scenes.begin(); it!=_scenes.end();){
 		if((*it)==c){
-			delete(*it);//Same as above
+			//delete(*it);//Same as above
 			_scenes.erase(it);
 		}
 		else{
@@ -152,14 +156,14 @@ inline void Main<T>::removeScene(typename pcl::PointCloud<T>::Ptr c){
 
 template <typename T>
 inline void Main<T>::clearObjects(){
-	for(typename std::deque<typename pcl::PointCloud<T>::Ptr>::iterator it = _objects.begin(); it!=_objects.end();){
+	for(typename std::vector<typename pcl::PointCloud<T>::Ptr>::iterator it = _objects.begin(); it!=_objects.end();){
 		_objects.erase(it);
 	}	
 }
 
 template <typename T>
 inline void Main<T>::clearScenes(){
-	for(typename std::deque<typename pcl::PointCloud<T>::Ptr>::iterator it = _scenes.begin(); it!=_scenes.end();){
+	for(typename std::vector<typename pcl::PointCloud<T>::Ptr>::iterator it = _scenes.begin(); it!=_scenes.end();){
 		_scenes.erase(it);
 	}
 }
@@ -168,9 +172,8 @@ inline void Main<T>::clearScenes(){
 template <typename T>
 inline void Main<T>::doWork(const sensor_msgs::PointCloud2ConstPtr& cloudy){
 	pcl::fromROSMsg(*cloudy, *_scene);
-	addScene(_scene);
-	_pipeline->setScene(_scene); 
-	_pipeline->addScene(_scene); //Need to figure out how to change and know the shape's names !! Maybe a yaml file...
+	_pipeline->setScene(_scene);
+	addScene(_scene); //Need to figure out how to change and know the shape's names !! Maybe a yaml file...
 	doWork();
 }
 

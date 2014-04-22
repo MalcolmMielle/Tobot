@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -151,6 +152,9 @@ target_link_libraries(maint gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARI
 
 add_executable(stalker_node src/Stalker.cpp)
 target_link_libraries(stalker_node gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} )
+
+add_executable(debug src/Test/debug.cpp)
+target_link_libraries(debug -lboost_unit_test_framework)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
