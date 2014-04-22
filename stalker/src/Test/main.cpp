@@ -60,8 +60,8 @@ BOOST_AUTO_TEST_CASE(trying)
 	mainly.doWork(smp);
 	//Don't work
 	mainly.removeObject(cloud);
-	BOOST_CHECK_EQUAL(mainly.getAllScenes().size(),2); //Size 2
-	BOOST_CHECK_EQUAL(mainly.getPipeline()->getAllScenes().size(),2); //Size 2
+	BOOST_CHECK_EQUAL(mainly.getAllScenes().size(),6); //Size 2
+	BOOST_CHECK_EQUAL(mainly.getPipeline()->getAllScenes().size(),6); //Size 2
 	
 	BOOST_CHECK_EQUAL(mg.getAllScenes().size(),0); //Size 0
 	BOOST_CHECK_EQUAL(mg.getPipeline()->getAllScenes().size(),0); //Size 0

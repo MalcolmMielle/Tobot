@@ -31,10 +31,7 @@ class Pipeline{
 		
 	}
 	virtual void doPipeline() = 0;
-	virtual void init(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud,pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud2){
-		_object->set(cloud);
-		_scene->set(cloud2);
-	}
+
 	virtual void setObject(Shape<PointType>* o){delete _object; _object=o;}
 	virtual void setScene(Shape<PointType>* o){delete _scene; _scene=o;}
 	virtual void setObject(typename pcl::PointCloud<PointType>::Ptr& obj);

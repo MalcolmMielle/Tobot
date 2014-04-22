@@ -61,7 +61,7 @@ class Pipeline{
 	virtual void removeScene(Shape<PointType>* o);
 	virtual void clearObjects();
 	virtual void clearScenes();
-	virtual void printNames(){
+	virtual void print(){
 		std::cout<<std::endl<<"********* Objects *********"<<std::endl;
 		for(typename std::vector<Shape<PointType>*>::iterator it = _objects.begin(); it!=_objects.end();){
 		//std::cout<<"Cleaning object size : "<<_objects.size()<<std::endl;
