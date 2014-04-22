@@ -39,6 +39,8 @@ BOOST_AUTO_TEST_CASE(trying)
 	///////////////////////////////////////////////
 	//MEMORY LEAKS SOMEWHERE
 	Main<pcl::PointXYZRGBA> mainly; //Mem leak
+	mainly.setMaxObject(5);
+	mainly.setMaxScene(2);
 	mainly.addObject(cloud);
 	mainly.addObject(cloud);
 	mainly.addObject(cloud);
@@ -46,12 +48,11 @@ BOOST_AUTO_TEST_CASE(trying)
 	mainly.addScene(cloud);
 	mainly.addScene(cloud);
 	mainly.addScene(cloud);
-	
-	BOOST_CHECK_EQUAL(mainly.getAllObjects().size(),1);
+	BOOST_CHECK_EQUAL(mainly.getAllObjects().size(),3);
 	mainly.addObject(cloud);// <- Doesn't work because of the name...
-	BOOST_CHECK_EQUAL(mainly.getPipeline()->getAllObjects().size(),3);
+	BOOST_CHECK_EQUAL(mainly.getPipeline()->getAllObjects().size(),4);
 	BOOST_CHECK_EQUAL(mainly.getPipeline()->getAllScenes().size(),4);
-	BOOST_CHECK_EQUAL(mainly.getAllScenes().size(),1);
+	BOOST_CHECK_EQUAL(mainly.getAllScenes().size(),2);
 	
 	std::cout<<"Doing Work"<<std::endl;
 	sensor_msgs::PointCloud2Ptr smp(new sensor_msgs::PointCloud2);
@@ -60,7 +61,7 @@ BOOST_AUTO_TEST_CASE(trying)
 	mainly.doWork(smp);
 	//Don't work
 	mainly.removeObject(cloud);
-	BOOST_CHECK_EQUAL(mainly.getAllScenes().size(),6); //Size 2
+	BOOST_CHECK_EQUAL(mainly.getAllScenes().size(),2); //Size 2
 	BOOST_CHECK_EQUAL(mainly.getPipeline()->getAllScenes().size(),6); //Size 2
 	
 	BOOST_CHECK_EQUAL(mg.getAllScenes().size(),0); //Size 0

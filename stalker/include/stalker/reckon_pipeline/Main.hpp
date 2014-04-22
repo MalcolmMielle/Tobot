@@ -14,6 +14,8 @@
 template <typename T>
 class Main{
 	protected : 
+	int _maxObject;
+	int _maxScene;
 	typename pcl::PointCloud<T>::Ptr _scene; //Last Scene receive
 	typename pcl::PointCloud<T>::Ptr _object; //Last Object receive
 	
@@ -26,7 +28,7 @@ class Main{
 	public : 
 	
 	/********DEFAULT CONSTRCTOR***********/
-	Main() : 
+	Main() : _maxObject(10), _maxScene(20),
 	_scene(new pcl::PointCloud<T>()), 
 	_object(new pcl::PointCloud<T>()), 
 	_pipeline(new CorrespGrouping<T>(new ShapeLocal<T>("object"), new ShapeLocal<T>("scene"))) 
@@ -35,7 +37,7 @@ class Main{
 	}
 
 	/********you have the Clouds CONSTRCTOR***********/
-	Main(typename pcl::PointCloud<T>::Ptr object, typename pcl::PointCloud<T>::Ptr scene) : 
+	Main(typename pcl::PointCloud<T>::Ptr object, typename pcl::PointCloud<T>::Ptr scene) : _maxObject(10), _maxScene(20),
 	_scene(scene), 
 	_object(object), 
 	_pipeline(new CorrespGrouping<T>(new ShapeLocal<T>("object"), new ShapeLocal<T>("scene")))
@@ -45,7 +47,7 @@ class Main{
 	}
 	
 	/********you have the Pipeline CONSTRCTOR***********/
-	Main(Pipeline<T>* p) :
+	Main(Pipeline<T>* p) : _maxObject(10), _maxScene(20),
 	_scene(new pcl::PointCloud<T>()), 
 	_object(new pcl::PointCloud<T>()), 
 	_pipeline(p)
@@ -54,7 +56,7 @@ class Main{
 	}
 
 	/********You have everything CONSTRCTOR***********/
-	Main(typename pcl::PointCloud<T>::Ptr object, typename pcl::PointCloud<T>::Ptr scene, Pipeline<T>* p) : 
+	Main(typename pcl::PointCloud<T>::Ptr object, typename pcl::PointCloud<T>::Ptr scene, Pipeline<T>* p) : _maxObject(10), _maxScene(20),
 	_scene(scene), 
 	_object(object), 
 	_pipeline(p)
@@ -91,6 +93,12 @@ class Main{
 	}
 	
 	//Accesseur
+	virtual void setMaxObject(int i){_maxObject=i;}
+	virtual void setMaxScene(int i){_maxScene=i;}
+	
+	virtual void checkSizeObject();
+	virtual void checkSizeScene();
+	
 	typename pcl::PointCloud<T>::Ptr getCloud(){return _scene;}
 	typename pcl::PointCloud<T>::Ptr getShape(){return _object;}
 	Pipeline<T>* getPipeline(){return _pipeline;}
@@ -100,14 +108,15 @@ class Main{
 	void setPipeline(Pipeline<T>* p){delete _pipeline; _pipeline=p;}
 	
 	//New interface
-	void addObject(typename pcl::PointCloud<T>::Ptr& c){_objects.push_back(c);_pipeline->addObject(c);}
-	void addScene(typename pcl::PointCloud<T>::Ptr& c){
-	_scenes.push_back(c);
-	_pipeline->addScene(c);
+	void addObject(typename pcl::PointCloud<T>::Ptr& c){_objects.push_back(c);checkSizeObject();_pipeline->addObject(c);}
+	void addScene(typename pcl::PointCloud<T>::Ptr& c){_scenes.push_back(c);checkSizeScene();_pipeline->addScene(c);
 		
 	}
 	void removeObject(typename pcl::PointCloud<T>::Ptr& c);
 	void removeScene(typename pcl::PointCloud<T>::Ptr& c);
+	void removeObject(int i);
+	void removeScene(int i);
+	
 	void clearObjects();
 	void clearScenes();
 	const std::vector<typename pcl::PointCloud<T>::Ptr>& getAllObjects(){return _objects;}
@@ -117,6 +126,30 @@ class Main{
 	virtual void doWork();
 	
 };
+
+
+template <typename T>
+inline void Main<T>::checkSizeObject()
+{
+	if(_objects.size()>_maxObject){
+		while(_objects.size()>_maxObject){
+			removeObject(0);
+		}
+	}
+}
+
+template <typename T>
+inline void Main<T>::checkSizeScene()
+{
+	if(_scenes.size()>_maxScene){
+		while(_scenes.size()>_maxScene){
+			removeScene(0);
+		}
+	}
+}
+
+
+
 template <typename T>
 inline void Main<T>::setScene(typename pcl::PointCloud<T>::Ptr& c){
 	this->_scene=c; 
@@ -155,6 +188,24 @@ inline void Main<T>::removeScene(typename pcl::PointCloud<T>::Ptr& c){
 }
 
 template <typename T>
+inline void Main<T>::removeObject(int i){
+	std::cout<<"remove object n "<< i << "with "<< _objects.size()<< std::endl;
+	if(size_t(i)<_objects.size()){
+		typename std::vector<typename pcl::PointCloud<T>::Ptr>::iterator it=_objects.begin()+i;
+		_objects.erase(it);
+	}
+}
+
+template <typename T>
+inline void Main<T>::removeScene(int i){
+	std::cout<<"remove scene n "<< i << "with "<< _scenes.size()<< std::endl;
+	if(size_t(i)<_scenes.size()){
+		typename std::vector<typename pcl::PointCloud<T>::Ptr>::iterator it=_scenes.begin()+i;
+		_scenes.erase(it);
+	}
+}
+
+template <typename T>
 inline void Main<T>::clearObjects(){
 	for(typename std::vector<typename pcl::PointCloud<T>::Ptr>::iterator it = _objects.begin(); it!=_objects.end();){
 		_objects.erase(it);
@@ -169,6 +220,10 @@ inline void Main<T>::clearScenes(){
 }
 
 /**********************DO WORK FUNCTIONS***************/
+
+/*Function to modify in order to use one "interface" or the other*/
+
+
 template <typename T>
 inline void Main<T>::doWork(const sensor_msgs::PointCloud2ConstPtr& cloudy){
 	pcl::fromROSMsg(*cloudy, *_scene);

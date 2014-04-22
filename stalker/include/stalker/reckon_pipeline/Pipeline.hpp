@@ -12,14 +12,16 @@
 template <typename PointType>
 class Pipeline{
 	
-	public : 
+	protected : 
+	int _maxObject;
+	int _maxScene;
 	Shape<PointType>* _object; //Don't need because it take a Shape* from main.
 	Shape<PointType>* _scene; // Need to be initialise because it takes a Cloud in argument.
 	std::vector<Shape<PointType> *> _objects; //Deck of all objects to compare
 	std::vector<Shape<PointType> *> _scenes; //Deck of all scene to compare
 	
 	public : 
-	Pipeline(Shape<PointType>* p, Shape<PointType>* p2) : _object(p), _scene(p2){}; //FREE PROBLEM
+	Pipeline(Shape<PointType>* p, Shape<PointType>* p2) : _maxObject(10), _maxScene(20), _object(p), _scene(p2){}; //FREE PROBLEM
 	virtual ~Pipeline(){
 		std::cout << "delete Pipeline"<<std::endl;
 		delete _object;
@@ -31,7 +33,12 @@ class Pipeline{
 		
 	}
 	virtual void doPipeline() = 0;
-
+	virtual void setMaxObject(int i){_maxObject=i;}
+	virtual void setMaxScene(int i){_maxScene=i;}
+	
+	virtual void checkSizeObject();
+	virtual void checkSizeScene();
+	
 	virtual void setObject(Shape<PointType>* o){delete _object; _object=o;}
 	virtual void setScene(Shape<PointType>* o){delete _scene; _scene=o;}
 	virtual void setObject(typename pcl::PointCloud<PointType>::Ptr& obj);
@@ -79,6 +86,27 @@ class Pipeline{
 };
 
 template <typename T>
+inline void Pipeline<T>::checkSizeObject()
+{
+	if(_objects.size()>_maxObject){
+		while(_objects.size()>_maxObject){
+			removeObject(0);
+		}
+	}
+}
+
+template <typename T>
+inline void Pipeline<T>::checkSizeScene()
+{
+	if(_scenes.size()>_maxScene){
+		while(_scenes.size()>_maxScene){
+			removeScene(0);
+		}
+	}
+}
+
+
+template <typename T>
 inline void Pipeline<T>::setScene(typename pcl::PointCloud<T>::Ptr& cloud)
 {
 	this->_scene->update(cloud);
@@ -93,11 +121,13 @@ inline void Pipeline<T>::setObject(typename pcl::PointCloud<T>::Ptr& obj)
 template <typename PointType>
 inline void Pipeline<PointType>::addObject(Shape<PointType>* o){
 	_objects.push_back(o);
+	checkSizeObject();
 	
 }
 template <typename PointType>
 inline void Pipeline<PointType>::addScene(Shape<PointType>* o){
 	_scenes.push_back(o);
+	checkSizeScene();
 }
 
 template <typename PointType>
@@ -106,6 +136,7 @@ inline void Pipeline<PointType>::addObject(typename pcl::PointCloud<PointType>::
 	name=name+boost::lexical_cast<std::string>( _scenes.size() );
 	_objects.push_back(new ShapeLocal<PointType>(name));
 	_objects[_objects.size()-1]->update(o);
+	checkSizeObject();
 }
 
 template <typename PointType>
@@ -114,6 +145,7 @@ inline void Pipeline<PointType>::addScene(typename pcl::PointCloud<PointType>::P
 	name=name+boost::lexical_cast<std::string>( _scenes.size() );
 	_scenes.push_back(new ShapeLocal<PointType>(name));
 	_scenes[_scenes.size()-1]->update(o);
+	checkSizeScene();
 }
 
 template <typename PointType>
@@ -180,7 +212,12 @@ inline void Pipeline<PointType>::removeObject(int i){
 	
 template <typename PointType>
 inline void Pipeline<PointType>::removeScene(int i){
-
+	std::cout<<"remove scene n "<< i << "with "<< _scenes.size()<< std::endl;
+	if(size_t(i)<_scenes.size()){
+		typename std::vector<Shape<PointType>*>::iterator it=_scenes.begin()+i;
+		delete(*it);
+		_scenes.erase(it);
+	}
 }
 
 template <typename PointType>

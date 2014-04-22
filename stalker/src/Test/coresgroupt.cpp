@@ -18,6 +18,8 @@ BOOST_AUTO_TEST_CASE(trying)
 	
 	
 	CorrespGrouping<pcl::PointXYZRGBA> cg(new ShapeLocal<pcl::PointXYZRGBA>("bob1"), new ShapeLocal<pcl::PointXYZRGBA>("bob2"));
+	cg.setMaxObject(2);
+	cg.setMaxScene(4);
 	//cg.addObject(new ShapeLocal<pcl::PointXYZRGBA>("bob2")); //Problem with this declaration oO
 	//BOOST_CHECK_EQUAL(cg.getAllObjects().size(),1);
 	
@@ -34,12 +36,16 @@ BOOST_AUTO_TEST_CASE(trying)
 	cg.addObject(cloud);
 	cg.addObject(cloud);
 	
+	BOOST_CHECK_EQUAL(cg.getAllObjects().size(), 2);
+	
 	std::cout<<"lest add2"<<std::endl;
 	cg.addScene(cloud);
 	cg.addScene(cloud);
 	cg.addScene(cloud);
 	cg.addScene(cloud);
 	cg.addScene(cloud);
+	
+	BOOST_CHECK_EQUAL(cg.getAllScenes().size(), 4);
 	
 	std::cout<<"First print"<<std::endl;
 	cg.print();
