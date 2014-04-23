@@ -6,6 +6,7 @@ project(stalker)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
+  
   geometry_msgs
   image_transport
   message_generation
