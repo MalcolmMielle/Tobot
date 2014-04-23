@@ -27,20 +27,20 @@ class Handler3D{
 	ros::Publisher pilote;
 	ros::Publisher ciel;
 	ros::Time time_stamp;
-	pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud;
-	pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_filtered;	
-	sensor_msgs::PointCloud2ConstPtr& cloud_sensor;
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered;	
+	sensor_msgs::PointCloud2ConstPtr cloud_sensor;
 	
-	Handler3D() : flag(0), time_stamp(ros::Time::now()), cloud(new pcl::PointCloud<pcl::PointXYZRGBA>), cloud_filtered(new pcl::PointCloud<pcl::PointXYZRGBA>), cloud_sensor(){
+	Handler3D() : flag(0), time_stamp(ros::Time::now()), cloud(new pcl::PointCloud<pcl::PointXYZ>), cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>), cloud_sensor(){
 		cloud->height=1;
 	};
 	~Handler3D(){/*delete cloud;*/}
 	void setCloud(const sensor_msgs::PointCloud2ConstPtr& cloudy);
-	void toMat(cv::Mat& result, pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloudin);
-	void publish(pcl::PointXYZRGBA& pt);
-	void publish(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cf);
+	void toMat(cv::Mat& result, pcl::PointCloud<pcl::PointXYZ>::Ptr cloudin);
+	void publish(pcl::PointXYZ& pt);
+	void publish(pcl::PointCloud<pcl::PointXYZ>::Ptr cf);
 	void tracking(cv::Rect *currBB);
-	void filter_pt(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloudin, std::string axis, int limits1, int limits2);
+	void filter_pt(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudin, std::string axis, int limits1, int limits2);
 	void afficheCloud();
 	void afficheCloudFiltre();
 };

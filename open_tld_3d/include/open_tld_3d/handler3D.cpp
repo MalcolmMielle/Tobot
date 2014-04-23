@@ -50,7 +50,7 @@ void Handler3D::tracking(cv::Rect *currBB){
 		//filter_pt(cloud,"x", x_lim, x_lim_max);
 		//filter_pt(cloud_filtered,"y", y_lim, y_lim_max);
 		//
-		//pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_cut(new pcl::PointCloud<pcl::PointXYZRGBA>);
+		//pcl::PointCloud<pcl::PointXYZRGBARGBA>::Ptr cloud_cut(new pcl::PointCloud<pcl::PointXYZRGBARGBA>);
 		cloud_filtered->width  = currBB->width;
 		cloud_filtered->height = currBB->height;
 		cloud_filtered->points.resize (cloud_filtered->width * cloud_filtered->height);

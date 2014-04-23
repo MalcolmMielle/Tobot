@@ -11,6 +11,7 @@
 #include <pcl/features/shot_lrf.h>
 #include <pcl/recognition/cg/geometric_consistency.h>
 
+
 template <typename T>
 class CorrespGrouping : public Pipeline<T> {
 	protected : 
@@ -32,6 +33,8 @@ class CorrespGrouping : public Pipeline<T> {
 	virtual int getFrameRadius(){return _rf_rad;}
 	virtual int getClusterSize(){return _cg_size;}
 	virtual int getClusterThresold(){return _cg_thresh;}
+	std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> >& getRoto(){return _rototranslations;}
+	std::vector<pcl::Correspondences>& getClust(){return _clustered_corrs;}
 	
 	virtual void point2PointCorrespondance();
 	virtual void clusteringHough();

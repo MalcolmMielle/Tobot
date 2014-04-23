@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(trying)
 	cg.addScene(cloud);
 	cg.addScene(cloud);
 	
-	//BOOST_CHECK_EQUAL(cg.getAllScenes().size(), 4);
+	BOOST_CHECK_EQUAL(cg.getAllScenes().size(), 4);
 	
 	std::cout<<"First print"<<std::endl;
 	cg.print();

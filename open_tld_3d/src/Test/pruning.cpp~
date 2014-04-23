@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(trying)
 		}
 	}
 
-	cloud->points[6].x=NaN;
+	cloud->points[6].x=std::numeric_limits<double>::quiet_NaN();;
 
 	std::cerr << "Cloud before filtering: " << std::endl;
 	theHandler.afficheCloud();

@@ -43,7 +43,7 @@ inline void ShapeLocal<T>::compute(){
 		std::cout << "Normal"<<std::endl;
 	this->estimNormal();
 		std::cout << "DownSample"<<std::endl;
-	//this->downsample();
+	this->downsample();
 		std::cout << "Descriptors"<<std::endl;
 	this->computeDescriptors();
 }

@@ -13,8 +13,7 @@ BOOST_AUTO_TEST_CASE(trying)
 {
 	ShapeLocal<pcl::PointXYZRGBA> st("test");
 	pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
-	pcl::io::loadPCDFile ("/home/ros/groovy_ws/catkin_ws/src/Tobot/stalker/src/Test/milk.pcd", *cloud);
-	
+	pcl::io::loadPCDFile ("/home/ros/hydro_ws/catkin_ws/src/Tobot/stalker/src/Test/milk.pcd", *cloud);	
 	
 	
 	CorrespGrouping<pcl::PointXYZRGBA> cg(new ShapeLocal<pcl::PointXYZRGBA>("bob1"), new ShapeLocal<pcl::PointXYZRGBA>("bob2"));

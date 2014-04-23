@@ -19,7 +19,7 @@
 
 BOOST_AUTO_TEST_CASE(trying)
 {
-	srand (time(NULL));
+	/*srand (time(NULL));
 	ros::init(boost::unit_test::framework::master_test_suite().argc, boost::unit_test::framework::master_test_suite().argv, "pruning");
 	ros::NodeHandle n;
 	ros::Rate loop_rate(10);
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(trying)
 	std::cerr << "    " << theHandler.cloud_filtered->points[i].x << " " 
 		      << theHandler.cloud_filtered->points[i].y << " " 
 		      << theHandler.cloud_filtered->points[i].z << std::endl;
-	/*while(ros::ok()){
+	while(ros::ok()){
 		theHandler.tracking(&rect);
 		ros::spinOnce();
 	}*/

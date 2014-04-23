@@ -181,19 +181,19 @@
 
 
   <!--CAMERA-->
-  <link name="camera">
+  <link name="camera_link">
     <visual>
       <geometry>
-        <box size="0.05 .05 .05"/>
+        <box size="0.15 .05 .05"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <material name="black"/>
     </visual>
   </link>
   
-  <joint name="camera" type="fixed">
+  <joint name="camera_link" type="fixed">
     <parent link="base_link"/>
-    <child link="camera"/>
+    <child link="camera_link"/>
     <origin xyz="${width} 0 ${GROUND_CLEARANCE-bodylen+posz_camera} " rpy="${-PI/2} 0 ${-PI/2}"/>
   </joint>
   

@@ -31,6 +31,7 @@ inline void ShapeLocal<T>::computeDescriptors(){
 	descr_est.setInputCloud (this->_shape_keypoints);
 	descr_est.setInputNormals (this->_shape_normals);
 	descr_est.setSearchSurface (this->_shape);
+	std::cout<<"Computin"<<std::endl;
 	descr_est.compute (*(this->_desc)); //pointer of desc
 }
 

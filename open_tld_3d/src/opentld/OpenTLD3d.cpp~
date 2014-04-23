@@ -72,7 +72,7 @@ int main (int argc, char **argv){
 	}
 	
 	image_transport::ImageTransport it(my_node);
-	image_transport::CameraSubscriber scribe_image = it.subscribeCamera("camera/rgb/image", que, boost::bind(&Main::doWork, main, _1));
+	image_transport::Subscriber scribe_image = it.subscribe("camera/rgb/image", que, boost::bind(&Main::doWork, main, _1));
 	
 
 	/*

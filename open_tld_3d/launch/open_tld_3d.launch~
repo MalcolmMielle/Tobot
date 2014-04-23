@@ -1,8 +1,9 @@
-
 <launch>
 
   <node name="OpenTLD3D" pkg="open_tld_3d" type="OpenTLD3D">
     <rosparam file="$(find open_tld_3d)/config/opentldconfig.yaml" command="load" />
+    <remap from="camera/rgb/image" to="camera/rgb/image_raw"/>
+    <remap from="camera/depth/points_xyzrgb" to="camera/depth/points"/>
   </node>
 
 </launch>

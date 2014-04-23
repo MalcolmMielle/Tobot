@@ -7,8 +7,7 @@ project(open_tld_3d)
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   geometry_msgs
-  pcl
-  pcl_ros
+  pcl_conversions
   roscpp
   rospy
   sensor_msgs
@@ -121,7 +120,7 @@ include_directories(src/libopentld/imacq
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES open_tld_3d
-  CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs pcl_ros pcl
+  CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs pcl_conversions
   DEPENDS system_lib
 )
 
