@@ -6,17 +6,14 @@ project(stalker)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
-  
   geometry_msgs
   image_transport
   message_generation
-  pcl
-  pcl_ros
+  pcl_conversions
   roscpp
   sensor_msgs
   std_msgs
 )
-
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -112,6 +109,9 @@ include_directories(
 
 find_package(VTK REQUIRED)
 include( ${VTK_USE_FILE} )
+
+find_package(PCL REQUIRED)
+include_directories(${PCL_INCLUDE_DIRS})
 ## Declare a cpp library
 # add_library(stalker
 #   src/${PROJECT_NAME}/stalker.cpp
@@ -128,7 +128,7 @@ add_library(gui
 	include/stalker/Gui/Gui.cpp
 	include/stalker/Gui/Gui.hpp)
 
-target_link_libraries(gui basic ${catkin_LIBRARIES} ${PCL_LIBRARIES} vtkHybrid vtkRendering)
+target_link_libraries(gui basic ${catkin_LIBRARIES} ${PCL_LIBRARIES}) #vtkHybrid vtkRendering)
 
 add_library(3Dreckon
 	include/stalker/reckon_pipeline/Main.cpp
@@ -153,9 +153,6 @@ target_link_libraries(maint gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARI
 
 add_executable(stalker_node src/Stalker.cpp)
 target_link_libraries(stalker_node gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} )
-
-add_executable(debug src/Test/debug.cpp)
-target_link_libraries(debug -lboost_unit_test_framework)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

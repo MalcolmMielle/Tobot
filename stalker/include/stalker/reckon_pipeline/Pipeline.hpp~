@@ -212,7 +212,7 @@ inline void Pipeline<PointType>::removeObject(int i){
 	
 template <typename PointType>
 inline void Pipeline<PointType>::removeScene(int i){
-	std::cout<<"remove scene n "<< i << "with "<< _objects.size()<< std::endl;
+	std::cout<<"remove scene n "<< i << "with "<< _scenes.size()<< std::endl;
 	if(size_t(i)<_scenes.size()){
 		typename std::vector<Shape<PointType>*>::iterator it=_scenes.begin()+i;
 		delete(*it);

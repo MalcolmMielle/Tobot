@@ -83,7 +83,7 @@ inline void CorrespGrouping<T>::clusteringHough(){
 	pcl::PointCloud<RFType>::Ptr scene_rf (new pcl::PointCloud<RFType> ());
 
 	//USED THAT IN PCL 1.7
-	/*pcl::BOARDLocalReferenceFrameEstimation<T, NormalType, RFType> rf_est;
+	pcl::BOARDLocalReferenceFrameEstimation<T, NormalType, RFType> rf_est;
 	rf_est.setFindHoles (true);
 	rf_est.setRadiusSearch (_rf_rad);
 
@@ -97,7 +97,7 @@ inline void CorrespGrouping<T>::clusteringHough(){
 	rf_est.setSearchSurface (this->_scene->getCloud());
 	rf_est.compute (*scene_rf); */
 	
-	//In PCL 1.6
+	/*In PCL 1.6
 	pcl::SHOTLocalReferenceFrameEstimation<T, RFType> rf_est;
 	rf_est.setRadiusSearch (_rf_rad);
 
@@ -107,7 +107,7 @@ inline void CorrespGrouping<T>::clusteringHough(){
 
 	rf_est.setInputCloud (this->_scene->getKeypoints());
 	rf_est.setSearchSurface (this->_scene->getCloud());
-	rf_est.compute (*scene_rf);
+	rf_est.compute (*scene_rf);*/
 
 	//  Clustering
 	pcl::Hough3DGrouping<T, T, RFType, RFType> clusterer; //undefined reference in .o
