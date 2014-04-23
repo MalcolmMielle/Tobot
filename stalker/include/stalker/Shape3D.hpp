@@ -41,7 +41,7 @@ class Shape{
 	};
 	//Accesseurs
 	virtual const typename pcl::PointCloud<T>::Ptr& getCloud(){return _shape;}
-	virtual const typename pcl::PointCloud<T>::Ptr& getCloudKey(){return _shape_keypoints;}
+	virtual const typename pcl::PointCloud<T>::Ptr& getKeypoints(){return _shape_keypoints;}
 	virtual const typename pcl::PointCloud<NormalType>::Ptr& getNormals(){return _shape_normals;}
 	virtual pcl::PointCloud<DescriptorType>::Ptr& getDescr(){return _desc;}
 	virtual float getRadius(){return _descrRad;}

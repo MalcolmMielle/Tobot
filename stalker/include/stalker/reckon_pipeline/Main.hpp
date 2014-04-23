@@ -37,7 +37,7 @@ class Main{
 	}
 
 	/********you have the Clouds CONSTRCTOR***********/
-	Main(typename pcl::PointCloud<T>::Ptr object, typename pcl::PointCloud<T>::Ptr scene) : _maxObject(10), _maxScene(20),
+	Main(typename pcl::PointCloud<T>::Ptr& object, typename pcl::PointCloud<T>::Ptr& scene) : _maxObject(10), _maxScene(20),
 	_scene(scene), 
 	_object(object), 
 	_pipeline(new CorrespGrouping<T>(new ShapeLocal<T>("object"), new ShapeLocal<T>("scene")))
@@ -56,7 +56,7 @@ class Main{
 	}
 
 	/********You have everything CONSTRCTOR***********/
-	Main(typename pcl::PointCloud<T>::Ptr object, typename pcl::PointCloud<T>::Ptr scene, Pipeline<T>* p) : _maxObject(10), _maxScene(20),
+	Main(typename pcl::PointCloud<T>::Ptr& object, typename pcl::PointCloud<T>::Ptr& scene, Pipeline<T>* p) : _maxObject(10), _maxScene(20),
 	_scene(scene), 
 	_object(object), 
 	_pipeline(p)
@@ -75,12 +75,12 @@ class Main{
 
 	
 	/***********Init***********************/
-	void init(typename pcl::PointCloud<T>::Ptr object, typename pcl::PointCloud<T>::Ptr scene){
+	void init(typename pcl::PointCloud<T>::Ptr& object, typename pcl::PointCloud<T>::Ptr& scene){
 		setScene(scene);
 		setObject(object);
 	}
 	
-	void initPipeline(typename pcl::PointCloud<T>::Ptr shape, typename pcl::PointCloud<T>::Ptr scene){
+	void initPipeline(typename pcl::PointCloud<T>::Ptr& shape, typename pcl::PointCloud<T>::Ptr& scene){
 		//_pipeline->init(cloud, cloud2);
 		_pipeline->setObject(shape);
 		_pipeline->setScene(scene);

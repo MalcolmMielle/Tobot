@@ -116,6 +116,7 @@ class Main{
 	void removeScene(typename pcl::PointCloud<T>::Ptr& c);
 	void removeObject(int i);
 	void removeScene(int i);
+	
 	void clearObjects();
 	void clearScenes();
 	const std::vector<typename pcl::PointCloud<T>::Ptr>& getAllObjects(){return _objects;}

@@ -7,14 +7,32 @@
 #include <pcl/correspondence.h>
 #include <pcl/recognition/cg/hough_3d.h>
 #include <pcl/recognition/cg/geometric_consistency.h>
+#include <pcl/features/board.h>
+#include <pcl/features/shot_lrf.h>
+#include <pcl/recognition/cg/geometric_consistency.h>
 
 template <typename T>
 class CorrespGrouping : public Pipeline<T> {
 	protected : 
 	pcl::CorrespondencesPtr _model_scene_corrs ;
+	int _rf_rad; //Referance frame radius default 0.015
+	int _cg_size; //Cluster size default 0.01
+	int _cg_thresh; //Cluster thressold default 5
+	std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > _rototranslations;
+	std::vector<pcl::Correspondences> _clustered_corrs;
 	public : 
-	CorrespGrouping(Shape<T>* p, Shape<T>* p2) : Pipeline<T>(p, p2), _model_scene_corrs(new pcl::Correspondences ()) {};
+	CorrespGrouping(Shape<T>* p, Shape<T>* p2) : Pipeline<T>(p, p2), _model_scene_corrs(new pcl::Correspondences ()), _rf_rad(0.015), _cg_size(0.01), _cg_thresh(5) {};
+	
 	virtual void doPipeline();
+	
+	//new stuff
+	virtual void setFrameRadius(int rf){_rf_rad=rf;}
+	virtual void setClusterSize(int rf){_cg_size=rf;}
+	virtual void setClusterThresold(int rf){_cg_thresh=rf;}
+	virtual int getFrameRadius(){return _rf_rad;}
+	virtual int getClusterSize(){return _cg_size;}
+	virtual int getClusterThresold(){return _cg_thresh;}
+	
 	virtual void point2PointCorrespondance();
 	virtual void clusteringHough();
 
@@ -60,39 +78,64 @@ template <typename T>
 inline void CorrespGrouping<T>::clusteringHough(){
 	    //
 	//  Compute (Keypoints) Reference Frames only for Hough
-	/*
+	
 	pcl::PointCloud<RFType>::Ptr model_rf (new pcl::PointCloud<RFType> ());
 	pcl::PointCloud<RFType>::Ptr scene_rf (new pcl::PointCloud<RFType> ());
 
-	pcl::BOARDLocalReferenceFrameEstimation<PointType, NormalType, RFType> rf_est;
+	//USED THAT IN PCL 1.7
+	/*pcl::BOARDLocalReferenceFrameEstimation<T, NormalType, RFType> rf_est;
 	rf_est.setFindHoles (true);
-	rf_est.setRadiusSearch (rf_rad_);
+	rf_est.setRadiusSearch (_rf_rad);
 
-	rf_est.setInputCloud (model_keypoints);
-	rf_est.setInputNormals (model_normals);
-	rf_est.setSearchSurface (model);
+	rf_est.setInputCloud (this->_object->getKeypoints());
+	rf_est.setInputNormals (this->_object->getNormals());
+	rf_est.setSearchSurface (this->_object->getCloud());
 	rf_est.compute (*model_rf);
 
-	rf_est.setInputCloud (scene_keypoints);
-	rf_est.setInputNormals (scene_normals);
-	rf_est.setSearchSurface (scene);
+	rf_est.setInputCloud (this->_scene->getKeypoints());
+	rf_est.setInputNormals (this->_scene->getNormals());
+	rf_est.setSearchSurface (this->_scene->getCloud());
+	rf_est.compute (*scene_rf); */
+	
+	//In PCL 1.6
+	pcl::SHOTLocalReferenceFrameEstimation<T, RFType> rf_est;
+	rf_est.setRadiusSearch (_rf_rad);
+
+	rf_est.setInputCloud (this->_object->getKeypoints());
+	rf_est.setSearchSurface (this->_object->getCloud());
+	rf_est.compute (*model_rf);
+
+	rf_est.setInputCloud (this->_scene->getKeypoints());
+	rf_est.setSearchSurface (this->_scene->getCloud());
 	rf_est.compute (*scene_rf);
 
 	//  Clustering
-	pcl::Hough3DGrouping<PointType, PointType, RFType, RFType> clusterer;
-	clusterer.setHoughBinSize (cg_size_);
-	clusterer.setHoughThreshold (cg_thresh_);
+	pcl::Hough3DGrouping<T, T, RFType, RFType> clusterer; //undefined reference in .o
+	clusterer.setHoughBinSize (_cg_size);
+	clusterer.setHoughThreshold (_cg_thresh);
 	clusterer.setUseInterpolation (true);
 	clusterer.setUseDistanceWeight (false);
 
-	clusterer.setInputCloud (model_keypoints);
+	clusterer.setInputCloud (this->_object->getKeypoints());
 	clusterer.setInputRf (model_rf);
-	clusterer.setSceneCloud (scene_keypoints);
+	clusterer.setSceneCloud (this->_scene->getKeypoints());
 	clusterer.setSceneRf (scene_rf);
-	clusterer.setModelSceneCorrespondences (model_scene_corrs);
+	clusterer.setModelSceneCorrespondences (_model_scene_corrs);
 
-	//clusterer.cluster (clustered_corrs);
-	clusterer.recognize (rototranslations, clustered_corrs);*/
+	/*clusterer.cluster (clustered_corrs);
+	clusterer.recognize (_rototranslations, _clustered_corrs);
+	
+	pcl::GeometricConsistencyGrouping<T, T> gc_clusterer;
+	gc_clusterer.setGCSize (_cg_size);
+	gc_clusterer.setGCThreshold (_cg_thresh);
+
+	gc_clusterer.setInputCloud (this->_object->getKeypoints());
+	gc_clusterer.setSceneCloud (this->_scene->getKeypoints());
+	gc_clusterer.setModelSceneCorrespondences (_model_scene_corrs);
+
+	//gc_clusterer.cluster (clustered_corrs);
+	gc_clusterer.recognize (_rototranslations, _clustered_corrs);*/
+
 }
 
 #endif
