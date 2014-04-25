@@ -1,4 +1,0 @@
-0000000000000000000000000000000000000000 7d9b8b5dceaddb3061c563e0622d7e3213ae0917 Malcolm Mielle <ros@ros-K56CM.(none)> 1395662875 +0800	commit (initial): First commit
-7d9b8b5dceaddb3061c563e0622d7e3213ae0917 24133a899fb9bdcc66adfee3fc0757eeb5040bae Malcolm Mielle <ros@ros-K56CM.(none)> 1395663248 +0800	commit: Read me added
-24133a899fb9bdcc66adfee3fc0757eeb5040bae 960b9bf545565296a61688b5ad934ebe73b50779 Malcolm Mielle <ros@ros-K56CM.(none)> 1395809195 +0800	commit: serial bug when nothing is received solve
-960b9bf545565296a61688b5ad934ebe73b50779 694c8612b7ea7a405cb19a337a44361117af4678 Malcolm Mielle <ros@ros-K56CM.(none)> 1396600496 +0800	commit: Publish the tf transform

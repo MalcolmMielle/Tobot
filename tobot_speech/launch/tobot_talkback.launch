@@ -4,7 +4,7 @@
 
   <node name="talkback" pkg="tobot_speech" type="talkback.py" output="screen">
   	<param name="voice" value="voice_don_diphone"/>
-  	<param name="wavepath" value="$(find rbx1_speech)/sounds"/>
+  	<param name="wavepath" value="$(find tobot_speech)/sounds"/>
   </node>
 
 </launch>

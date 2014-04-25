@@ -1,6 +1,0 @@
-<launch>
-
-  <node pkg="tobot_goal_groovy" type="GoalMaker" name="Tobot_GoalMaker">
-  </node>
-  
-</launch>

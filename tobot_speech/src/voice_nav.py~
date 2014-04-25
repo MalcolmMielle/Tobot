@@ -11,7 +11,7 @@
   See http://www.ros.org/wiki/pocketsphinx
 """
 
-import roslib; roslib.load_manifest('tobot_speech')
+import roslib; #roslib.load_manifest('tobot_speech')
 import rospy
 
 
@@ -88,6 +88,7 @@ class VoiceNav:
 			for word in keywords:
 		    		if data.find(word) > -1:
 			  		return command
+		return data
         
 	def speech_callback(self, msg):
 		# Get the motion command from the recognized phrase

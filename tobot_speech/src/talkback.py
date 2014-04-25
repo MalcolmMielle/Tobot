@@ -21,7 +21,7 @@
     http://www.gnu.org/licenses/gpl.htmlPoint
 """
 
-import roslib; roslib.load_manifest('rbx1_speech')
+import roslib; #roslib.load_manifest('rbx1_speech')
 import rospy
 import datetime
 import time

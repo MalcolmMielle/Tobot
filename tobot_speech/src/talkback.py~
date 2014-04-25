@@ -46,7 +46,7 @@ class TalkBack:
 		self.soundhandle = SoundClient()
 
 		self.keywords_to_command = {'time': ['time','what time is it'],
-						'face' : ['face', 'follow me', 'look at me']
+						'face' : ['face', 'follow me', 'look at me'],
 						'stoplook' : ['stop looking', 'who you looking at']
 				     }
 

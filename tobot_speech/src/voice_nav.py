@@ -11,7 +11,7 @@
   See http://www.ros.org/wiki/pocketsphinx
 """
 
-import roslib; roslib.load_manifest('tobot_speech')
+import roslib; #roslib.load_manifest('tobot_speech')
 import rospy
 
 
