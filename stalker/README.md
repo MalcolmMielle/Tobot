@@ -8,7 +8,7 @@ _/_/_/        _/      _/    _/  _/_/_/_/  _/    _/  _/_/_/_/  _/    _/
 Welcome
 =======
 
-                                                                       
+                                                                             
 Welcome at you, using the stalker =).
 
 The stalker is an interface made to use 3D Real Time recognition algorithms under [ROS](http://www.ros.org/).
