@@ -13,6 +13,9 @@ class ShapeLocal : public Shape<T> {
 	ShapeLocal(const std::string& name, double sampling_size) : Shape<T>(name, sampling_size), resol(false){};
 	ShapeLocal(const std::string& name, double sampling_size, double descriptor_radius) : Shape<T>(name, sampling_size, descriptor_radius), resol(false){};
 
+	virtual void setNormalEstimator(pcl::NormalEstimationOMP<T, NormalType> norm, int K){
+		norm_est=norm; norm_est.setKSearch(K);
+	}
 	//update Shape state
 	
 	virtual void compute();
@@ -41,7 +44,7 @@ inline void ShapeLocal<T>::computeDescriptors(){
 template <typename T>
 inline void ShapeLocal<T>::compute(){
 	if(resol==true){
-		std::cout << "Rosulation"<<std::endl;
+		std::cout << "Resolution"<<std::endl;
 		resolutionInvariance();
 	}
 		std::cout << "Normal"<<std::endl;
@@ -55,9 +58,12 @@ inline void ShapeLocal<T>::compute(){
 //PROUBLEM ICI
 template <typename T>
 inline void ShapeLocal<T>::estimNormal(){
-	norm_est.setKSearch(10);
-	norm_est.setInputCloud (this->_shape);
-	norm_est.compute (*(this->_shape_normals));
+	
+	pcl::NormalEstimationOMP<T, NormalType> norm_est2;
+	norm_est2.setKSearch (10);
+	norm_est2.setInputCloud (_shape);
+	norm_est2.compute (*(_shape_normals));
+
 }
 
 

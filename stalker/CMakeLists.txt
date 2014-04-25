@@ -154,6 +154,9 @@ target_link_libraries(hough gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARI
 add_executable(tcorsptuto src/Test/testcorresp.cpp)
 target_link_libraries(tcorsptuto gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
 
+add_executable(tnormal src/Test/pcl_normal_test.cpp)
+target_link_libraries(tnormal gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
+
 add_executable(maint src/Test/main.cpp)
 target_link_libraries(maint gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
 

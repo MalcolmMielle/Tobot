@@ -1,4 +1,4 @@
-#include <pcl/io/pcd_io.h>
+
 #include <pcl/point_cloud.h>
 #include <pcl/correspondence.h>
 #include <pcl/features/normal_3d_omp.h>
@@ -13,6 +13,7 @@
 #include <pcl/common/transforms.h>
 #include <pcl/console/parse.h>
 #include <CorrespGrouping.hpp>
+#include "Shape3DLocal.hpp"
 
 typedef pcl::PointXYZRGBA PointType;
 
@@ -213,11 +214,17 @@ main (int argc, char *argv[])
   //
   pcl::NormalEstimationOMP<PointType, NormalType> norm_est;
   norm_est.setKSearch (10);
-  norm_est.setInputCloud (model);
-  norm_est.compute (*model_normals);
-
-  norm_est.setInputCloud (scene);
+  
+    norm_est.setInputCloud (scene);
   norm_est.compute (*scene_normals);
+  
+  pcl::NormalEstimationOMP<PointType, NormalType> norm_est2;
+  norm_est2.setKSearch (10); 
+  
+  norm_est2.setInputCloud (model);
+  norm_est2.compute (*model_normals);
+
+
 
   //
   //  Downsample Clouds to Extract keypoints
@@ -359,101 +366,6 @@ main (int argc, char *argv[])
     printf ("\n");
     printf ("        t = < %0.3f, %0.3f, %0.3f >\n", translation (0), translation (1), translation (2));
   }
-
-  /***********************************ME*****************************************/
- std::cout << "*********************************************MY PART 1 *******************************************************************"<<std::endl;
-  
-  
-  pcl::PointCloud<PointType>::Ptr model2 (new pcl::PointCloud<PointType> ());
-  pcl::PointCloud<PointType>::Ptr scene2 (new pcl::PointCloud<PointType> ()); 
-  pcl::PointCloud<NormalType>::Ptr model_normals2 (new pcl::PointCloud<NormalType> ());
-  pcl::PointCloud<NormalType>::Ptr scene_normals2 (new pcl::PointCloud<NormalType> ());
-  //
-  //  Load clouds
-  //
-  if (pcl::io::loadPCDFile (model_filename_, *model2) < 0)
-  {
-    std::cout << "Error loading model cloud." << std::endl;
-    showHelp (argv[0]);
-    return (-1);
-  }
-  if (pcl::io::loadPCDFile (scene_filename_, *scene2) < 0)
-  {
-    std::cout << "Error loading scene cloud." << std::endl;
-    showHelp (argv[0]);
-    return (-1);
-  } 
-  
-  
-  ShapeLocal<PointType>* object=new ShapeLocal<PointType>("1");
-  object->set(model2);
-  ShapeLocal<PointType>* scenery=new ShapeLocal<PointType>("2",0.03f);
-  scenery->set(scene2);
-  
-  std::cout<<"INSIDE THE PROGRAM"<<std::endl;
-  std::cout<<"heig "<<scene2->height<<" width "<<scene2->width<<" size "<< scene2->size() <<" dense "<< scene2->is_dense<< " organiz "<<scene2->isOrganized()<<std::endl;
-  std::cout<<"heig "<<scene->height<<" width "<<scene->width<<" size "<< scene->size() <<" dense "<< scene->is_dense<< " organiz "<<scene->isOrganized()<<std::endl;
-  
-  std::cout<<"heig "<<scenery->getCloud()->height<<" width "<<scenery->getCloud()->width<<" size "<< scenery->getCloud()->size() <<" dense "<< scenery->getCloud()->is_dense<< " organiz "<<scenery->getCloud()->isOrganized()<<std::endl;
-  
-   std::cout<<"INSIDE THE PROGRAM model"<<std::endl;
-  std::cout<<"heig "<<model2->height<<" width "<<model2->width<<" size "<< model2->size() <<" dense "<< model2->is_dense<< " organiz "<<model2->isOrganized()<<std::endl;
-  std::cout<<"heig "<<model->height<<" width "<<model->width<<" size "<< model->size() <<" dense "<< model->is_dense<< " organiz "<<model->isOrganized()<<std::endl;
-  
-  std::cout<<"heig "<<object->getCloud()->height<<" width "<<object->getCloud()->width<<" size "<< object->getCloud()->size() <<" dense "<< object->getCloud()->is_dense<< " organiz "<<object->getCloud()->isOrganized()<<std::endl;
-  
-  /*pcl::NormalEstimationOMP<PointType, NormalType> norm_est2;
-  norm_est2.setKSearch (10);
-  norm_est2.setInputCloud (model2);
-  norm_est2.compute (*model_normals2);
-
-  norm_est2.setInputCloud (scene2);
-  norm_est2.compute (*scene_normals2);
-  
-  object->setNormals(model_normals2);
-  scenery->setNormals(scene_normals2);*/
-  
-  CorrespGrouping<PointType> cp(object, scenery);
-  std::cout<<"inc class version***********************"<<std::endl;
- 
-  cp.printinfo();
-  
-  cp.doPipelineOld();
-  cp.affiche();
-  
-    /***********************************ME*****************************************/
- std::cout << "*********************************************MY PART 2 *******************************************************************"<<std::endl;
- 
- pcl::PointCloud<PointType>::Ptr model3 (new pcl::PointCloud<PointType> ());
-  pcl::PointCloud<PointType>::Ptr scene3 (new pcl::PointCloud<PointType> ()); 
-  //
-  //  Load clouds
-  //
-  if (pcl::io::loadPCDFile (model_filename_, *model3) < 0)
-  {
-    std::cout << "Error loading model cloud." << std::endl;
-    showHelp (argv[0]);
-    return (-1);
-  }
-  if (pcl::io::loadPCDFile (scene_filename_, *scene3) < 0)
-  {
-    std::cout << "Error loading scene cloud." << std::endl;
-    showHelp (argv[0]);
-    return (-1);
-  } 
-  
-  
-  ShapeLocal<PointType>* object2=new ShapeLocal<PointType>("1");
-  object2->update(model3);
-  ShapeLocal<PointType>* scenery2=new ShapeLocal<PointType>("2",0.03f);
-  scenery2->update(scene3);
-
-  
-  CorrespGrouping<PointType> cp2(object2, scenery2);
-  
-  cp2.doPipeline();
-  cp2.affiche();
-
   
   /********************************************************************************/
   

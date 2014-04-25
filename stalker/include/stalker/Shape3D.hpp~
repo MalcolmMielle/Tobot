@@ -54,7 +54,7 @@ class Shape{
 	virtual void setRadius(float r){_descrRad=r;}
 	virtual void setSamplingSize(float r){_shape_ss=r;}
 	virtual void setDescriptors(pcl::PointCloud<DescriptorType>::Ptr& desc){_desc=desc;}
-	virtual void setNormals(pcl::PointCloud<NormalType>::Ptr&){_shape_normals=normal;}
+	virtual void setNormals(pcl::PointCloud<NormalType>::Ptr& normal){_shape_normals=normal;}
 	//update Shape state
 	
 	virtual void compute()=0;
