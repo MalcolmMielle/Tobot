@@ -21,7 +21,7 @@ class Pipeline{
 	std::vector<Shape<PointType> *> _scenes; //Deck of all scene to compare
 	
 	public : 
-	Pipeline(Shape<PointType>* p, Shape<PointType>* p2) : _maxObject(10), _maxScene(20), _object(p), _scene(p2){}; //FREE PROBLEM
+	Pipeline(Shape<PointType>* object, Shape<PointType>* scene) : _maxObject(10), _maxScene(20), _object(object), _scene(scene){}; //FREE PROBLEM
 	virtual ~Pipeline(){
 		std::cout << "delete Pipeline"<<std::endl;
 		delete _object;

@@ -63,6 +63,7 @@ class Pipeline{
 	virtual void removeScene(int i);
 	virtual void removeObject(Shape<PointType>* o);
 	virtual void removeScene(Shape<PointType>* o);
+	
 	virtual void clearObjects();
 	virtual void clearScenes();
 	virtual void print(){

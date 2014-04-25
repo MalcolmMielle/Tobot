@@ -7,8 +7,11 @@ template <typename T>
 class ShapeLocal : public Shape<T> {
 	public :
 	bool resol;
+	pcl::NormalEstimationOMP<T, NormalType> norm_est;
 	
 	ShapeLocal(const std::string& name) : Shape<T>(name), resol(false){};
+	ShapeLocal(const std::string& name, double sampling_size) : Shape<T>(name, sampling_size), resol(false){};
+	ShapeLocal(const std::string& name, double sampling_size, double descriptor_radius) : Shape<T>(name, sampling_size, descriptor_radius), resol(false){};
 
 	//update Shape state
 	
@@ -31,6 +34,7 @@ inline void ShapeLocal<T>::computeDescriptors(){
 	descr_est.setInputCloud (this->_shape_keypoints);
 	descr_est.setInputNormals (this->_shape_normals);
 	descr_est.setSearchSurface (this->_shape);
+	std::cout<<"Computin"<<std::endl;
 	descr_est.compute (*(this->_desc)); //pointer of desc
 }
 
@@ -48,10 +52,10 @@ inline void ShapeLocal<T>::compute(){
 	this->computeDescriptors();
 }
 
+//PROUBLEM ICI
 template <typename T>
 inline void ShapeLocal<T>::estimNormal(){
-	pcl::NormalEstimationOMP<T, NormalType> norm_est;
-	norm_est.setKSearch (10);
+	norm_est.setKSearch(10);
 	norm_est.setInputCloud (this->_shape);
 	norm_est.compute (*(this->_shape_normals));
 }
@@ -66,7 +70,8 @@ inline void ShapeLocal<T>::downsample(){
 	uniform_sampling.setRadiusSearch (this->_shape_ss);
 	uniform_sampling.compute (sampled_indices);
 	pcl::copyPointCloud (*(this->_shape), sampled_indices.points, *(this->_shape_keypoints));
-	std::cout << "Model total points: " << this->_shape->size () << "; Selected Keypoints: " << this->_shape_keypoints->size () << std::endl;
+	
+	std::cout << "Shape total points: " << this->_shape->size () << "; Selected Keypoints: " << this->_shape_keypoints->size () << std::endl;
 }
 
 
@@ -79,7 +84,7 @@ inline void ShapeLocal<T>::resolutionInvariance(){
 		this->_shape_ss   *= resolution;
 		//rf_rad_     *= resolution;
 		this->_descrRad  *= resolution;
-		this->cg_size_    *= resolution;
+		//this->cg_size_    *= resolution;
 	}
 
 	/*std::cout << "Model resolution:       " << resolution << std::endl;

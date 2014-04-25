@@ -27,14 +27,16 @@ class Shape{
 	typename pcl::PointCloud<T>::Ptr _shape; //model
 	typename pcl::PointCloud<T>::Ptr _shape_keypoints; //model_keypoint
 	pcl::PointCloud<NormalType>::Ptr _shape_normals;	
-	pcl::PointCloud<pcl::SHOT352>::Ptr _desc;	
-	float _descrRad;
-	float _shape_ss; //shape_sampling size
-	float cg_size_ ; //clustering bin size
-	float cg_thresh_ ;
+	pcl::PointCloud<DescriptorType>::Ptr _desc;	
+	double _descrRad;
+	double _shape_ss; //shape_sampling size
 	
 	public :
-	Shape(const std::string& name) : _id(name), _shape(new pcl::PointCloud<T>()),_shape_keypoints(new pcl::PointCloud<T>()),_shape_normals(new pcl::PointCloud<NormalType>()), _desc(new pcl::PointCloud<DescriptorType>()), _descrRad(0.02f), _shape_ss (0.01f), cg_size_ (0.01f),cg_thresh_ (5.0f){};
+	Shape(const std::string& name) : _id(name), _shape(new pcl::PointCloud<T>()),_shape_keypoints(new pcl::PointCloud<T>()),_shape_normals(new pcl::PointCloud<NormalType>()), _desc(new pcl::PointCloud<DescriptorType>()), _descrRad(0.02), _shape_ss (0.01){};
+	
+	Shape(const std::string& name, double sampling_size) : _id(name), _shape(new pcl::PointCloud<T>()),_shape_keypoints(new pcl::PointCloud<T>()),_shape_normals(new pcl::PointCloud<NormalType>()), _desc(new pcl::PointCloud<DescriptorType>()), _descrRad(0.02), _shape_ss (sampling_size){};
+	
+	Shape(const std::string& name, double sampling_size, int descriptor_radius) : _id(name), _shape(new pcl::PointCloud<T>()),_shape_keypoints(new pcl::PointCloud<T>()),_shape_normals(new pcl::PointCloud<NormalType>()), _desc(new pcl::PointCloud<DescriptorType>()), _descrRad(descriptor_radius), _shape_ss (sampling_size){};
 
 	virtual ~Shape(){
 		std::cout<<"delete shape "<<_id <<std::endl;
@@ -44,14 +46,15 @@ class Shape{
 	virtual const typename pcl::PointCloud<T>::Ptr& getKeypoints(){return _shape_keypoints;}
 	virtual const typename pcl::PointCloud<NormalType>::Ptr& getNormals(){return _shape_normals;}
 	virtual pcl::PointCloud<DescriptorType>::Ptr& getDescr(){return _desc;}
-	virtual float getRadius(){return _descrRad;}
-	virtual float getSamplingSize(){return _shape_ss;}
+	virtual double getRadius(){return _descrRad;}
+	virtual double getSamplingSize(){return _shape_ss;}
 	virtual const std::string& getName(){return _id;}
 	
 	virtual void set(typename pcl::PointCloud<T>::Ptr& p){_shape=p;}
 	virtual void setRadius(float r){_descrRad=r;}
 	virtual void setSamplingSize(float r){_shape_ss=r;}
-	
+	virtual void setDescriptors(pcl::PointCloud<DescriptorType>::Ptr& desc){_desc=desc;}
+	virtual void setNormals(pcl::PointCloud<NormalType>::Ptr&){_shape_normals=normal;}
 	//update Shape state
 	
 	virtual void compute()=0;

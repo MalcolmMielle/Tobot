@@ -11,7 +11,6 @@
 #include <pcl/features/shot_lrf.h>
 #include <pcl/recognition/cg/geometric_consistency.h>
 
-typedef pcl::PointXYZRGBA PointType;
 
 template <typename T>
 class CorrespGrouping : public Pipeline<T> {
@@ -23,7 +22,8 @@ class CorrespGrouping : public Pipeline<T> {
 	std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > _rototranslations;
 	std::vector<pcl::Correspondences> _clustered_corrs;
 	public : 
-	CorrespGrouping(Shape<T>* p, Shape<T>* p2) : Pipeline<T>(p, p2), _model_scene_corrs(new pcl::Correspondences ()), _rf_rad(0.015), _cg_size(0.01), _cg_thresh(5) {};
+		
+	CorrespGrouping(Shape<T>* object, Shape<T>* scene) : Pipeline<T>(object, scene), _model_scene_corrs(new pcl::Correspondences ()), _rf_rad(0.015), _cg_size(0.01), _cg_thresh(5.0) {};
 	
 	virtual void doPipeline();
 	
@@ -54,7 +54,8 @@ inline void CorrespGrouping<T>::point2PointCorrespondance(){
 	
 	pcl::KdTreeFLANN<pcl::SHOT352> match_search;
 	match_search.setInputCloud (this->_object->getDescr());
-	std::cout << "yo";
+	std::cout << "Scene descirptor size "<< this->_scene->getDescr()->size()<<" object descr size "<< this->_object->getDescr()->size()<< std::endl;
+	int kop=0;
 	//  For each scene keypoint descriptor, find nearest neighbor into the model keypoints descriptor cloud and add it to the correspondences vector.
 	for (size_t i = 0; i < this->_scene->getDescr()->size(); ++i){
 		std::vector<int> neigh_indices(1);
@@ -70,10 +71,11 @@ inline void CorrespGrouping<T>::point2PointCorrespondance(){
 		if(found_neighs == 1 && neigh_sqr_dists[0] < 0.25f) {
 			pcl::Correspondence corr (neigh_indices[0], static_cast<int> (i), neigh_sqr_dists[0]);
 			_model_scene_corrs->push_back (corr);
-			std::cout << "yo";
-			
+			kop++;
 		}
+		
 	}
+	std::cout<<"number of entries "<<kop<<std::endl;
 	std::cout << "Correspondences found: " << _model_scene_corrs->size() << std::endl;
 }
 
