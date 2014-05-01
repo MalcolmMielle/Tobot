@@ -11,7 +11,7 @@
 #include "Pipeline.hpp"
 
 
-template <typename T>
+template <typename T,typename DescriptorType>
 class Main{
 	protected : 
 	int _maxObject;
@@ -23,7 +23,7 @@ class Main{
 	std::vector<typename pcl::PointCloud<T>::Ptr> _scenes; //Beta List of all scene receive
 	
 	/*I chose the point cloud because it's easier to have something general of use if we receive a Point Cloud through Ros nodes*/
-	Pipeline<T>* _pipeline;
+	Pipeline<T, DescriptorType>* _pipeline;
 	
 	public : 
 	
@@ -31,23 +31,24 @@ class Main{
 	Main() : _maxObject(10), _maxScene(20),
 	_scene(new pcl::PointCloud<T>()), 
 	_object(new pcl::PointCloud<T>()), 
-	_pipeline(new CorrespGrouping<T>(new ShapeLocal<T>("object"), new ShapeLocal<T>("scene"))) 
+	_pipeline(new CorrespGrouping<T>(new ShapeLocal<T, DescriptorType>("object"), new ShapeLocal<T, DescriptorType>("scene"))) 
 	{
 		std::cout<<"buiding the main awith nothing"<<std::endl;
+
 	}
 
 	/********you have the Clouds CONSTRCTOR***********/
-	Main(typename pcl::PointCloud<T>::Ptr object, typename pcl::PointCloud<T>::Ptr scene) : _maxObject(10), _maxScene(20),
+	Main(typename pcl::PointCloud<T>::Ptr& object, typename pcl::PointCloud<T>::Ptr& scene) : _maxObject(10), _maxScene(20),
 	_scene(scene), 
 	_object(object), 
-	_pipeline(new CorrespGrouping<T>(new ShapeLocal<T>("object"), new ShapeLocal<T>("scene")))
+	_pipeline(new CorrespGrouping<T>(new ShapeLocal<T, DescriptorType>("object"), new ShapeLocal<T, DescriptorType>("scene")))
 	{
 		std::cout<<"buiding the main"<<std::endl;
 		initPipeline(); //Mem leak
 	}
 	
 	/********you have the Pipeline CONSTRCTOR***********/
-	Main(Pipeline<T>* p) : _maxObject(10), _maxScene(20),
+	Main(Pipeline<T, DescriptorType>* p) : _maxObject(10), _maxScene(20),
 	_scene(new pcl::PointCloud<T>()), 
 	_object(new pcl::PointCloud<T>()), 
 	_pipeline(p)
@@ -56,7 +57,7 @@ class Main{
 	}
 
 	/********You have everything CONSTRCTOR***********/
-	Main(typename pcl::PointCloud<T>::Ptr object, typename pcl::PointCloud<T>::Ptr scene, Pipeline<T>* p) : _maxObject(10), _maxScene(20),
+	Main(typename pcl::PointCloud<T>::Ptr& object, typename pcl::PointCloud<T>::Ptr& scene, Pipeline<T, DescriptorType>* p) : _maxObject(10), _maxScene(20),
 	_scene(scene), 
 	_object(object), 
 	_pipeline(p)
@@ -75,12 +76,12 @@ class Main{
 
 	
 	/***********Init***********************/
-	void init(typename pcl::PointCloud<T>::Ptr object, typename pcl::PointCloud<T>::Ptr scene){
+	void init(typename pcl::PointCloud<T>::Ptr& object, typename pcl::PointCloud<T>::Ptr& scene){
 		setScene(scene);
 		setObject(object);
 	}
 	
-	void initPipeline(typename pcl::PointCloud<T>::Ptr shape, typename pcl::PointCloud<T>::Ptr scene){
+	void initPipeline(typename pcl::PointCloud<T>::Ptr& shape, typename pcl::PointCloud<T>::Ptr& scene){
 		//_pipeline->init(cloud, cloud2);
 		_pipeline->setObject(shape);
 		_pipeline->setScene(scene);
@@ -101,11 +102,11 @@ class Main{
 	
 	typename pcl::PointCloud<T>::Ptr getCloud(){return _scene;}
 	typename pcl::PointCloud<T>::Ptr getShape(){return _object;}
-	Pipeline<T>* getPipeline(){return _pipeline;}
+	Pipeline<T, DescriptorType>* getPipeline(){return _pipeline;}
 	
 	void setScene(typename pcl::PointCloud<T>::Ptr& c);
 	void setObject(typename pcl::PointCloud<T>::Ptr& s);
-	void setPipeline(Pipeline<T>* p){delete _pipeline; _pipeline=p;}
+	void setPipeline(Pipeline<T, DescriptorType>* p){delete _pipeline; _pipeline=p;}
 	
 	//New interface
 	void addObject(typename pcl::PointCloud<T>::Ptr& c){_objects.push_back(c);checkSizeObject();_pipeline->addObject(c);}
@@ -128,8 +129,8 @@ class Main{
 };
 
 
-template <typename T>
-inline void Main<T>::checkSizeObject()
+template <typename T, typename DescriptorType>
+inline void Main<T, DescriptorType>::checkSizeObject()
 {
 	if(_objects.size()>_maxObject){
 		while(_objects.size()>_maxObject){
@@ -138,8 +139,8 @@ inline void Main<T>::checkSizeObject()
 	}
 }
 
-template <typename T>
-inline void Main<T>::checkSizeScene()
+template <typename T, typename DescriptorType>
+inline void Main<T, DescriptorType>::checkSizeScene()
 {
 	if(_scenes.size()>_maxScene){
 		while(_scenes.size()>_maxScene){
@@ -150,19 +151,19 @@ inline void Main<T>::checkSizeScene()
 
 
 
-template <typename T>
-inline void Main<T>::setScene(typename pcl::PointCloud<T>::Ptr& c){
+template <typename T, typename DescriptorType>
+inline void Main<T, DescriptorType>::setScene(typename pcl::PointCloud<T>::Ptr& c){
 	this->_scene=c; 
 	this->_pipeline->setScene(_scene);
 }
-template <typename T>
-inline void Main<T>::setObject(typename pcl::PointCloud<T>::Ptr& s){
+template <typename T, typename DescriptorType>
+inline void Main<T, DescriptorType>::setObject(typename pcl::PointCloud<T>::Ptr& s){
 	this->_object=s; 
 	this->_pipeline->setObject(_object);
 }
 
-template <typename T>
-inline void Main<T>::removeObject(typename pcl::PointCloud<T>::Ptr& c){
+template <typename T, typename DescriptorType>
+inline void Main<T, DescriptorType>::removeObject(typename pcl::PointCloud<T>::Ptr& c){
 	for (typename std::vector<typename pcl::PointCloud<T>::Ptr>::iterator it = _objects.begin(); it!=_objects.end();){
 		if((*it)==c){
 			//delete(*it);//I think this is wrong because it's not a pointer...
@@ -174,8 +175,8 @@ inline void Main<T>::removeObject(typename pcl::PointCloud<T>::Ptr& c){
 	}
 }
 
-template <typename T>
-inline void Main<T>::removeScene(typename pcl::PointCloud<T>::Ptr& c){
+template <typename T, typename DescriptorType>
+inline void Main<T, DescriptorType>::removeScene(typename pcl::PointCloud<T>::Ptr& c){
 	for (typename std::vector<typename pcl::PointCloud<T>::Ptr>::iterator it = _scenes.begin(); it!=_scenes.end();){
 		if((*it)==c){
 			//delete(*it);//Same as above
@@ -187,8 +188,8 @@ inline void Main<T>::removeScene(typename pcl::PointCloud<T>::Ptr& c){
 	}
 }
 
-template <typename T>
-inline void Main<T>::removeObject(int i){
+template <typename T, typename DescriptorType>
+inline void Main<T, DescriptorType>::removeObject(int i){
 	std::cout<<"remove object n "<< i << "with "<< _objects.size()<< std::endl;
 	if(size_t(i)<_objects.size()){
 		typename std::vector<typename pcl::PointCloud<T>::Ptr>::iterator it=_objects.begin()+i;
@@ -196,8 +197,8 @@ inline void Main<T>::removeObject(int i){
 	}
 }
 
-template <typename T>
-inline void Main<T>::removeScene(int i){
+template <typename T, typename DescriptorType>
+inline void Main<T, DescriptorType>::removeScene(int i){
 	std::cout<<"remove scene n "<< i << "with "<< _scenes.size()<< std::endl;
 	if(size_t(i)<_scenes.size()){
 		typename std::vector<typename pcl::PointCloud<T>::Ptr>::iterator it=_scenes.begin()+i;
@@ -205,15 +206,15 @@ inline void Main<T>::removeScene(int i){
 	}
 }
 
-template <typename T>
-inline void Main<T>::clearObjects(){
+template <typename T, typename DescriptorType>
+inline void Main<T, DescriptorType>::clearObjects(){
 	for(typename std::vector<typename pcl::PointCloud<T>::Ptr>::iterator it = _objects.begin(); it!=_objects.end();){
 		_objects.erase(it);
 	}	
 }
 
-template <typename T>
-inline void Main<T>::clearScenes(){
+template <typename T, typename DescriptorType>
+inline void Main<T, DescriptorType>::clearScenes(){
 	for(typename std::vector<typename pcl::PointCloud<T>::Ptr>::iterator it = _scenes.begin(); it!=_scenes.end();){
 		_scenes.erase(it);
 	}
@@ -224,20 +225,22 @@ inline void Main<T>::clearScenes(){
 /*Function to modify in order to use one "interface" or the other*/
 
 
-template <typename T>
-inline void Main<T>::doWork(const sensor_msgs::PointCloud2ConstPtr& cloudy){
+template <typename T, typename DescriptorType>
+inline void Main<T, DescriptorType>::doWork(const sensor_msgs::PointCloud2ConstPtr& cloudy){
 	pcl::fromROSMsg(*cloudy, *_scene);
+	std::cout<<_scene->x <<std::endl;
 	_pipeline->setScene(_scene);
 	addScene(_scene); //Need to figure out how to change and know the shape's names !! Maybe a yaml file...
 	doWork();
 }
 
-template <typename T>
-inline void Main<T>::doWork(){
+template <typename T, typename DescriptorType>
+inline void Main<T, DescriptorType>::doWork(){
 	std::cout<<"doWork"<<std::endl;
 	//TODO processing here
 	
 	/**************************MAIN PIPELINE OF RECOGNITION**********************/
+	
 	_pipeline->doPipeline();
 	
 	//TODO Post Processing here

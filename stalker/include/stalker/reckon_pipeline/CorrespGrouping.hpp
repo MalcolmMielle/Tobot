@@ -13,10 +13,10 @@
 
 
 template <typename T>
-class CorrespGrouping : public Pipeline<T> {
+class CorrespGrouping : public Pipeline<T, pcl::SHOT352> {
 	protected: 
-	ShapeLocal<T>* _object; //Don't need because it take a Shape* from main.
-	ShapeLocal<T>* _scene; // Need to be initialise because it takes a Cloud in argument.
+	//ShapeLocal<T, pcl::SHOT352>* _object; //Don't need because it take a Shape* from main.
+	//ShapeLocal<T, pcl::SHOT352>* _scene; // Need to be initialise because it takes a Cloud in argument.
 	bool resol;
 	pcl::CorrespondencesPtr _model_scene_corrs ;
 	double _rf_rad; //Referance frame radius default 0.015
@@ -27,10 +27,10 @@ class CorrespGrouping : public Pipeline<T> {
 	
 	public : 
 		
-	CorrespGrouping(ShapeLocal<T>* object, ShapeLocal<T>* scene) : Pipeline<T>(object, scene), _object(object), _scene(scene),resol(false), _model_scene_corrs(new pcl::Correspondences ()), _rf_rad(0.015), _cg_size(0.01), _cg_thresh(5.0) {};
+	CorrespGrouping(ShapeLocal<T, pcl::SHOT352>* object, ShapeLocal<T, pcl::SHOT352>* scene) : Pipeline<T, pcl::SHOT352>(object, scene),/* _object(object), _scene(scene),*/resol(false), _model_scene_corrs(new pcl::Correspondences ()), _rf_rad(0.015), _cg_size(0.01), _cg_thresh(5.0) {};
 	
 	virtual void doPipeline();
-	virtual void doPipelineOld();
+	//virtual void doPipelineOld();
 	
 	//new stuff
 	virtual void setResol(bool y){resol=y;}
@@ -48,7 +48,7 @@ class CorrespGrouping : public Pipeline<T> {
 	virtual void point2PointCorrespondance();
 	virtual void clusteringHough();
 	virtual void resolutionInvariance();
-	virtual void estimNormal();
+	//virtual void estimNormal();
 	
 	virtual void affiche();
 	virtual void printinfo(){
@@ -60,12 +60,12 @@ class CorrespGrouping : public Pipeline<T> {
 	}
 	
 	//OVERWRITTEN FUNTION
-	virtual void setScene(typename pcl::PointCloud<T>::Ptr& obj){this->_scene->set(obj);}
-	virtual void setObject(typename pcl::PointCloud<T>::Ptr& obj){this->_object->set(obj);}
+	//virtual void setScene(typename pcl::PointCloud<T>::Ptr& obj){this->_scene->set(obj);}
+	//virtual void setObject(typename pcl::PointCloud<T>::Ptr& obj){this->_object->set(obj);}
 
 };
 
-template <typename T>
+/*template <typename T>
 inline void CorrespGrouping<T>::doPipelineOld()
 {
 	std::cout<<"ENTER THE OLD PIPELINE ************************************"<<std::endl;
@@ -86,7 +86,7 @@ inline void CorrespGrouping<T>::doPipelineOld()
 	clusteringHough();
 	
 	
-}
+}*/
 
 template <typename T>
 inline void CorrespGrouping<T>::doPipeline()
@@ -223,7 +223,7 @@ inline void CorrespGrouping<T>::resolutionInvariance(){
 
 }
 
-
+/*
 template <typename PointType>
 inline void CorrespGrouping<PointType>::estimNormal()
 {
@@ -231,14 +231,12 @@ inline void CorrespGrouping<PointType>::estimNormal()
 	
 	pcl::NormalEstimationOMP<PointType, NormalType> norm_est2;
 	norm_est2.setKSearch (10);
-	norm_est2.setInputCloud (_object->getCloud());
-	norm_est2.compute (*(_object->getNormals()));
+	norm_est2.setInputCloud (this->_object->getCloud());
+	norm_est2.compute (*(this->_object->getNormals()));
 
-	norm_est2.setInputCloud (_scene->getCloud());
-	norm_est2.compute (*(_scene->getNormals()));
-	
-	
-}
+	norm_est2.setInputCloud (this->_scene->getCloud());
+	norm_est2.compute (*(this->_scene->getNormals()));
+}*/
 
 
 template <typename T>

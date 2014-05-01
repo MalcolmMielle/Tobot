@@ -21,8 +21,8 @@ int main (int argc, char **argv){
 	ros::Publisher pose_pub;
 	ros::Publisher newBB_pub;
 	
-	Main<pcl::PointXYZRGBA> main;
-	pointcloud_sub = my_node.subscribe<sensor_msgs::PointCloud2> ("camera/depth/points_xyzrgb", 1, &Main<pcl::PointXYZRGBA>::doWork, &main);
+	Main<pcl::PointXYZRGBA, pcl::SHOT352> main;
+	pointcloud_sub = my_node.subscribe<sensor_msgs::PointCloud2> ("camera/depth/points_xyzrgb", 1, &Main<pcl::PointXYZRGBA, pcl::SHOT352>::doWork, &main);
 
 
 	while(ros::ok()){

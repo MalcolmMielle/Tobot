@@ -3,15 +3,15 @@
 
 #include "Shape3D.hpp"
 
-template <typename T>
-class ShapeLocal : public Shape<T> {
+template <typename T, typename DescriptorType>
+class ShapeLocal : public Shape<T, DescriptorType> {
 	public :
 	bool resol;
 	pcl::NormalEstimationOMP<T, NormalType> norm_est;
 	
-	ShapeLocal(const std::string& name) : Shape<T>(name), resol(false){};
-	ShapeLocal(const std::string& name, double sampling_size) : Shape<T>(name, sampling_size), resol(false){};
-	ShapeLocal(const std::string& name, double sampling_size, double descriptor_radius) : Shape<T>(name, sampling_size, descriptor_radius), resol(false){};
+	ShapeLocal(const std::string& name) : Shape<T, DescriptorType>(name), resol(false){};
+	ShapeLocal(const std::string& name, double sampling_size) : Shape<T, DescriptorType>(name, sampling_size), resol(false){};
+	ShapeLocal(const std::string& name, double sampling_size, double descriptor_radius) : Shape<T, DescriptorType>(name, sampling_size, descriptor_radius), resol(false){};
 
 	virtual void setNormalEstimator(pcl::NormalEstimationOMP<T, NormalType> norm, int K){
 		norm_est=norm; norm_est.setKSearch(K);
@@ -30,8 +30,8 @@ class ShapeLocal : public Shape<T> {
 };
 
 
-template <typename T>
-inline void ShapeLocal<T>::computeDescriptors(){
+template <typename T, typename DescriptorType>
+inline void ShapeLocal<T, DescriptorType>::computeDescriptors(){
 	pcl::SHOTEstimationOMP<T, NormalType, DescriptorType> descr_est;
 	descr_est.setRadiusSearch (this->_descrRad);
 	descr_est.setInputCloud (this->_shape_keypoints);
@@ -41,8 +41,8 @@ inline void ShapeLocal<T>::computeDescriptors(){
 	descr_est.compute (*(this->_desc)); //pointer of desc
 }
 
-template <typename T>
-inline void ShapeLocal<T>::compute(){
+template <typename T, typename DescriptorType>
+inline void ShapeLocal<T, DescriptorType>::compute(){
 	if(resol==true){
 		std::cout << "Resolution"<<std::endl;
 		resolutionInvariance();
@@ -56,8 +56,8 @@ inline void ShapeLocal<T>::compute(){
 }
 
 //PROUBLEM ICI
-template <typename T>
-inline void ShapeLocal<T>::estimNormal(){
+template <typename T, typename DescriptorType>
+inline void ShapeLocal<T, DescriptorType>::estimNormal(){
 	
 	pcl::NormalEstimationOMP<T, NormalType> norm_est2;
 	norm_est2.setKSearch (10);
@@ -67,8 +67,8 @@ inline void ShapeLocal<T>::estimNormal(){
 }
 
 
-template <typename T>
-inline void ShapeLocal<T>::downsample(){
+template <typename T, typename DescriptorType>
+inline void ShapeLocal<T, DescriptorType>::downsample(){
 	pcl::PointCloud<int> sampled_indices;
 
 	pcl::UniformSampling<T> uniform_sampling;
@@ -81,8 +81,8 @@ inline void ShapeLocal<T>::downsample(){
 }
 
 
-template <typename T>
-inline void ShapeLocal<T>::resolutionInvariance(){
+template <typename T, typename DescriptorType>
+inline void ShapeLocal<T, DescriptorType>::resolutionInvariance(){
 
 	float resolution = static_cast<float> (computeCloudResolution (this->_shape));
 	if (resolution != 0.0f)
@@ -102,8 +102,8 @@ inline void ShapeLocal<T>::resolutionInvariance(){
 
 }
 
-template <typename T>
-inline double ShapeLocal<T>::computeCloudResolution (typename pcl::PointCloud<T>::Ptr cloud)
+template <typename T, typename DescriptorType>
+inline double ShapeLocal<T, DescriptorType>::computeCloudResolution (typename pcl::PointCloud<T>::Ptr cloud)
 {
 	double res = 0.0;
 	int n_points = 0;

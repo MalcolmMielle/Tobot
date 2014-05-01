@@ -15,6 +15,7 @@
 #include <CorrespGrouping.hpp>
 #include "Shape3DLocal.hpp"
 
+#define DescriptorType pcl::SHOT352
 typedef pcl::PointXYZRGBA PointType;
 
 std::string model_filename_;

@@ -117,48 +117,48 @@ include_directories(${PCL_INCLUDE_DIRS})
 #   src/${PROJECT_NAME}/stalker.cpp
 # )
 
-add_library(basic
-	include/stalker/Shape3D.cpp
-	include/stalker/Shape3D.hpp)
-target_link_libraries(basic ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+#add_library(basic
+#	include/stalker/Shape3D.cpp
+#	include/stalker/Shape3D.hpp)
+#target_link_libraries(basic ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 	
 
 	
-add_library(gui
-	include/stalker/Gui/Gui.cpp
-	include/stalker/Gui/Gui.hpp)
+#add_library(gui
+#	include/stalker/Gui/Gui.cpp
+#	include/stalker/Gui/Gui.hpp)
 
-target_link_libraries(gui basic ${catkin_LIBRARIES} ${PCL_LIBRARIES}) #vtkHybrid vtkRendering)
+#target_link_libraries(gui basic ${catkin_LIBRARIES} ${PCL_LIBRARIES}) #vtkHybrid vtkRendering)
 
-add_library(3Dreckon
-	include/stalker/reckon_pipeline/Main.cpp
-	include/stalker/reckon_pipeline/Main.hpp
-	include/stalker/reckon_pipeline/CorrespGrouping.cpp
-	include/stalker/reckon_pipeline/CorrespGrouping.hpp)
-target_link_libraries(3Dreckon gui basic ${catkin_LIBRARIES} ${PCL_LIBRARIES} )
+#add_library(3Dreckon
+#	include/stalker/reckon_pipeline/Main.cpp
+#	include/stalker/reckon_pipeline/Main.hpp
+#	include/stalker/reckon_pipeline/CorrespGrouping.cpp
+#	include/stalker/reckon_pipeline/CorrespGrouping.hpp)
+#target_link_libraries(3Dreckon gui basic ${catkin_LIBRARIES} ${PCL_LIBRARIES} )
 
 ## Declare a cpp executable
 # add_executable(stalker_node src/stalker_node.cpp)
-add_executable(guit src/Test/gui.cpp)
-target_link_libraries(guit gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
+#add_executable(guit src/Test/gui.cpp)
+#target_link_libraries(guit gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
 
 add_executable(st src/Test/shapet.cpp)
-target_link_libraries(st gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
+target_link_libraries(st ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
 
 add_executable(coresgroupt src/Test/coresgroupt.cpp)
-target_link_libraries(coresgroupt gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
+target_link_libraries(coresgroupt ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
 
 add_executable(hough src/Test/hough.cpp)
-target_link_libraries(hough gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
+target_link_libraries(hough ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
 
 add_executable(tcorsptuto src/Test/testcorresp.cpp)
-target_link_libraries(tcorsptuto gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
+target_link_libraries(tcorsptuto ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
 
-add_executable(tnrmal src/Test/testcorresp.cpp)
-target_link_libraries(tcorsptuto gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
+add_executable(tnormal src/Test/pcl_normal_test.cpp)
+target_link_libraries(tnormal ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
 
 add_executable(maint src/Test/main.cpp)
-target_link_libraries(maint gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
+target_link_libraries(maint ${catkin_LIBRARIES} ${PCL_LIBRARIES} -lboost_unit_test_framework)
 
 add_executable(stalker_node src/Stalker.cpp)
 target_link_libraries(stalker_node gui basic 3Dreckon ${catkin_LIBRARIES} ${PCL_LIBRARIES} )

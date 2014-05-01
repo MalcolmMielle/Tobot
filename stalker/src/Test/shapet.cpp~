@@ -27,5 +27,7 @@ BOOST_AUTO_TEST_CASE(trying)
 	BOOST_CHECK_EQUAL(st.getRadius(), 3);
 	BOOST_CHECK_EQUAL(st.getSamplingSize(),5);
 	
+	st2.update(cloud2);
+	
 
 }

@@ -15,11 +15,11 @@
 #include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/io/pcd_io.h>
 
-#define DescriptorType pcl::SHOT352
+//#define DescriptorType pcl::SHOT352
 #define NormalType pcl::Normal 
 #define RFType pcl::ReferenceFrame 
 
-template <typename T>
+template <typename T, typename DescriptorType>
 class Shape{
 
 	protected :
@@ -27,7 +27,7 @@ class Shape{
 	typename pcl::PointCloud<T>::Ptr _shape; //model
 	typename pcl::PointCloud<T>::Ptr _shape_keypoints; //model_keypoint
 	pcl::PointCloud<NormalType>::Ptr _shape_normals;	
-	pcl::PointCloud<DescriptorType>::Ptr _desc;	
+	typename pcl::PointCloud<DescriptorType>::Ptr _desc;	
 	double _descrRad;
 	double _shape_ss; //shape_sampling size
 	
@@ -45,7 +45,7 @@ class Shape{
 	virtual const typename pcl::PointCloud<T>::Ptr& getCloud(){return _shape;}
 	virtual const typename pcl::PointCloud<T>::Ptr& getKeypoints(){return _shape_keypoints;}
 	virtual const typename pcl::PointCloud<NormalType>::Ptr& getNormals(){return _shape_normals;}
-	virtual pcl::PointCloud<DescriptorType>::Ptr& getDescr(){return _desc;}
+	virtual typename pcl::PointCloud<DescriptorType>::Ptr& getDescr(){return _desc;}
 	virtual double getRadius(){return _descrRad;}
 	virtual double getSamplingSize(){return _shape_ss;}
 	virtual const std::string& getName(){return _id;}
@@ -53,7 +53,7 @@ class Shape{
 	virtual void set(typename pcl::PointCloud<T>::Ptr& p){_shape=p;}
 	virtual void setRadius(float r){_descrRad=r;}
 	virtual void setSamplingSize(float r){_shape_ss=r;}
-	virtual void setDescriptors(pcl::PointCloud<DescriptorType>::Ptr& desc){_desc=desc;}
+	virtual void setDescriptors(typename pcl::PointCloud<DescriptorType>::Ptr& desc){_desc=desc;}
 	virtual void setNormals(pcl::PointCloud<NormalType>::Ptr& normal){_shape_normals=normal;}
 	//update Shape state
 	
@@ -66,21 +66,21 @@ class Shape{
 
 };
 
-template <typename T>
-inline void Shape<T>::update(typename pcl::PointCloud<T>::Ptr& p){
+template <typename T, typename DescriptorType>
+inline void Shape<T, DescriptorType>::update(typename pcl::PointCloud<T>::Ptr& p){
 	//Clustering pipe
 	this->_shape=p;
 	compute();
 }
 
-template <typename T>
-inline bool Shape<T>::saveMesh(){
+template <typename T, typename DescriptorType>
+inline bool Shape<T, DescriptorType>::saveMesh(){
 	int a = pcl::io::savePCDFileBinary("view", *_shape);
 	return true;
 }
 
-template <typename T>
-inline bool Shape<T>::loadMesh(std::string path){
+template <typename T, typename DescriptorType>
+inline bool Shape<T, DescriptorType>::loadMesh(std::string path){
 	if (pcl::io::loadPCDFile (path, *_shape) < 0)
 	{
 		std::cout << "Error loading model cloud." << std::endl;

@@ -4,13 +4,13 @@
 #include "Main.hpp"
 #include "Gui.hpp"
 
-template < typename T>
-class MainGraphic : public Main<T>{
+template < typename T,typename DescriptorType>
+class MainGraphic : public Main<T, DescriptorType>{
 	protected :
-	Gui<pcl::PointXYZRGBA>* gui;
+	Gui<T>* gui;
 	
 	public :
-	MainGraphic() : Main<T>(), gui(new Gui<T>){
+	MainGraphic() : Main<T, DescriptorType>(), gui(new Gui<T>){
 		std::cout<<"buiding the main Graphic"<<std::endl;
 		gui->add(this->_cloud,"scene");
 	}
@@ -28,10 +28,10 @@ class MainGraphic : public Main<T>{
 {
 	Main::doWork(cloudy);
 }*/
-template < typename T>
-void MainGraphic<T>::doWork()
+template < typename T, typename DescriptorType>
+void MainGraphic<T, DescriptorType>::doWork()
 {
-	Main::doWork();
+	Main<T>::doWork();
 	gui->update(this->_cloud, "scene");
 	gui->show();
 }

@@ -10,8 +10,8 @@
 
 BOOST_AUTO_TEST_CASE(trying)
 {
-	ShapeLocal<pcl::PointXYZRGBA> st("test");
-	ShapeLocal<pcl::PointXYZRGBA> st2("test2");
+	ShapeLocal<pcl::PointXYZRGBA, pcl::SHOT352> st("test");
+	ShapeLocal<pcl::PointXYZRGBA, pcl::SHOT352> st2("test2");
 	pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
 	pcl::io::loadPCDFile ("/home/ros/hydro_ws/catkin_ws/src/Tobot/stalker/src/Test/milk.pcd", *cloud);	
 	

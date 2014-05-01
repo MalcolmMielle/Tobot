@@ -15,7 +15,7 @@
 #include <CorrespGrouping.hpp>
 
 typedef pcl::PointXYZRGBA PointType;
-
+#define DescriptorType pcl::SHOT352
 std::string model_filename_;
 std::string scene_filename_;
 
@@ -385,9 +385,9 @@ main (int argc, char *argv[])
   } 
   
   
-  ShapeLocal<PointType>* object=new ShapeLocal<PointType>("1");
+  ShapeLocal<PointType, pcl::SHOT352>* object=new ShapeLocal<PointType, pcl::SHOT352>("1");
   object->set(model2);
-  ShapeLocal<PointType>* scenery=new ShapeLocal<PointType>("2",0.03f);
+  ShapeLocal<PointType, pcl::SHOT352>* scenery=new ShapeLocal<PointType, pcl::SHOT352>("2",0.03f);
   scenery->set(scene2);
   
   std::cout<<"INSIDE THE PROGRAM"<<std::endl;
@@ -418,7 +418,8 @@ main (int argc, char *argv[])
  
   cp.printinfo();
   
-  cp.doPipelineOld();
+  //cp.doPipelineOld();
+  cp.doPipeline();
   cp.affiche();
   
     /***********************************ME*****************************************/
@@ -443,9 +444,9 @@ main (int argc, char *argv[])
   } 
   
   
-  ShapeLocal<PointType>* object2=new ShapeLocal<PointType>("1");
+  ShapeLocal<PointType, pcl::SHOT352>* object2=new ShapeLocal<PointType, pcl::SHOT352>("1");
   object2->update(model3);
-  ShapeLocal<PointType>* scenery2=new ShapeLocal<PointType>("2",0.03f);
+  ShapeLocal<PointType, pcl::SHOT352>* scenery2=new ShapeLocal<PointType, pcl::SHOT352>("2",0.03f);
   scenery2->update(scene3);
 
   

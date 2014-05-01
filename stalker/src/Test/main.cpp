@@ -19,26 +19,26 @@ BOOST_AUTO_TEST_CASE(trying)
 	pcl::io::loadPCDFile ("/home/ros/groovy_ws/catkin_ws/src/Tobot/stalker/src/Test/milk.pcd", *cloud);
 	pcl::io::loadPCDFile ("/home/ros/groovy_ws/catkin_ws/src/Tobot/stalker/src/Test/milk.pcd", *cloud2);
 
-	CorrespGrouping<pcl::PointXYZRGBA>* p = new CorrespGrouping<pcl::PointXYZRGBA>(new ShapeLocal<pcl::PointXYZRGBA>("object"), new ShapeLocal<pcl::PointXYZRGBA>("scene"));
+	CorrespGrouping<pcl::PointXYZRGBA>* p = new CorrespGrouping<pcl::PointXYZRGBA>(new ShapeLocal<pcl::PointXYZRGBA, pcl::SHOT352>("object"), new ShapeLocal<pcl::PointXYZRGBA, pcl::SHOT352>("scene"));
 	
-	Main<pcl::PointXYZRGBA> mg(cloud, cloud2);//Mem lek
+	Main<pcl::PointXYZRGBA, pcl::SHOT352> mg(cloud, cloud2);//Mem lek
 	
 	mg.setScene(cloud);
 	mg.setObject(cloud);
 	
 	mg.doWork();
 	
-	Main<pcl::PointXYZRGBA> mg2(p);
+	Main<pcl::PointXYZRGBA, pcl::SHOT352> mg2(p);
 	mg2.setScene(cloud);
 	mg2.setObject(cloud);
 	mg2.doWork();
 	
-	Main<pcl::PointXYZRGBA> mg3(cloud, cloud, new CorrespGrouping<pcl::PointXYZRGBA>(new ShapeLocal<pcl::PointXYZRGBA>("object"), new ShapeLocal<pcl::PointXYZRGBA>("scene")));
+	Main<pcl::PointXYZRGBA, pcl::SHOT352> mg3(cloud, cloud, new CorrespGrouping<pcl::PointXYZRGBA>(new ShapeLocal<pcl::PointXYZRGBA, pcl::SHOT352>("object"), new ShapeLocal<pcl::PointXYZRGBA, pcl::SHOT352>("scene")));
 	mg3.doWork();
 	
 	///////////////////////////////////////////////
 	//MEMORY LEAKS SOMEWHERE
-	Main<pcl::PointXYZRGBA> mainly; //Mem leak
+	Main<pcl::PointXYZRGBA, pcl::SHOT352> mainly; //Mem leak
 	mainly.setMaxObject(5);
 	mainly.setMaxScene(2);
 	mainly.addObject(cloud);
@@ -54,12 +54,14 @@ BOOST_AUTO_TEST_CASE(trying)
 	BOOST_CHECK_EQUAL(mainly.getPipeline()->getAllScenes().size(),4);
 	BOOST_CHECK_EQUAL(mainly.getAllScenes().size(),2);
 	
-	std::cout<<"Doing Work"<<std::endl;
+	std::cout<<"Doing Work"<<std::endl << std::endl;
 	sensor_msgs::PointCloud2Ptr smp(new sensor_msgs::PointCloud2);
 	pcl::toROSMsg(*cloud2, *smp);
+	
+	mainly.setObject(cloud);
+	
+	mainly.doWork(smp); //UBUG
 	mainly.doWork(smp);
-	mainly.doWork(smp);
-	//Don't work
 	mainly.removeObject(cloud);
 	BOOST_CHECK_EQUAL(mainly.getAllScenes().size(),2); //Size 2
 	BOOST_CHECK_EQUAL(mainly.getPipeline()->getAllScenes().size(),6); //Size 2
@@ -76,6 +78,6 @@ BOOST_AUTO_TEST_CASE(trying)
 	
 	
 	/////////////////////////////
-	CorrespGrouping<pcl::PointXYZRGBA>* cp=new CorrespGrouping<pcl::PointXYZRGBA>(new ShapeLocal<pcl::PointXYZRGBA>("1"), new ShapeLocal<pcl::PointXYZRGBA>("2"));
- 	Main<pcl::PointXYZRGBA> meanie(cp);
+	CorrespGrouping<pcl::PointXYZRGBA>* cp=new CorrespGrouping<pcl::PointXYZRGBA>(new ShapeLocal<pcl::PointXYZRGBA, pcl::SHOT352>("1"), new ShapeLocal<pcl::PointXYZRGBA, pcl::SHOT352>("2"));
+ 	Main<pcl::PointXYZRGBA, pcl::SHOT352> meanie(cp);
 };
