@@ -100,7 +100,7 @@ inline void Robot::odometry(){
 	if(_verbose==true){
 		std::cout<< "Searching for odometry..."<<std::endl;
 	}
-	//Prepare de reading by stating that we are in a correct reading mode. if the reading fail for X reason then the state willl be false afterward.
+	//Prepare de reading by stating that we are in a correct reading mode. if the reading fail for X reason then the state will be false afterward.
 	_motorControl1.setReadState();
 	//_motorControl1.updateMeasurement();
 	double SLW=_motorControl1.readRealSLW();
@@ -108,11 +108,15 @@ inline void Robot::odometry(){
 	
 	double TICKNUM=_motorControl1.getTickNumber();
 	
-	//double SRW=_motorControl1.readRealSRW();
-	//double posRW=_motorControl1.readRencoder();
-												double SRW=SLW; //TESTING!!
-												double posRW=posLW;
+	double SRW=_motorControl1.readRealSRW();
+	double posRW=_motorControl1.readRencoder();
+
+
+	//double SRW=SLW; //TESTING!!
+	//double posRW=posLW;
 	//Need to convert from RPM to m.s
+
+
 	SRW=rpm2ms(SRW);
 	SLW=rpm2ms(SLW);
 	
