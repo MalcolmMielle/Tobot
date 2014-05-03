@@ -116,6 +116,8 @@ inline void Robot::odometry(){
 	//Need to convert from RPM to m.s
 	SRW=rpm2ms(SRW);
 	SLW=rpm2ms(SLW);
+	ROS_INFO("the speed is");
+	std::cout << SRW <<" "<< SLW<<std::endl;
 	
 	if(_verbose==true){
 		std::cout<< "We measured everything and so posx"<<posRW<< " speedl "<<SLW<<std::endl;
@@ -125,10 +127,10 @@ inline void Robot::odometry(){
 	//calcul of speed
 	double Speed_x=_wheelRadius*( (SRW + SLW)/2);
 	double Angle=(_wheelRadius/_radius)*(SRW-SLW );
-	if(Speed_x>0.001){
+	if(Speed_x>0.001 || Speed_x<-0.001){
 		_odomRead.twist.twist.linear.x=Speed_x;
 	}
-	if(Angle>0.001){
+	if(Angle>0.001 || Angle<-0.001){
 		_odomRead.twist.twist.angular.z=Angle;
 	}
 	

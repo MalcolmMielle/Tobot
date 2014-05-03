@@ -68,7 +68,7 @@ class Robot{
 	
 	void setSpeed(double s){_speed=s;}
 	void setAngularSpeed(double as){_angularSpeed=as;};
-	void setVerbose(){_verbose=true;_motorControl1.setVerbose()}	
+	void setVerbose(){_verbose=true;_motorControl1.setVerbose();}	
 	/*********************************************************
 	Function conversion for the serial communication.
 	We calculate the speed and change the speed to RPM.
@@ -108,13 +108,16 @@ inline void Robot::odometry(){
 	
 	double TICKNUM=_motorControl1.getTickNumber();
 	
-	//double SRW=_motorControl1.readRealSRW();
-	//double posRW=_motorControl1.readRencoder();
-												double SRW=SLW; //TESTING!!
-												double posRW=posLW;
+	double SRW=_motorControl1.readRealSRW();
+	double posRW=_motorControl1.readRencoder();
+
+//	double SRW=SLW; //TESTING!!
+//	double posRW=posLW;
 	//Need to convert from RPM to m.s
 	SRW=rpm2ms(SRW);
 	SLW=rpm2ms(SLW);
+	ROS_INFO("the speed is");
+	std::cout << SRW <<" "<< SLW<<std::endl;
 	
 	if(_verbose==true){
 		std::cout<< "We measured everything and so posx"<<posRW<< " speedl "<<SLW<<std::endl;

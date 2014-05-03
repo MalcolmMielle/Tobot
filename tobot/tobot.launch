@@ -1,6 +1,6 @@
 <launch>
 	<include file="$(find tobot_speech)/launch/tobot_speech.launch"/>
-	<include file="$(find tobot_goal_groovy)/launch/tobot_goal_maker.launch"/>
+	<include file="$(find tobot_goal)/launch/tobot_goal_maker.launch"/>
 	<include file="$(find simulation_tobot)/launch/simulation_tobot.launch"/>
 	<include file="$(find open_tld_3d)/launch/open_tld_3d.launch"/>
 	<include file="$(find tobotdrivers)/launch/TobotDriver.launch"/>
