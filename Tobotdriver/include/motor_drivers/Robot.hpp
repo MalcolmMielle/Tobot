@@ -108,10 +108,11 @@ inline void Robot::odometry(){
 	
 	double TICKNUM=_motorControl1.getTickNumber();
 	
-	//double SRW=_motorControl1.readRealSRW();
-	//double posRW=_motorControl1.readRencoder();
-												double SRW=SLW; //TESTING!!
-												double posRW=posLW;
+	double SRW=_motorControl1.readRealSRW();
+	double posRW=_motorControl1.readRencoder();
+
+//	double SRW=SLW; //TESTING!!
+//	double posRW=posLW;
 	//Need to convert from RPM to m.s
 	SRW=rpm2ms(SRW);
 	SLW=rpm2ms(SLW);

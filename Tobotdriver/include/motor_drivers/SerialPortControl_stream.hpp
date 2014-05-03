@@ -447,7 +447,7 @@ inline void SerialPortControl::update(int speedRwheel, int speedLwheel){
 	//writeSpeed(speedRwheel);
 	//Write the target speeds
 	
-	//writeTargetSRW(speedRwheel);
+	writeTargetSRW(speedRwheel);
 	writeTargetSLW(speedLwheel);
 	
 }
