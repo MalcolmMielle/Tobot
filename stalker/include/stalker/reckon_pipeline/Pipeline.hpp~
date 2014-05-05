@@ -41,7 +41,7 @@ class Pipeline{
 	
 	virtual void setObject(Shape<PointType, DescriptorType>* o){std::cout << "set Object shape"<<std::endl; delete _object; _object=o;}
 	virtual void setScene(Shape<PointType, DescriptorType>* o){delete _scene; _scene=o;}
-	virtual void setObject(typename pcl::PointCloud<PointType>::Ptr& obj){std::cout << "set Object shape"<<std::endl;}
+	virtual void setObject(typename pcl::PointCloud<PointType>::Ptr& obj);
 	virtual void setScene(typename pcl::PointCloud<PointType>::Ptr& cloud);	
 	virtual Shape<PointType, DescriptorType>* getObject(){return _object;}
 	virtual Shape<PointType, DescriptorType>* getScene(){return _scene;}
@@ -114,12 +114,12 @@ inline void Pipeline<T, DescriptorType>::setScene(typename pcl::PointCloud<T>::P
 	this->_scene->update(cloud);
 }
 
-/*template <typename T, typename DescriptorType>
+template <typename T, typename DescriptorType>
 inline void Pipeline<T, DescriptorType>::setObject(typename pcl::PointCloud<T>::Ptr& obj)
 {
 	std::cout << "SET THE Object"<<std::endl;
 	this->_object->update(obj);
-}*/
+}
 
 template <typename PointType, typename DescriptorType>
 inline void Pipeline<PointType, DescriptorType>::addObject(Shape<PointType, DescriptorType>* o){

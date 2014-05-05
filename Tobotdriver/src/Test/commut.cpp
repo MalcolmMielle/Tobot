@@ -11,13 +11,15 @@
 
 BOOST_AUTO_TEST_CASE(trying)
 {
+	ros::init(boost::unit_test::framework::master_test_suite().argc, boost::unit_test::framework::master_test_suite().argv, "timer");
+	ros::NodeHandle n("~");
 	std::string str("no");
 
 	
-	SerialPortControl spaa(7500);
+	SerialPortControl spaa(7500,n);
 	std::cout << "ENCODER ERESOL " <<spaa.readEncoderResolution() << std::endl;
 	spaa.writeHome();
-	float y;
+	std::string y;
 	while(1){
 		std::cout<<"Debut"<<std::endl;
 		//std::cin >> str;
@@ -25,7 +27,7 @@ BOOST_AUTO_TEST_CASE(trying)
 		if(strcmp("vitesse", str.c_str())== 0){
 			spaa.readRealSRW();
 		}
-		else if(y==-1){
+		else if(y=="yo"){
 			std::cout << "we areeeeee at "<<spaa.readLencoder()<<std::endl;
 		}
 		else{		
@@ -33,8 +35,10 @@ BOOST_AUTO_TEST_CASE(trying)
 			//spaa.writePoseRelativeL(y);
 			//spaa.writeMove();
 			//spaa.readLencoder();
-			spaa.writeTargetSLW(y);
+			y=y+"\n";
+			spaa.writePort(y);
 		}
+		//std::cout<<"endddd "<<spaa.readRealSLW()<<std::endl;
 	}
 
 }

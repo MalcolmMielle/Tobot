@@ -13,9 +13,11 @@
 
 BOOST_AUTO_TEST_CASE(trying)
 {
+	ros::init(boost::unit_test::framework::master_test_suite().argc, boost::unit_test::framework::master_test_suite().argv, "timer");
+	ros::NodeHandle n("~");
 	std::string yo="yo";
 	BOOST_CHECK_EQUAL(BOU+yo, "Vyo");
-	SerialPortControl sp(7500);
+	SerialPortControl sp(7500, n);
 	//sp.setVerbose();
 	sp.writeHome();
 	sp.writePoseRelativeR(2000);

@@ -30,7 +30,9 @@ int main(int argc, char **argv)
 	ros::NodeHandle my_node;
 	ros::Rate loop_rate(10);
 
-	Robot platform(my_node);
+	ros::NodeHandle priv_node("~");
+
+	Robot platform(priv_node);
 	Scribe scribe(my_node, "/cmd_vel", platform);
 	Poete poete(my_node, "/odom");
 	

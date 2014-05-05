@@ -41,17 +41,25 @@ class SerialPortControl{
 	std::string _RWHEEL;
 	bool _verbose;
 	bool _readcorrectly;
+	ros::NodeHandle _pnode;
 	
 	public:
-	SerialPortControl(int maxspeed) : _lEnco(0),_rEnco(0),_targetSRW(0),_targetSLW(0),_measuredSRW(0),_measuredSLW(0), _verbose(false), _readcorrectly(true){
-		ros::param::get("/TobotDriver/NodeleftWheel", _LWHEEL);
-		ros::param::get("/TobotDriver/NodeRightWheel", _RWHEEL);
-		ros::param::get("/TobotDriver/TICKNUM", _nTick);
+	SerialPortControl(int maxspeed, ros::NodeHandle priv_node) : _lEnco(0),_rEnco(0),_targetSRW(0),_targetSLW(0),_measuredSRW(0),_measuredSLW(0), _verbose(false), _readcorrectly(true), _pnode(priv_node){
+		//ros::param::get("/TobotDriver/NodeleftWheel", _LWHEEL);
+		//ros::param::get("/TobotDriver/NodeRightWheel", _RWHEEL);
+		//ros::param::get("/TobotDriver/TICKNUM", _nTick);
+		_pnode.param<std::string>("NodeleftWheel", _LWHEEL, "1");
+		_pnode.param<std::string>("NodeleftRheel", _RWHEEL, "0");
+		_pnode.param<double>("TICKNUM", _nTick, 500000);
+		//_LWHEEL="1";
+		//_RWHEEL="1";
+		//std::string PORT ="/dev/ttyUSB0";
 		std::string PORT;
-		ros::param::get("/TobotDriver/Port", PORT);
+		_pnode.param<std::string>("Port", PORT, "/dev/ttyUSB0");
 		double Baud;
-		ros::param::get("/TobotDriver/BaudRate", Baud);
-		
+		//ros::param::get("/TobotDriver/BaudRate", Baud);
+		_pnode.param<double>("BaudRate", Baud, 115200);
+		std::cout << "The motor is=> Baud "<< Baud<<" Port "<< PORT<<std::endl;
 		_motor.Open(PORT);		
 		//8 data bits
 		//1 stop bit
@@ -226,8 +234,10 @@ class SerialPortControl{
 	}
 	void writeTargetSLW(int ms){
 		try{
+			std::cout<<"we write ";
 			std::string MaxSpeed=boost::lexical_cast<std::string>(ms);
 			MaxSpeed=_LWHEEL+"V"+MaxSpeed+"\n";
+			std::cout<<MaxSpeed<<std::endl;
 			writePort(MaxSpeed);
 		}
 		catch(boost::bad_lexical_cast& blc){
@@ -395,6 +405,7 @@ inline void SerialPortControl::writeDec(int dec){
 
 inline void SerialPortControl::writePort(std::string& str){
 	_motor << str;//lpBufferToWrite;
+	std::cout << "wrote the demand "<<str.c_str()<<" written " << std::endl;
 	if(_verbose==true){
 		std::cout << "wrote the demand "<<str.c_str()<<" written " << std::endl;
 	}

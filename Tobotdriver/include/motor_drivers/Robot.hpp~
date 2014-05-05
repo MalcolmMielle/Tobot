@@ -37,17 +37,19 @@ class Robot{
 	//Odometry stuff
 	nav_msgs::Odometry _odomRead; //Odometry of the robot
 	bool _verbose;
+	
+	ros::NodeHandle _pnode;
 
 	public:
 	
-	Robot(ros::NodeHandle ao_nh) : _motorControl1(7500), _speed(0), _angularSpeed(0),_radius(1), _verbose(false){
-		ros::param::get("/TobotDriver/WheelRadius", _wheelRadius);
-		ros::param::get("/TobotDriver/Radius", _radius);
+	Robot(ros::NodeHandle ao_nh) : _motorControl1(7500, ao_nh), _speed(0), _angularSpeed(0),_radius(1), _verbose(false), _pnode(ao_nh){
+		_pnode.param<double>("WheelRadius", _wheelRadius, 0.08);
+		_pnode.param<double>("WRadius", _radius, 0.26);
 	};
 	
-	Robot(ros::NodeHandle ao_nh, double r, double wr) : _motorControl1(7500), _speed(0), _angularSpeed(0), _radius(r), _wheelRadius(wr), _verbose(false){
-		ros::param::get("/TobotDriver/WheelRadius", _wheelRadius);
-		ros::param::get("/TobotDriver/Radius", _radius);
+	Robot(ros::NodeHandle ao_nh, double r, double wr) : _motorControl1(7500, ao_nh), _speed(0), _angularSpeed(0), _radius(r), _wheelRadius(wr), _verbose(false), _pnode(ao_nh){
+		_pnode.param<double>("WheelRadius", _wheelRadius, 0.08);
+		_pnode.param<double>("WRadius", _radius, 0.26);
 	};
 	
 	/*********************************
@@ -127,10 +129,10 @@ inline void Robot::odometry(){
 	//calcul of speed
 	double Speed_x=_wheelRadius*( (SRW + SLW)/2);
 	double Angle=(_wheelRadius/_radius)*(SRW-SLW );
-	if(Speed_x>0.001){
+	if(Speed_x>0.001 || Speed_x<-0.001){
 		_odomRead.twist.twist.linear.x=Speed_x;
 	}
-	if(Angle>0.001){
+	if(Angle>0.001 || Angle<-0.001){
 		_odomRead.twist.twist.angular.z=Angle;
 	}
 	
