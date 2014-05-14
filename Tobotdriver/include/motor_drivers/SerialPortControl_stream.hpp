@@ -193,7 +193,7 @@ class SerialPortControl{
 		catch(boost::bad_lexical_cast& blc){
 		  std::cout << "Exception in Max Speed" << blc.what() << std::endl;
 		  _readcorrectly=false;
-		  scanf("%d",&testin);
+	//	  scanf("%d",&testin);
 		}
 	}
 	void writeMinSpeed(int ms){
@@ -204,7 +204,7 @@ class SerialPortControl{
 		}
 		catch(boost::bad_lexical_cast& blc){
 		  std::cout << "Exception in Min Speed" << blc.what() << std::endl;
-		  scanf("%d",&testin);
+	//	  scanf("%d",&testin);
 		  _readcorrectly=false;
 		}
 	}
@@ -216,7 +216,7 @@ class SerialPortControl{
 		}
 		catch(boost::bad_lexical_cast& blc){
 		  std::cout << "Exception in Speed" << blc.what() << std::endl;
-		  scanf("%d",&testin);
+	//	  scanf("%d",&testin);
 		  _readcorrectly=false;
 		}
 	}
@@ -228,7 +228,7 @@ class SerialPortControl{
 		}
 		catch(boost::bad_lexical_cast& blc){
 		  std::cout << "Exception in Right wheel Speed" << blc.what() << std::endl;
-		  scanf("%d",&testin);
+	//	  scanf("%d",&testin);
 		  _readcorrectly=false;
 		}
 	}
@@ -242,7 +242,7 @@ class SerialPortControl{
 		}
 		catch(boost::bad_lexical_cast& blc){
 		  std::cout << "Exception in Left wheel Speed" << blc.what() << std::endl;
-		  scanf("%d",&testin);
+	//	  scanf("%d",&testin);
 		  _readcorrectly=false;
 		}	
 	}
@@ -254,7 +254,7 @@ class SerialPortControl{
 		}
 		catch(boost::bad_lexical_cast& blc){
 		  std::cout << "Exception in Relative Right position" << blc.what() << std::endl;
-		  scanf("%d",&testin);
+		 // scanf("%d",&testin);
 		  _readcorrectly=false;
 		}
 	}
@@ -266,7 +266,7 @@ class SerialPortControl{
 		}
 		catch(boost::bad_lexical_cast& blc){
 		  std::cout << "Exception in Relative Left position" << blc.what() << std::endl;
-		  scanf("%d",&testin);
+		 // scanf("%d",&testin);
 		  _readcorrectly=false;
 		}
 	}
@@ -278,7 +278,7 @@ class SerialPortControl{
 		}
 		catch(boost::bad_lexical_cast& blc){
 		  std::cout << "Exception in Absolute Right Position" << blc.what() << std::endl;
-		  scanf("%d",&testin);
+		  //scanf("%d",&testin);
 		  _readcorrectly=false;
 		}
 
@@ -291,7 +291,7 @@ class SerialPortControl{
 		}
 		catch(boost::bad_lexical_cast& blc){
 		  std::cout << "Exception in Absolute Left Position" << blc.what() << std::endl;
-		  scanf("%d",&testin);
+		  //scanf("%d",&testin);
 		  _readcorrectly=false;
 		}
 	}
@@ -423,7 +423,7 @@ inline int SerialPortControl::readPort(){
 			}
 			catch(boost::bad_lexical_cast& blc){
 			  std::cout << "Exception in readPort" << blc.what()<< " this is the reason" <<i<< "VOILA" << std::endl;
-			  scanf("%d",&testin);
+			 // scanf("%d",&testin);
 			  _readcorrectly=false;
 			}
 		}
@@ -437,7 +437,7 @@ inline int SerialPortControl::readPort(){
 			}
 			catch(boost::bad_lexical_cast& blc){
 			  std::cout << "Exception in readPort" << blc.what() << std::endl;
-	  		  scanf("%d",&testin);
+	  		 // scanf("%d",&testin);
 	  		  _readcorrectly=false;
 			}
 		}
