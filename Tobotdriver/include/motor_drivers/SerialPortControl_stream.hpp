@@ -49,7 +49,7 @@ class SerialPortControl{
 		//ros::param::get("/TobotDriver/NodeRightWheel", _RWHEEL);
 		//ros::param::get("/TobotDriver/TICKNUM", _nTick);
 		_pnode.param<std::string>("NodeleftWheel", _LWHEEL, "1");
-		_pnode.param<std::string>("NodeleftRheel", _RWHEEL, "0");
+		_pnode.param<std::string>("NodeleftRheel", _RWHEEL, "2");
 		_pnode.param<double>("TICKNUM", _nTick, 500000);
 		//_LWHEEL="1";
 		//_RWHEEL="1";
