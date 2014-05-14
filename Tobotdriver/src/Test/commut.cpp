@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(trying)
 	std::string str("no");
 
 	
-	SerialPortControl spaa(7500,n);
+	SerialPortControl spaa(9600,n);
 	std::cout << "ENCODER ERESOL " <<spaa.readEncoderResolution() << std::endl;
 	spaa.writeHome();
 	std::string y;
