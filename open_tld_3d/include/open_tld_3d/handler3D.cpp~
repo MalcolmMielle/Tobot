@@ -68,7 +68,7 @@ void Handler3D::tracking(cv::Rect *currBB){
 				cloud_filtered->at(x-x_go,y-y_go)=cloud->at(x,y);	
 			}
 		}
-		
+		cloud_filtered->is_dense=cloud->is_dense;
 		publish(cloud_filtered);
 		cv::Mat mat;
 		toMat(mat, cloud_filtered);

@@ -41,7 +41,7 @@ using namespace message_filters;
 
 int main (int argc, char **argv){
 	/************************Ros stuff************************/
-	ros::init(argc, argv, "Point_Cloud");
+	ros::init(argc, argv, "Open_TLD_3D");
 	ros::NodeHandle my_node;
 	
 	ros::NodeHandle priv_node("~");
@@ -65,6 +65,10 @@ int main (int argc, char **argv){
 	ros::Subscriber scribe_cloud;
 	/****OLD version***/
 	
+	//Publisher in the handler
+	theHandler->pilote=pilote;
+	theHandler->ciel=ciel;
+
 	if(enable3DTracking==true){
 		//Do not compare the timestamp for now. A bit random :/
 		std::cout<<"FULL track"<<std::endl;
@@ -85,10 +89,7 @@ int main (int argc, char **argv){
 	Subscriber<sensor_msgs::Image> image_sub(my_node, "/camera/rgb/image", 100);
 	Synchronizer<MySyncPolicy> sync(MySyncPolicy(100), image_sub, cloud_sub);
 	sync.registerCallback(boost::bind(&Main::doWork, main, _1, _2));*/
-	
-	//Publisher in the handler
-	theHandler->pilote=pilote;
-	theHandler->ciel=ciel;
+
 
 	//Main setup
 	main->gui = gui;
