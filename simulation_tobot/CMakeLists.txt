@@ -84,9 +84,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES simulation_tobot
-#  CATKIN_DEPENDS rosccp rospy std_msgs visualization_msgs
-#  DEPENDS system_lib
+  LIBRARIES simulation_tobot
+  CATKIN_DEPENDS rosccp rospy std_msgs visualization_msgs message_runtime
+  DEPENDS system_lib
 )
 
 ###########

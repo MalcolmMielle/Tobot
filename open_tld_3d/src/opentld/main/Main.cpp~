@@ -34,6 +34,8 @@
 #include "cv_bridge/cv_bridge.h"
 #include <sensor_msgs/image_encodings.h>
 
+#include "stalker/square.h"
+
 using namespace tld;
 using namespace cv;
 
@@ -54,6 +56,27 @@ bool Main::add(open_tld_3d::model::Request  &req, open_tld_3d::model::Response &
 	return true;
 	
 }
+
+
+void Main::setNewBB(const open_tld_3d::square::ConstPtr& boundingBox){
+	//TODO get the actual new bouding box as box 
+	//CvRect box=boundingBox
+	
+	CvRect box;	
+	
+	/*std::cout<<"Gow "<<std::endl;
+	if(getBBFromUser(&img, box, gui) == PROGRAM_EXIT){
+		//  break;
+		exit(0);
+	}
+	//std::cout<<"hellow"<<std::endl;
+	Rect r = Rect(box);
+	//std::cout<<"the pointer box "<< r.height <<" "<<r.width <<std::endl;
+	if(r.height!=0 && r.width!=0){
+		tld->selectObject(grey, &r);
+	}*/
+}
+
 
 
 void Main::doWork(const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::PointCloud2ConstPtr& cloudy)
@@ -132,6 +155,7 @@ void Main::doWork(const sensor_msgs::ImageConstPtr& msg)
 
 		if(!skipProcessingOnce){
 			getCPUTick(&procInit);
+			//This is where we learn !
 			tld->processImage(img);
 			getCPUTick(&procFinal);
 		}

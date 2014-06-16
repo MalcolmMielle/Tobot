@@ -36,12 +36,14 @@
 #include <message_filters/time_synchronizer.h>
 #include <message_filters/synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
-#include "open_tld_3d/model.h"
+/*#include "open_tld_3d/model.h"
+#include "open_tld_3d/square.h"*/
+
 using namespace message_filters;
 
 int main (int argc, char **argv){
 	/************************Ros stuff************************/
-	ros::init(argc, argv, "Point_Cloud");
+	ros::init(argc, argv, "Open_TLD_3D");
 	ros::NodeHandle my_node;
 	
 	ros::NodeHandle priv_node("~");
@@ -63,6 +65,7 @@ int main (int argc, char **argv){
 	ros::Publisher pilote=my_node.advertise<geometry_msgs::PointStamped>("/tracking3D", 1000);
 	ros::Publisher ciel=my_node.advertise<sensor_msgs::PointCloud2>("/cloud_filtered", 1000);
 	ros::Subscriber scribe_cloud;
+	ros::Subscriber newBB;
 	/****OLD version***/
 	
 	//Publisher in the handler
@@ -115,6 +118,8 @@ int main (int argc, char **argv){
 	/***INUTILE commentaire***/
 	ros::ServiceServer service = my_node.advertiseService("modelisation", &Main::add, main);
 	ROS_INFO("Ready to change model");
+	
+	newBB=my_node.subscribe<open_tld_3d::square>("/newBoundingBox", 1, &Main::setNewBB, main);
 	
 	
 	while(ros::ok()){

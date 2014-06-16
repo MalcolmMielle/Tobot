@@ -87,6 +87,11 @@ include_directories(src/libopentld/imacq
 #   Message2.msg
 # )
 
+add_message_files(
+  FILES
+  square.msg
+)
+
 ## Generate services in the 'srv' folder
  add_service_files(
    FILES
@@ -104,7 +109,7 @@ include_directories(src/libopentld/imacq
 ## Generate added messages and services with any dependencies listed here
  generate_messages(
    DEPENDENCIES
-#   geometry_msgs
+   geometry_msgs
    std_msgs
  )
 
@@ -120,7 +125,7 @@ include_directories(src/libopentld/imacq
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES open_tld_3d
-  CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs pcl_conversions
+  CATKIN_DEPENDS cv_bridge geometry_msgs roscpp rospy std_msgs pcl_conversions message_runtime
   DEPENDS system_lib
 )
 
@@ -232,6 +237,8 @@ target_link_libraries(reception 3dlib ${OpenCV_LIBS} ${catkin_LIBRARIES} ${PCL_L
 
 add_executable(OpenTLD3D src/opentld/OpenTLD3d.cpp)
 target_link_libraries(OpenTLD3D 3Dmain 3Dcvblobs 3Dlibopentld 3Dconfig++ 3dlib ${OpenCV_LIBS} ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+add_dependencies(OpenTLD3D open_tld_3d_generate_messages_cpp)
+
 
 add_executable(pcltrying src/3D/test.cpp)
 target_link_libraries(pcltrying 3Dmain 3Dcvblobs 3Dlibopentld 3Dconfig++ ${OpenCV_LIBS} ${catkin_LIBRARIES} )

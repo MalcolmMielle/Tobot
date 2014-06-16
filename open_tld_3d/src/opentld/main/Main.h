@@ -51,6 +51,7 @@
 #include <sensor_msgs/image_encodings.h>
 
 #include "open_tld_3d/model.h"
+#include "open_tld_3d/square.h"
 
 
 using namespace tld;
@@ -140,6 +141,7 @@ public:
         delete tld;
     }
     
+	void setNewBB(const open_tld_3d::square::ConstPtr& boundingBox);
     	void doWork(const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::PointCloud2ConstPtr& cloudy);
 	void doWork(const sensor_msgs::ImageConstPtr& msg);
 	void publish(cv::Rect *currBB);
