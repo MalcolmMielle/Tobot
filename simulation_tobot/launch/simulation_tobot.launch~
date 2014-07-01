@@ -1,4 +1,7 @@
 <launch>
+<group ns="robot1">
+    <param name="tf_prefix" value="robot1_tf" />
+ 
   <param name="/use_sim_time" value="false" />
   <!-- Use the gui for the state publisher. So you can check the it's continuous-->
   <param name="/use_gui" value="true" />
@@ -11,6 +14,8 @@
   <node name="arbotix" pkg="arbotix_python" type="arbotix_driver" output="screen">
       <rosparam file="$(find simulation_tobot)/config/fake_tobot_arbotix.yaml" command="load" />
       <param name="sim" value="true"/>
+      <remap from="odom" to="odomcaca" />
+      <remap from="base_link" to="base_linkccac" />
   </node>
  
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher">
@@ -22,6 +27,6 @@
   
    <!-- Run a static transform between /base_link and /base_footprint needed for SLAM -->
   <node pkg="tf" type="static_transform_publisher" name="base_footprint_broadcaster" args="0 0 0 0 0 0 /base_link /base_footprint 100" />
-
+</group>
 
 </launch>
