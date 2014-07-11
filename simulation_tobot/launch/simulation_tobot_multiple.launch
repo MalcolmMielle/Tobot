@@ -1,4 +1,9 @@
 <launch>
+
+  <!-- Load the URDF/Xacro model of our robot >
+  <arg name="urdf_file" default="$(find xacro)/xacro.py '$(find simulation_tobot)/URDF/tobot.urdf.xacro'" />
+  <param name="robot_description" command="$(arg urdf_file)" /-->
+     
 <group ns="robot0">
 	<param name="tf_prefix" value="robot0" />
   <param name="/use_sim_time" value="false" />
@@ -8,7 +13,7 @@
   <!-- Load the URDF/Xacro model of our robot -->
   <arg name="urdf_file" default="$(find xacro)/xacro.py '$(find simulation_tobot)/URDF/tobot.urdf.xacro'" />
    
-  <param name="robot0/robot_description" command="$(arg urdf_file)" />
+  <param name="robot_description" command="$(arg urdf_file)" />
     
   <node name="arbotix" pkg="arbotix_python" type="arbotix_driver" output="screen">
       <rosparam file="$(find simulation_tobot)/config/fake_tobot_arbotixn0.yaml" command="load" />
@@ -20,13 +25,15 @@
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher">
       <param name="publish_frequency" type="double" value="20.0" />
-      <remap from="robot0/robot_description" to="robot_description"/>
+      <!--remap from="robot0/robot_description" to="robot_description"/-->
       <!--remap from="joint_states" to="robot0/joint_states" /-->
       <!--rosparam command="load" param="my/param" /-->
   </node>
     <!-- NEEDED FOR THE CONTINUOUS JOINT -->    
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
-  <remap from="robot0/robot_description" to="robot_description" />
+
+  <!--remap from="robot_description" to="robot0/robot_description" /-->
+  <!--remap from="joint_states" to="robot0/joint_states" /-->
   </node>
 </group>
 
@@ -40,7 +47,7 @@
   <!-- Load the URDF/Xacro model of our robot -->
   <arg name="urdf_file" default="$(find xacro)/xacro.py '$(find simulation_tobot)/URDF/tobot.urdf.xacro'" />
    
-  <param name="robot1/robot_description" command="$(arg urdf_file)" />
+  <param name="robot_description" command="$(arg urdf_file)" />
     
   <node name="arbotix" pkg="arbotix_python" type="arbotix_driver" output="screen">
       <rosparam file="$(find simulation_tobot)/config/fake_tobot_arbotixn1.yaml" command="load" />
@@ -52,13 +59,13 @@
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher">
       <param name="publish_frequency" type="double" value="20.0" />
-      <remap from="robot_description" to="robot1/robot_description"/>
+      <!--remap from="robot1/robot_description" to="robot_description"/-->
       <!--remap from="joint_states" to="robot0/joint_states" /-->
       <!--rosparam command="load" param="my/param" /-->
   </node>
     <!-- NEEDED FOR THE CONTINUOUS JOINT -->    
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
-  <remap from="robot_description" to="robot1/robot_description" />
+  <!--remap from="robot_description" to="robot1/robot_description" /-->
   </node>
 </group>
 

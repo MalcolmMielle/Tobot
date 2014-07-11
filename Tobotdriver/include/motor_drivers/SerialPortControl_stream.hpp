@@ -58,7 +58,7 @@ class SerialPortControl{
 		_pnode.param<std::string>("Port", PORT, "/dev/ttyUSB0");
 		double Baud;
 		//ros::param::get("/TobotDriver/BaudRate", Baud);
-		_pnode.param<double>("BaudRate", Baud, 115200);
+		_pnode.param<double>("BaudRate", Baud, 9600);
 		std::cout << "The motor is=> Baud "<< Baud<<" Port "<< PORT<<std::endl;
 		_motor.Open(PORT);		
 		//8 data bits
