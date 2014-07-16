@@ -32,13 +32,18 @@ class SerialPortControl{
 	LibSerial::SerialStream _motor;
 	int _lEnco;
 	int _rEnco;
+	int _liftEnco;
 	float _targetSRW; //Speed in rpm
 	float _targetSLW;
+	float _targetSLift;
 	float _measuredSRW; //Speed of right wheel mesured
 	float _measuredSLW;
+	float _measuredSLift;
 	double _nTick;
+	double _nTickLift;
 	std::string _LWHEEL;
 	std::string _RWHEEL;
+	std::string _LIFTER;
 	bool _verbose;
 	bool _readcorrectly;
 	ros::NodeHandle _pnode;
@@ -50,6 +55,7 @@ class SerialPortControl{
 		//ros::param::get("/TobotDriver/TICKNUM", _nTick);
 		_pnode.param<std::string>("NodeleftWheel", _LWHEEL, "1");
 		_pnode.param<std::string>("NodeleftRheel", _RWHEEL, "2");
+		_pnode.param<std::string>("NodeLifter", _LIFTER, "3");
 		_pnode.param<double>("TICKNUM", _nTick, 500000);
 		//_LWHEEL="1";
 		//_RWHEEL="1";
@@ -149,31 +155,42 @@ class SerialPortControl{
 	**************************************************/
 	int getLencoder(){return _lEnco;}
 	int getRencoder(){return _rEnco;}
+	int getLiftencoder(){return _liftEnco;}
 	float getTargetSLW(){return _targetSLW;}
 	float getTargetSRW(){return _targetSRW;}
+	float getTargetSLift(){return _targetSLift;}
 	float getMeasuredSLW(){return _measuredSLW;}
 	float getMeasuredSRW(){return _measuredSRW;}
+	float getMeasuredSLift(){return _measuredSLift;}
 	LibSerial::SerialStream& getMotor(){return _motor;}
 	double getTickNumber(){return _nTick;}
+	double getTickNumberLift(){return _nTickLift;}
 	bool getReadState(){return _readcorrectly;}
 	/**************************************************
 	Read values in the controller
 	**************************************************/
 	int readLencoder(); //Left wheel node 0
 	int readRencoder(); //Right wheel node 1
+	int readLiftencoder(); //Lift motor node 3
 	int readTargetSLW();
 	int readTargetSRW();
+	int readTargetSLift();
 	int readRealSRW();
 	int readRealSLW();
+	int readRealSLift();
 	int readEncoderResolution();
+	int readEncoderResolutionLift();
 
 	/**************************************************
 	Set values Manually
 	**************************************************/	
 	void setTargetSLW(float s){_targetSLW=s;}
 	void setTargetSRW(float s){_targetSRW=s;}
+	void setTargetSLift(float s){_targetSLift=s;}
 	void setVerbose(){_verbose=true;}
 	void setReadState(){_readcorrectly=true;}
+	void setTickNumber(int n){_nTick=n;}
+	void setTickNumberLift(int n){_nTickLift=n;}
 	
 	/**************************************************
 	Write values in the controller
@@ -184,6 +201,7 @@ class SerialPortControl{
 	void writeHome();
 	void writeAcc(int acc);
 	void writeDec(int dec);
+	void writeHomeLifter();
 	void writeMaxSpeed(int ms){
 		try{
 			std::string MaxSpeed=boost::lexical_cast<std::string>(ms);
@@ -246,6 +264,20 @@ class SerialPortControl{
 		  _readcorrectly=false;
 		}	
 	}
+	void writeTargetSLift(int ms){
+		try{
+			std::cout<<"we write ";
+			std::string MaxSpeed=boost::lexical_cast<std::string>(ms);
+			MaxSpeed=_LIFTER+"V"+MaxSpeed+"\n";
+			std::cout<<MaxSpeed<<std::endl;
+			writePort(MaxSpeed);
+		}
+		catch(boost::bad_lexical_cast& blc){
+		  std::cout << "Exception in Left wheel Speed" << blc.what() << std::endl;
+	//	  scanf("%d",&testin);
+		  _readcorrectly=false;
+		}	
+	}
 	void writePoseRelativeR(int ms){
 		try{
 			std::string pos=boost::lexical_cast<std::string>(ms);
@@ -262,6 +294,18 @@ class SerialPortControl{
 		try{
 			std::string pos=boost::lexical_cast<std::string>(ms);
 			pos=_LWHEEL+"LR"+pos+"\n";
+			writePort(pos);
+		}
+		catch(boost::bad_lexical_cast& blc){
+		  std::cout << "Exception in Relative Left position" << blc.what() << std::endl;
+		 // scanf("%d",&testin);
+		  _readcorrectly=false;
+		}
+	}
+	void writePoseRelativeLifter(int ms){
+		try{
+			std::string pos=boost::lexical_cast<std::string>(ms);
+			pos=_LIFTER+"LR"+pos+"\n";
 			writePort(pos);
 		}
 		catch(boost::bad_lexical_cast& blc){
@@ -287,6 +331,18 @@ class SerialPortControl{
 		try{
 			std::string pos=boost::lexical_cast<std::string>(ms);
 			pos=_LWHEEL+"LA"+pos+"\n";
+			writePort(pos);
+		}
+		catch(boost::bad_lexical_cast& blc){
+		  std::cout << "Exception in Absolute Left Position" << blc.what() << std::endl;
+		  //scanf("%d",&testin);
+		  _readcorrectly=false;
+		}
+	}
+	void writePoseAbsoluteLifter(int ms){
+		try{
+			std::string pos=boost::lexical_cast<std::string>(ms);
+			pos=_LIFTER+"LA"+pos+"\n";
 			writePort(pos);
 		}
 		catch(boost::bad_lexical_cast& blc){
@@ -332,8 +388,24 @@ inline int SerialPortControl::readRencoder(){
 	return readPort();
 }
 
+inline int SerialPortControl::readLiftencoder(){
+	std::string yo("POS\n");
+	yo=_LIFTER+yo;
+	writePort(yo);
+	return readPort();
+}
+
 inline int SerialPortControl::readEncoderResolution(){
 	std::string yo("GENCRES\n");
+	yo=_LWHEEL+yo;
+	writePort(yo);
+	return readPort();
+	
+}
+
+inline int SerialPortControl::readEncoderResolutionLift(){
+	std::string yo("GENCRES\n");
+	yo=_LIFTER+yo;
 	writePort(yo);
 	return readPort();
 	
@@ -354,6 +426,13 @@ inline int SerialPortControl::readTargetSLW(){
 	return readPort();
 }
 
+inline int SerialPortControl::readTargetSLift(){
+	std::string speed2("GV\n");
+	speed2=_LIFTER+speed2;
+	writePort(speed2);
+	return readPort();
+}
+
 
 inline int SerialPortControl::readRealSRW(){	
 	std::string speed2("GN\n");
@@ -365,6 +444,14 @@ inline int SerialPortControl::readRealSRW(){
 inline int SerialPortControl::readRealSLW(){	
 	std::string speed2("GN\n");
 	speed2=_LWHEEL+speed2;
+	writePort(speed2);
+	return readPort();
+
+}
+
+inline int SerialPortControl::readRealSLift(){	
+	std::string speed2("GN\n");
+	speed2=_LIFTER+speed2;
 	writePort(speed2);
 	return readPort();
 
@@ -398,6 +485,14 @@ inline void SerialPortControl::writeAcc(int acc){
 inline void SerialPortControl::writeDec(int dec){
 	std::string decc=boost::lexical_cast<std::string>(dec);
 	std::string enable("DEC"+decc+"\n");
+	SerialPortControl::writePort(enable);
+}
+
+
+/******************FOR THE ROBOT DIRECTLY****************/
+inline void SerialPortControl::writeHomeLifter(){
+	std::string enable("HO\n");
+	enable=_LIFTER+enable;
 	SerialPortControl::writePort(enable);
 }
 
