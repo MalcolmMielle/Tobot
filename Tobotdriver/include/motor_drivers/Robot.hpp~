@@ -48,8 +48,8 @@ class Robot{
 	};
 	
 	Robot(ros::NodeHandle ao_nh, double r, double wr) : _motorControl1(7500, ao_nh), _speed(0), _angularSpeed(0), _radius(r), _wheelRadius(wr), _verbose(false), _pnode(ao_nh){
-		_pnode.param<double>("WheelRadius", _wheelRadius, 0.08);
-		_pnode.param<double>("WRadius", _radius, 0.26);
+		//_pnode.param<double>("WheelRadius", _wheelRadius, 0.08);
+		//_pnode.param<double>("WRadius", _radius, 0.26);
 	};
 	
 	/*********************************

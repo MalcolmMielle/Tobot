@@ -161,7 +161,7 @@ inline void Robot::robot2wheels(geometry_msgs::Twist& _twistDemand){
 
 inline void Robot::robot2wheels(){	
 	double rwheel =  (((2 * _speed)/_wheelRadius) + ((_angularSpeed * _radius)/ _wheelRadius))/2 ;
-	double lwheel =  (((2 * _speed)/_wheelRadius) - ((_angularSpeed * _radius)/ _wheelRadius))/2 ;
+	double lwheel =  -(((2 * _speed)/_wheelRadius) - ((_angularSpeed * _radius)/ _wheelRadius))/2 ;
 	if (_verbose==true){
 		std::cout<<"Command envoyée au controlleur mon capitaine. On a "<<_speed<< " "<<_angularSpeed<< " donc Roue droite "<<rpm2ms(rwheel)<<" roue gauche "<<rpm2ms(lwheel)<<std::endl;
 		std::cout << "les deux vitesses sont "<< rpm2ms(rwheel)<<" " <<rpm2ms(lwheel) << " pour "<< rwheel <<" "<<lwheel<< std::endl;
