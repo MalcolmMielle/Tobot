@@ -7,14 +7,14 @@
 #include "ros/time.h"
 #include "std_msgs/Bool.h"
 
-#include "lifting_driver/lifting.h"
+#include "tobotdrivers/lifting.h"
 
 
 
 
 
 /****SERVICE can TALK BACK !*/
-bool lift(lifting_driver::lifting::Request  &req, lifting_driver::lifting::Response &res, Lift_platform* p, ros::Publisher* pose_pub){
+bool lift(tobotdrivers::lifting::Request  &req, tobotdrivers::lifting::Response &res, Lift_platform* p, ros::Publisher* pose_pub){
 	ROS_INFO("Request : %s", req.way.c_str());
 	if(!strcmp(req.way.c_str(),"up")){
 		
@@ -68,7 +68,7 @@ class Lifter{
 		platform.setHight(hightobject);
 		platform.setMaxDistance(maxdistance);
 		
-		service = node.advertiseService<lifting_driver::lifting::Request, lifting_driver::lifting::Response>("lifting_service", boost::bind(lift, _1, _2, &platform, &pose_pub));
+		service = node.advertiseService<tobotdrivers::lifting::Request, tobotdrivers::lifting::Response>("lifting_service", boost::bind(lift, _1, _2, &platform, &pose_pub));
 	ROS_INFO("Ready to change model");
 		
 	}
