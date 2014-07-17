@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 	}
 	
 	while(ros::ok()){
-		platform.odometry();
+		//platform.odometry();
 		//if we read correctly
 		if(platform.getControl().getReadState()){
 			//poete.publish(platform.getOdom());
