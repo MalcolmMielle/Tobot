@@ -68,10 +68,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+ generate_messages(
+   DEPENDENCIES
+   std_msgs
+ )
 
 ###################################
 ## catkin specific configuration ##
@@ -121,6 +121,7 @@ target_link_libraries(commmunicationtest ${catkin_LIBRARIES} -lboost_unit_test_f
 
 add_executable(TobotNode src/DriverNode.cpp)
 target_link_libraries(TobotNode ${catkin_LIBRARIES} -lserial)
+add_dependencies(TobotNode lifting_driver_generate_messages_cpp)
 
 ## Declare a cpp library
 # add_library(motor_drivers
