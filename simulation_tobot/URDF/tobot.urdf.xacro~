@@ -4,18 +4,19 @@
   <!-- Constant for the xacro model -->
 
   <xacro:property name="GROUND_CLEARANCE" value="0.2" />
-  <xacro:property name="width" value="0.285" />
+  <xacro:property name="width" value="0.2102" />
   <xacro:property name="bodylen" value="0.355" />
   <xacro:property name="wheel_w" value="0.039" />
   <xacro:property name="wheel_rad" value="0.075" />
   <xacro:property name="plat_rad" value="0.285" />
   <xacro:property name="plat_len" value="0.005" />
   <xacro:property name="HIGH_PLATFORM" value="0.15" />
-  <xacro:property name="posz_laser" value="0.285" />
+  <xacro:property name="posz_laser" value="0.280" />
+  <xacro:property name="posx_laser" value="0.385" />
   <xacro:property name="posz_camera" value="0.5" />
   <xacro:property name="fwheel_rad" value="0.0325" />
   <xacro:property name="PI" value="3.1415" />
-  <xacro:property name="prefix" value="o" />
+  <xacro:property name="prefix" value="" />
    
   <material name="black">
     <color rgba="0 0 0 1"/>
@@ -29,7 +30,7 @@
   <!-- Actual frame and materials -->
 
 
-  <link name="${prefix}/base_link">
+  <link name="${prefix}base_link">
     <visual>
       <geometry>
          <cylinder length="${bodylen}" radius="${width}"/>
@@ -47,7 +48,7 @@
     </collision>
   </link>
   
-  <link name="${prefix}/lwheel">
+  <link name="${prefix}lwheel">
     <visual>
       <geometry>
         <cylinder length="${wheel_w}" radius="${wheel_rad}"/>
@@ -63,15 +64,15 @@
     </collsion>
   </link>
   
-  <joint name="${prefix}/base_to_lwheel" type="continuous">
-    <parent link="${prefix}/base_link"/>
-    <child link="${prefix}/lwheel"/>
+  <joint name="${prefix}base_to_lwheel" type="continuous">
+    <parent link="${prefix}base_link"/>
+    <child link="${prefix}lwheel"/>
     <axis xyz="0 1 0"/>
     <origin xyz="0 ${width} ${GROUND_CLEARANCE-(bodylen/2)}" rpy="0 0 0"/>
   </joint>
   
 
-  <link name="${prefix}/rwheel">
+  <link name="${prefix}rwheel">
     <visual>
       <geometry>
         <cylinder length="${wheel_w}" radius="${wheel_rad}"/>
@@ -87,15 +88,15 @@
     </collsion>
   </link>
   
-  <joint name="${prefix}/base_to_rwheel" type="continuous">
-    <parent link="${prefix}/base_link"/>
-    <child link="${prefix}/rwheel"/>
+  <joint name="${prefix}base_to_rwheel" type="continuous">
+    <parent link="${prefix}base_link"/>
+    <child link="${prefix}rwheel"/>
     <axis xyz="0 1 0"/>
     <origin xyz="0 ${-width} ${GROUND_CLEARANCE-(bodylen/2)}" rpy="0 0 0"/>
   </joint>
   
   <!--LASER-->
-  <link name="${prefix}/laser">
+  <link name="${prefix}laser">
     <visual>
       <geometry>
         <box size="0.05 .05 .05"/>
@@ -105,15 +106,15 @@
     </visual>
   </link>
   
-  <joint name="${prefix}/base_laser" type="fixed">
-    <parent link="${prefix}/base_link"/>
-    <child link="${prefix}/laser"/>
-    <origin xyz="${width} 0 ${GROUND_CLEARANCE-bodylen+posz_laser} " rpy="0 0 0"/>
+  <joint name="${prefix}base_laser" type="fixed">
+    <parent link="${prefix}base_link"/>
+    <child link="${prefix}laser"/>
+    <origin xyz="${GROUND_CLEARANCE-posx_laser} 0 ${GROUND_CLEARANCE-posx_laser+posz_laser} " rpy="0 0 0"/>
   </joint>
   
   
   <!--FRONT WHEEL-->
-  <link name="${prefix}/fwheel">
+  <link name="${prefix}fwheel">
     <visual>
       <geometry>
         <cylinder length="${wheel_w}" radius="${fwheel_rad}"/>
@@ -129,15 +130,15 @@
     </collsion>
   </link>
   
-  <joint name="${prefix}/base_to_fwheel" type="continuous">
-    <parent link="${prefix}/base_link"/>
-    <child link="${prefix}/fwheel"/>
+  <joint name="${prefix}base_to_fwheel" type="continuous">
+    <parent link="${prefix}base_link"/>
+    <child link="${prefix}fwheel"/>
     <axis xyz="0 1 0"/>
     <origin xyz="${width} 0 ${GROUND_CLEARANCE-(bodylen/2)-(fwheel_rad)}" rpy="0 0 0"/>
   </joint>
   
   <!--BACK WHEEL-->
-  <link name="${prefix}/bwheel">
+  <link name="${prefix}bwheel">
     <visual>
       <geometry>
         <cylinder length="${wheel_w}" radius="${fwheel_rad}"/>
@@ -153,16 +154,16 @@
     </collsion>
   </link>
   
-  <joint name="${prefix}/base_to_bwheel" type="continuous">
-    <parent link="${prefix}/base_link"/>
-    <child link="${prefix}/bwheel"/>
+  <joint name="${prefix}base_to_bwheel" type="continuous">
+    <parent link="${prefix}base_link"/>
+    <child link="${prefix}bwheel"/>
     <axis xyz="0 1 0"/>
     <origin xyz="${-width} 0 ${GROUND_CLEARANCE-(bodylen/2)-(fwheel_rad)}" rpy="0 0 0"/>
   </joint>
   
   
   <!-- PLatform qui se leve-->
-  <link name="${prefix}/platform">
+  <link name="${prefix}platform">
     <visual>
       <geometry>
          <cylinder length="${plat_len}" radius="${plat_rad}"/>
@@ -172,9 +173,9 @@
     </visual>
   </link>
   
-  <joint name="${prefix}/base_platform" type="prismatic">
-    <parent link="${prefix}/base_link"/>
-    <child link="${prefix}/platform"/>
+  <joint name="${prefix}base_platform" type="prismatic">
+    <parent link="${prefix}base_link"/>
+    <child link="${prefix}platform"/>
     <axis xyz="0 0 1"/>
     <limit effort="1000.0" lower="0" upper="${HIGH_PLATFORM}" velocity="0.5"/>
     <origin rpy="0 0 0" xyz="0 0 ${(bodylen/2)+GROUND_CLEARANCE}"/>
@@ -182,7 +183,7 @@
 
 
   <!--CAMERA-->
-  <link name="${prefix}/camera_link">
+  <link name="${prefix}camera_link">
     <visual>
       <geometry>
         <box size="0.15 .05 .05"/>
@@ -192,9 +193,9 @@
     </visual>
   </link>
   
-  <joint name="${prefix}/camera_link" type="fixed">
-    <parent link="${prefix}/base_link"/>
-    <child link="${prefix}/camera_link"/>
+  <joint name="${prefix}camera_link" type="fixed">
+    <parent link="${prefix}base_link"/>
+    <child link="${prefix}camera_link"/>
     <origin xyz="${width} 0 ${GROUND_CLEARANCE-bodylen+posz_camera} " rpy="${-PI/2} 0 ${-PI/2}"/>
   </joint>
   

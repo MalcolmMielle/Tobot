@@ -3,15 +3,16 @@
 
   <!-- Constant for the xacro model -->
 
-  <xacro:property name="GROUND_CLEARANCE" value="0.2" />
-  <xacro:property name="width" value="0.285" />
+  <xacro:property name="GROUND_CLEARANCE" value="0.0938" />
+  <xacro:property name="width" value="0.2102" />
   <xacro:property name="bodylen" value="0.355" />
   <xacro:property name="wheel_w" value="0.039" />
-  <xacro:property name="wheel_rad" value="0.075" />
-  <xacro:property name="plat_rad" value="0.285" />
+  <xacro:property name="wheel_rad" value="0.0938" />
+  <xacro:property name="plat_rad" value="0.150" />
   <xacro:property name="plat_len" value="0.005" />
   <xacro:property name="HIGH_PLATFORM" value="0.15" />
-  <xacro:property name="posz_laser" value="0.285" />
+  <xacro:property name="posz_laser" value="0.280" />
+  <xacro:property name="posx_laser" value="0.385" />
   <xacro:property name="posz_camera" value="0.5" />
   <xacro:property name="fwheel_rad" value="0.0325" />
   <xacro:property name="PI" value="3.1415" />
@@ -108,7 +109,7 @@
   <joint name="${prefix}base_laser" type="fixed">
     <parent link="${prefix}base_link"/>
     <child link="${prefix}laser"/>
-    <origin xyz="${width} 0 ${GROUND_CLEARANCE-bodylen+posz_laser} " rpy="0 0 0"/>
+    <origin xyz="${GROUND_CLEARANCE-posx_laser} 0 ${GROUND_CLEARANCE-posx_laser+posz_laser} " rpy="0 0 0"/>
   </joint>
   
   
