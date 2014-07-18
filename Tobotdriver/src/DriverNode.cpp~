@@ -11,7 +11,7 @@
 #include <tf/transform_broadcaster.h>
 #include "Lifting_service.hpp"
 
-void publishTransform(const nav_msgs::Odometry& odomRead, tf::TransformBroadcaster& odom_broadcaster, Filter& filt){
+void publishTransform(const nav_msgs::Odometry& odomRead, tf::TransformBroadcaster& odom_broadcaster, Filter& filter){
 	geometry_msgs::TransformStamped odom_trans;
 	odom_trans.header.stamp = odomRead.header.stamp;
 	odom_trans.header.frame_id = "odom";
@@ -41,6 +41,7 @@ int main(int argc, char **argv)
 	Filter filt();
 	
 	tf::TransformBroadcaster odom_broadcaster;
+	nav_msgs::Odometry nav;
 	
 	int flag=0;
 	//Creation de Platform et test de verbose option
@@ -60,8 +61,12 @@ int main(int argc, char **argv)
 		platform.odometry();
 		//if we read correctly
 		if(platform.getControl().getReadState()){
-			poete.publish(platform.getOdom());
-			publishTransform(platform.getOdom(), odom_broadcaster, filt);
+			nav=platform.getOdom();
+			filt.add(nav);
+			nav=filt.filtering();
+			
+			poete.publish(nav);
+			publishTransform(nav, odom_broadcaster);
 		}
 		ros::spinOnce();
 		loop_rate.sleep();

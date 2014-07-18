@@ -121,11 +121,11 @@ target_link_libraries(commmunicationtest ${catkin_LIBRARIES} -lboost_unit_test_f
 
 add_executable(TobotNode src/DriverNode.cpp)
 target_link_libraries(TobotNode ${catkin_LIBRARIES} -lserial)
-add_dependencies(TobotNode lifting_driver_generate_messages_cpp)
+add_dependencies(TobotNode motor_drivers_generate_messages_cpp)
 
 add_executable(TobotNodenoodom src/DriverNodenoodom.cpp)
 target_link_libraries(TobotNodenoodom ${catkin_LIBRARIES} -lserial)
-add_dependencies(TobotNodenoodom lifting_driver_generate_messages_cpp)
+add_dependencies(TobotNodenoodom motor_drivers_generate_messages_cpp)
 
 ## Declare a cpp library
 # add_library(motor_drivers

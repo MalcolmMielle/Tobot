@@ -9,10 +9,6 @@
 
 #include "tobotdrivers/lifting.h"
 
-
-
-
-
 /****SERVICE can TALK BACK !*/
 bool lift(tobotdrivers::lifting::Request  &req, tobotdrivers::lifting::Response &res, Lift_platform* p, ros::Publisher* pose_pub){
 	ROS_INFO("Request : %s", req.way.c_str());
