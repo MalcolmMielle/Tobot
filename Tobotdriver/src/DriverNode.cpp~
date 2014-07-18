@@ -6,10 +6,12 @@
 #include "Scribe.hpp"
 #include "Poete.hpp"
 #include "Robot.hpp"
+#include "Filter.hpp"
 #include <sstream>
 #include <tf/transform_broadcaster.h>
+#include "Lifting_service.hpp"
 
-void publishTransform(const nav_msgs::Odometry& odomRead, tf::TransformBroadcaster& odom_broadcaster){
+void publishTransform(const nav_msgs::Odometry& odomRead, tf::TransformBroadcaster& odom_broadcaster, Filter& filt){
 	geometry_msgs::TransformStamped odom_trans;
 	odom_trans.header.stamp = odomRead.header.stamp;
 	odom_trans.header.frame_id = "odom";
@@ -36,6 +38,7 @@ int main(int argc, char **argv)
 	Scribe scribe(my_node, "/cmd_vel", platform);
 	Poete poete(my_node, "/odom");
 	Lifter lift(my_node, priv_node);
+	Filter filt();
 	
 	tf::TransformBroadcaster odom_broadcaster;
 	
@@ -58,7 +61,7 @@ int main(int argc, char **argv)
 		//if we read correctly
 		if(platform.getControl().getReadState()){
 			poete.publish(platform.getOdom());
-			publishTransform(platform.getOdom(), odom_broadcaster);
+			publishTransform(platform.getOdom(), odom_broadcaster, filt);
 		}
 		ros::spinOnce();
 		loop_rate.sleep();
