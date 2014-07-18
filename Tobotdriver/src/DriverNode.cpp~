@@ -11,7 +11,7 @@
 #include <tf/transform_broadcaster.h>
 #include "Lifting_service.hpp"
 
-void publishTransform(const nav_msgs::Odometry& odomRead, tf::TransformBroadcaster& odom_broadcaster, Filter& filter){
+void publishTransform(const nav_msgs::Odometry& odomRead, tf::TransformBroadcaster& odom_broadcaster){
 	geometry_msgs::TransformStamped odom_trans;
 	odom_trans.header.stamp = odomRead.header.stamp;
 	odom_trans.header.frame_id = "odom";

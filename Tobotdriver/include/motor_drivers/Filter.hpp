@@ -10,13 +10,13 @@ class Filter{
 
 public:
 	// push_back and pop_front
-	std::queue<nav_msgs::Odometry> filter;
+	std::list<nav_msgs::Odometry> filter;
 	
 	Filter(){};
 	
-	void add(double a){
+	void add(nav_msgs::Odometry& a){
 		if (filter.size()>10){
-			filter.pop_front();
+			filter.pop_front();;
 		}
 		filter.push_back(a);
 		
@@ -25,9 +25,9 @@ public:
 	int getSize(){return filter.size();}
 	
 	nav_msgs::Odometry filtering(){
-		nav_msgs::Odometry sum=0;
-		for (std::queue<nav_msgs::Odometry&>::iterator iter=filter.begin(); iter!=filter.end();){
-			sum=sum+(*iter);
+		nav_msgs::Odometry sum;
+		for (std::list<nav_msgs::Odometry>::iterator iter=filter.begin(); iter!=filter.end();){
+			//sum=sum+(*iter);
 			
 			sum.pose.pose.position.x=sum.pose.pose.position.x+(*iter).pose.pose.position.x;
 			sum.pose.pose.position.y=sum.pose.pose.position.y+(*iter).pose.pose.position.y;
