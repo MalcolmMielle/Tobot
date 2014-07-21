@@ -1,561 +1,387 @@
-/*
-//First edition by old000: C.H.Hung , NTU,EE97,master student
-//Second edition by kenji: Y.C.Lin , NTU,EE97,master student
-//          Idea from code by W.L.Hsu, NTU,EE98,PHD student
-
-// MOUAHAHHAHA MALCOLM IS THERE ! :D
-*/
-#ifndef _SERIALPORTCONTROL_HPP
-#define _SERIALPORTCONTROL_HPP
-#include <stdio.h>
 #include <string.h>
-#include <iostream>
-#include <deque>
-#include <cstdlib>
-#include <sstream>
-#include <iomanip>
-#include <string>
-#include <stdexcept>
-#include <SerialStream.h>
-#include <boost/lexical_cast.hpp>
 #include "ros/ros.h"
+#include "sensor_msgs/PointCloud2.h"
+#include "geometry_msgs/PoseStamped.h"
+#include "std_msgs/Bool.h"
 
-int testin;
+#include "pcl_ros/point_cloud.h"
+#include "pcl/io/ply_io.h"
 
-//That must be parameters !!!
-//#define TICKNUM 500000
-//#define PORT "/dev/ttyUSB0"
+// PCL specific includes
+#include <pcl/ros/conversions.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include "CorrespGrouping.hpp"
+#include "MainGraphic.hpp"
+#include "Main.hpp"
+#include "Postprocessing.hpp"
 
-class SerialPortControl{
-	protected :
-	//ATTRIBUTS 
-	LibSerial::SerialStream _motor;
-	int _lEnco;
-	int _rEnco;
-	int _liftEnco;
-	float _targetSRW; //Speed in rpm
-	float _targetSLW;
-	float _targetSLift;
-	float _measuredSRW; //Speed of right wheel mesured
-	float _measuredSLW;
-	float _measuredSLift;
-	double _nTick;
-	double _nTickLift;
-	std::string _LWHEEL;
-	std::string _RWHEEL;
-	std::string _LIFTER;
-	bool _verbose;
-	bool _readcorrectly;
-	ros::NodeHandle _pnode;
+#include <SegmentAndClustering.hpp>
+#include <Shape3DGlobal.hpp>
+
+#include <tf/transform_listener.h>
+
+#include "stalker/square.h"
+#include "stalker/getobject.h"
+#include "stalker/sentobject.h"
+
+
+#define Descriptor pcl::Histogram<153>
+#define PointType pcl::PointXYZRGBA
+
+/****** GLOBAL VARIABLES *****/
+
+//Declare you're new Pipeline there
+SegmentAndClustering<pcl::PointXYZRGBA, Descriptor>* cp= new SegmentAndClustering<pcl::PointXYZRGBA, Descriptor>(new ShapeGlobal<PointType, Descriptor>("bob1"), new ShapeGlobal<PointType, Descriptor>("bob2"));
+
+std::string frame;
+
+bool search_status=false;
+
+bool flagy=true;
+
+/*******Function********/
+
+
+
+/**************µCALLBACKS************************/
+
+//Service Server
+
+bool getPose(stalker::getobject::Request  &req, stalker::getobject::Response &res){
+	ROS_INFO("Request");
 	
-	public:
-	SerialPortControl(int maxspeed, ros::NodeHandle priv_node) : _lEnco(0),_rEnco(0),_targetSRW(0),_targetSLW(0),_measuredSRW(0),_measuredSLW(0), _verbose(false), _readcorrectly(true), _pnode(priv_node){
-		//ros::param::get("/TobotDriver/NodeleftWheel", _LWHEEL);
-		//ros::param::get("/TobotDriver/NodeRightWheel", _RWHEEL);
-		//ros::param::get("/TobotDriver/TICKNUM", _nTick);
-		_pnode.param<std::string>("NodeleftWheel", _LWHEEL, "1");
-		_pnode.param<std::string>("NodeleftRheel", _RWHEEL, "2");
-		_pnode.param<std::string>("NodeLifter", _LIFTER, "3");
-		_pnode.param<double>("TICKNUM", _nTick, 500000);
-		//_LWHEEL="1";
-		//_RWHEEL="1";
-		//std::string PORT ="/dev/ttyUSB0";
-		std::string PORT;
-		_pnode.param<std::string>("Port", PORT, "/dev/ttyUSB0");
-		double Baud;
-		//ros::param::get("/TobotDriver/BaudRate", Baud);
-		_pnode.param<double>("BaudRate", Baud, 9600);
-		std::cout << "The motor is=> Baud "<< Baud<<" Port "<< PORT<<std::endl;
-		_motor.Open(PORT);		
-		//8 data bits
-		//1 stop bit
-		//No parity
-		 if ( ! _motor.good() ){
-			std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] "
-			<< "Error: Could not open serial port "<<PORT
-			<< std::endl ;
-			exit(1) ;
-		}
+	if(req.ask==true && cp->foundObject()){
+		geometry_msgs::PoseStamped pose_stamped;
+				
+		pose_stamped.header.frame_id=frame;
 		
-		if(Baud==115200){
-			_motor.SetBaudRate(LibSerial::SerialStreamBuf::BAUD_115200);
-			std::cout<<"Going for value of 115200"<<std::endl;
-		}
-		else if(Baud==1200){
-			_motor.SetBaudRate(LibSerial::SerialStreamBuf::BAUD_1200);
-			std::cout<<"Going for value of 1200"<<std::endl;
-		}
-		else if(Baud==2400){
-			_motor.SetBaudRate(LibSerial::SerialStreamBuf::BAUD_2400);
-			std::cout<<"Going for value of 2400"<<std::endl;
-		}
-		else if(Baud==19200){
-			_motor.SetBaudRate(LibSerial::SerialStreamBuf::BAUD_19200);
-			std::cout<<"Going for value of 19200"<<std::endl;
-		}
-		else if(Baud==38400){
-			_motor.SetBaudRate(LibSerial::SerialStreamBuf::BAUD_38400);
-			std::cout<<"Going for value of 38400"<<std::endl;
-		}
-		else if(Baud==57600){
-			_motor.SetBaudRate(LibSerial::SerialStreamBuf::BAUD_57600);
-			std::cout<<"Going for value of 57600"<<std::endl;
-		}
-		else if(Baud==9600){
-			_motor.SetBaudRate(LibSerial::SerialStreamBuf::BAUD_9600);
-			std::cout<<"Going for default value of 9600"<<std::endl;
-		}
-		else{
-			std::cout<<"Value incorrect. Going for default value of 9600"<<std::endl;
-			_motor.SetBaudRate(LibSerial::SerialStreamBuf::BAUD_9600);
-		}
-			  
-		if ( ! _motor.good() ){
-			std::cerr << "Error: Could not set the baud rate." <<std::endl;
-			exit(1);
-		}		
+		pose_stamped.pose.position.x=0;
+		pose_stamped.pose.position.y=0;
+		pose_stamped.pose.position.z=0;
+		
+		pose_stamped.pose.orientation.x=0;
+		pose_stamped.pose.orientation.y=0;
+		pose_stamped.pose.orientation.z=0;
+		pose_stamped.pose.orientation.w=1;
+		
+		//TODO What if multiples objects ?
+		//Calculate the pose compared the base link... 
+		stalker::calculatePose(cp->getRoto()[0], pose_stamped.pose ,pose_stamped.pose );
+		
+		pose_stamped.header.stamp=ros::Time::now();
+		
+		res.gotObject=true;
+		res.pose=pose_stamped;
+		res.who="Stalker";		
+	}	
+	
+	/*if(!strcmp(req.order.c_str(),"face")){
+		modelPath=req.model;
+		tld->release();
+		tld->readFromFile(modelPath);
+	}
+	else if(!strcmp(req.order.c_str(),"stoplook")){
+		ROS_INFO("Stop la reconnaissance");
+		tld->release();
+	}	
+	res.answer=req.order;
+	return true;*/
+	
+}
+
+
+//TODO Service CLIENT : 
+
+//TODO A TESTER PARCE QUE CODER EN 5 SECONDES.
+
+void service_client(ros::ServiceClient& client, tf::TransformListener* listener, std::string& to){
+	
+	int i=0;
+	geometry_msgs::PoseStamped pose_stamped;
+	
+	pose_stamped.header.frame_id=frame;
+	
+	pose_stamped.pose.position.x=0;
+	pose_stamped.pose.position.y=0;
+	pose_stamped.pose.position.z=0;
+	
+	pose_stamped.pose.orientation.x=0;
+	pose_stamped.pose.orientation.y=0;
+	pose_stamped.pose.orientation.z=0;
+	pose_stamped.pose.orientation.w=1;
+	
+	//TODO What if multiples objects ?
+	stalker::calculatePoseBaseLink(cp->getRoto()[i], pose_stamped ,pose_stamped, *listener, to );
+	
+	pose_stamped.header.stamp=ros::Time::now();
+
+	stalker::sentobject srv;
+
+	srv.response.keepsearching=true;
+	
+	//while(srv.response.keepsearching && i<cp->getRoto().size() )
+	while(srv.response.keepsearching && i<1 ){
+		stalker::calculatePose(cp->getRoto()[i], pose_stamped.pose ,pose_stamped.pose );
+		pose_stamped.header.stamp=ros::Time::now();
+
 		
 		
-		_motor.SetCharSize(LibSerial::SerialStreamBuf::CHAR_SIZE_8);
-		if ( ! _motor.good() ){
-			std::cerr << "Error: Could not set the char size." <<std::endl;
-			exit(1);
+		srv.request.gotObject=true;
+		srv.request.pose = pose_stamped;
+		srv.request.robot_id=0;
+		if (client.call(srv))
+		{
+			ROS_INFO("Search done ");
+			std::cout << "response searching : "<<srv.response.keepsearching<<std::endl;
 		}
-		_motor.SetParity( LibSerial::SerialStreamBuf::PARITY_NONE ) ;
-		if ( ! _motor.good() ){
-			std::cerr << "Error: Could not set the parity." <<std::endl;
-			exit(1);
+		else
+		{
+			ROS_ERROR("Failed to call service searching state");
+			//return 1;
 		}
-		_motor.SetFlowControl(LibSerial::SerialStreamBuf::FLOW_CONTROL_NONE ) ;
-		if ( ! _motor.good() ){
-			std::cerr << "Error: Could not set the control." <<std::endl;
-			exit(1);
-		}
-		_motor.SetNumOfStopBits(1) ;
-		if ( ! _motor.good() ){
-			std::cerr << "Error: Could not set the stopbit." <<std::endl;
-			exit(1);
-		}
-		
-		//setMax Min speed
-		writeDisable(); //Stop the motor in case the robot was still moving
-		writeEnable();
-		writeHome(); //Set the initial position to zero ;)
-		writeMaxSpeed(maxspeed);
-		writeMinSpeed(-maxspeed);
-
+		i++;
+		std::cout <<"Looping for the service of searching "<<std::endl;
 	}
-	
-	~SerialPortControl(){
-		_motor.Close();
-	}
-	
-	/**************************************************
-	Accessors
-	**************************************************/
-	int getLencoder(){return _lEnco;}
-	int getRencoder(){return _rEnco;}
-	int getLiftencoder(){return _liftEnco;}
-	float getTargetSLW(){return _targetSLW;}
-	float getTargetSRW(){return _targetSRW;}
-	float getTargetSLift(){return _targetSLift;}
-	float getMeasuredSLW(){return _measuredSLW;}
-	float getMeasuredSRW(){return _measuredSRW;}
-	float getMeasuredSLift(){return _measuredSLift;}
-	LibSerial::SerialStream& getMotor(){return _motor;}
-	double getTickNumber(){return _nTick;}
-	double getTickNumberLift(){return _nTickLift;}
-	bool getReadState(){return _readcorrectly;}
-	/**************************************************
-	Read values in the controller
-	**************************************************/
-	int readLencoder(); //Left wheel node 0
-	int readRencoder(); //Right wheel node 1
-	int readLiftencoder(); //Lift motor node 3
-	int readTargetSLW();
-	int readTargetSRW();
-	int readTargetSLift();
-	int readRealSRW();
-	int readRealSLW();
-	int readRealSLift();
-	int readEncoderResolution();
-	int readEncoderResolutionLift();
-
-	/**************************************************
-	Set values Manually
-	**************************************************/	
-	void setTargetSLW(float s){_targetSLW=s;}
-	void setTargetSRW(float s){_targetSRW=s;}
-	void setTargetSLift(float s){_targetSLift=s;}
-	void setVerbose(){_verbose=true;}
-	void setReadState(){_readcorrectly=true;}
-	void setTickNumber(int n){_nTick=n;}
-	void setTickNumberLift(int n){_nTickLift=n;}
-	
-	/**************************************************
-	Write values in the controller
-	**************************************************/
-	void writeEnable();
-	void writeDisable();
-	void writeGoEncoderIndex();
-	void writeHome();
-	void writeAcc(int acc);
-	void writeDec(int dec);
-	void writeMaxSpeed(int ms){
-		try{
-			std::string MaxSpeed=boost::lexical_cast<std::string>(ms);
-			MaxSpeed="SP"+MaxSpeed+"\n";
-			writePort(MaxSpeed);
-		}
-		catch(boost::bad_lexical_cast& blc){
-		  std::cout << "Exception in Max Speed" << blc.what() << std::endl;
-		  _readcorrectly=false;
-	//	  scanf("%d",&testin);
+	//TODO
+	if(srv.response.keepsearching==false){
+		//Put flagy to false when we found a good object
+		if( search_status==true){
+			flagy=false;
 		}
 	}
-	void writeMinSpeed(int ms){
-		try{
-			std::string MaxSpeed=boost::lexical_cast<std::string>(ms);
-			MaxSpeed="MV"+MaxSpeed+"\n";
-			writePort(MaxSpeed);
-		}
-		catch(boost::bad_lexical_cast& blc){
-		  std::cout << "Exception in Min Speed" << blc.what() << std::endl;
-	//	  scanf("%d",&testin);
-		  _readcorrectly=false;
-		}
-	}
-	void writeSpeed(int ms){
-		try{
-			std::string MaxSpeed=boost::lexical_cast<std::string>(ms);
-			MaxSpeed="V"+MaxSpeed+"\n";
-			writePort(MaxSpeed);
-		}
-		catch(boost::bad_lexical_cast& blc){
-		  std::cout << "Exception in Speed" << blc.what() << std::endl;
-	//	  scanf("%d",&testin);
-		  _readcorrectly=false;
-		}
-	}
-	void writeTargetSRW(int ms){
-		try{
-			std::string MaxSpeed=boost::lexical_cast<std::string>(ms);
-			MaxSpeed=_RWHEEL+"V"+MaxSpeed+"\n";
-			writePort(MaxSpeed);
-		}
-		catch(boost::bad_lexical_cast& blc){
-		  std::cout << "Exception in Right wheel Speed" << blc.what() << std::endl;
-	//	  scanf("%d",&testin);
-		  _readcorrectly=false;
-		}
-	}
-	void writeTargetSLW(int ms){
-		try{
-			std::cout<<"we write ";
-			std::string MaxSpeed=boost::lexical_cast<std::string>(ms);
-			MaxSpeed=_LWHEEL+"V"+MaxSpeed+"\n";
-			std::cout<<MaxSpeed<<std::endl;
-			writePort(MaxSpeed);
-		}
-		catch(boost::bad_lexical_cast& blc){
-		  std::cout << "Exception in Left wheel Speed" << blc.what() << std::endl;
-	//	  scanf("%d",&testin);
-		  _readcorrectly=false;
-		}	
-	}
-	void writeTargetSLift(int ms){
-		try{
-			std::cout<<"we write ";
-			std::string MaxSpeed=boost::lexical_cast<std::string>(ms);
-			MaxSpeed=_LIFTER+"V"+MaxSpeed+"\n";
-			std::cout<<MaxSpeed<<std::endl;
-			writePort(MaxSpeed);
-		}
-		catch(boost::bad_lexical_cast& blc){
-		  std::cout << "Exception in Left wheel Speed" << blc.what() << std::endl;
-	//	  scanf("%d",&testin);
-		  _readcorrectly=false;
-		}	
-	}
-	void writePoseRelativeR(int ms){
-		try{
-			std::string pos=boost::lexical_cast<std::string>(ms);
-			pos=_RWHEEL+"LR"+pos+"\n";
-			writePort(pos);
-		}
-		catch(boost::bad_lexical_cast& blc){
-		  std::cout << "Exception in Relative Right position" << blc.what() << std::endl;
-		 // scanf("%d",&testin);
-		  _readcorrectly=false;
-		}
-	}
-	void writePoseRelativeL(int ms){
-		try{
-			std::string pos=boost::lexical_cast<std::string>(ms);
-			pos=_LWHEEL+"LR"+pos+"\n";
-			writePort(pos);
-		}
-		catch(boost::bad_lexical_cast& blc){
-		  std::cout << "Exception in Relative Left position" << blc.what() << std::endl;
-		 // scanf("%d",&testin);
-		  _readcorrectly=false;
-		}
-	}
-	void writePoseRelativeLifter(int ms){
-		try{
-			std::string pos=boost::lexical_cast<std::string>(ms);
-			pos=_LIFTER+"LR"+pos+"\n";
-			writePort(pos);
-		}
-		catch(boost::bad_lexical_cast& blc){
-		  std::cout << "Exception in Relative Left position" << blc.what() << std::endl;
-		 // scanf("%d",&testin);
-		  _readcorrectly=false;
-		}
-	}
-	void writePoseAbsoluteR(int ms){
-		try{
-			std::string pos=boost::lexical_cast<std::string>(ms);
-			pos=_RWHEEL+"LA"+pos+"\n";
-			writePort(pos);
-		}
-		catch(boost::bad_lexical_cast& blc){
-		  std::cout << "Exception in Absolute Right Position" << blc.what() << std::endl;
-		  //scanf("%d",&testin);
-		  _readcorrectly=false;
-		}
-
-	}
-	void writePoseAbsoluteL(int ms){
-		try{
-			std::string pos=boost::lexical_cast<std::string>(ms);
-			pos=_LWHEEL+"LA"+pos+"\n";
-			writePort(pos);
-		}
-		catch(boost::bad_lexical_cast& blc){
-		  std::cout << "Exception in Absolute Left Position" << blc.what() << std::endl;
-		  //scanf("%d",&testin);
-		  _readcorrectly=false;
-		}
-	}
-	void writePoseAbsoluteLifter(int ms){
-		try{
-			std::string pos=boost::lexical_cast<std::string>(ms);
-			pos=_LIFTER+"LA"+pos+"\n";
-			writePort(pos);
-		}
-		catch(boost::bad_lexical_cast& blc){
-		  std::cout << "Exception in Absolute Left Position" << blc.what() << std::endl;
-		  //scanf("%d",&testin);
-		  _readcorrectly=false;
-		}
-	}
-	void writeMove(){
-		std::string s="M\n";
-		writePort(s);
-	}
-	/**************************************************
-	Basic serial operations
-	**************************************************/
-	
-	void writePort(std::string& str);
-	int readPort();
-
-	/**************************************************
-	Updates
-	**************************************************/	
-	void update(int speedRwheel, int speedLwheel);
-};
-
-/*********************************************************************************************************
-FONCTIONS
-*********************************************************************************************************/
-
-/********************************Read values in the controller**************************************/
-
-inline int SerialPortControl::readLencoder(){
-	std::string yo("POS\n");
-	yo=_LWHEEL+yo;
-	writePort(yo);
-	return readPort();
-}
-
-inline int SerialPortControl::readRencoder(){
-	std::string yo("POS\n");
-	yo=_RWHEEL+yo;
-	writePort(yo);
-	return readPort();
-}
-
-inline int SerialPortControl::readLiftencoder(){
-	std::string yo("POS\n");
-	yo=_LIFTER+yo;
-	writePort(yo);
-	return readPort();
-}
-
-inline int SerialPortControl::readEncoderResolution(){
-	std::string yo("GENCRES\n");
-	yo=_LWHEEL+yo;
-	writePort(yo);
-	return readPort();
-	
-}
-
-inline int SerialPortControl::readEncoderResolutionLift(){
-	std::string yo("GENCRES\n");
-	yo=_LIFTER+yo;
-	writePort(yo);
-	return readPort();
-	
-}
-
-
-inline int SerialPortControl::readTargetSRW(){
-	std::string speed2("GV\n");
-	speed2=_RWHEEL+speed2;
-	writePort(speed2);
-	return readPort();
-}
-
-inline int SerialPortControl::readTargetSLW(){
-	std::string speed2("GV\n");
-	speed2=_LWHEEL+speed2;
-	writePort(speed2);
-	return readPort();
-}
-
-inline int SerialPortControl::readTargetSLift(){
-	std::string speed2("GV\n");
-	speed2=_LIFTER+speed2;
-	writePort(speed2);
-	return readPort();
-}
-
-
-inline int SerialPortControl::readRealSRW(){	
-	std::string speed2("GN\n");
-	speed2=_RWHEEL+speed2;
-	writePort(speed2);
-	return readPort();
-}
-
-inline int SerialPortControl::readRealSLW(){	
-	std::string speed2("GN\n");
-	speed2=_LWHEEL+speed2;
-	writePort(speed2);
-	return readPort();
-
-}
-
-inline int SerialPortControl::readRealSLift(){	
-	std::string speed2("GN\n");
-	speed2=_LIFTER+speed2;
-	writePort(speed2);
-	return readPort();
-
-}
-
-/*****************************CFULHABER CONTROLER CONFIGURATION*******************************/
-
-inline void SerialPortControl::writeEnable(){
-	std::string enable("en\n");
-	SerialPortControl::writePort(enable);
-}
-
-inline void SerialPortControl::writeDisable(){
-	std::string enable("di\n");
-	SerialPortControl::writePort(enable);
-}
-
-inline void SerialPortControl::writeGoEncoderIndex(){
-	std::string enable("GOIX\n");
-	SerialPortControl::writePort(enable);
-}
-inline void SerialPortControl::writeHome(){
-	std::string enable("HO\n");
-	SerialPortControl::writePort(enable);
-}
-inline void SerialPortControl::writeAcc(int acc){
-	std::string accc=boost::lexical_cast<std::string>(acc);
-	std::string enable("AC"+accc+"\n");
-	SerialPortControl::writePort(enable);
-}
-inline void SerialPortControl::writeDec(int dec){
-	std::string decc=boost::lexical_cast<std::string>(dec);
-	std::string enable("DEC"+decc+"\n");
-	SerialPortControl::writePort(enable);
-}
-
-
-/******************FOR THE ROBOT DIRECTLY****************/
-inline void SerialPortControl::writeHomeLifter(){
-	std::string enable("HO\n");
-	enable=_LIFTER+enable;
-	SerialPortControl::writePort(enable);
-}
-
-/****************************Basic functon*******************************************/
-
-inline void SerialPortControl::writePort(std::string& str){
-	_motor << str;//lpBufferToWrite;
-	std::cout << "wrote the demand "<<str.c_str()<<" written " << std::endl;
-	if(_verbose==true){
-		std::cout << "wrote the demand "<<str.c_str()<<" written " << std::endl;
-	}
-}
-
-inline int SerialPortControl::readPort(){
-	std::string i;
-	if(_verbose==true){
-		if(_motor.rdbuf()->in_avail() >0){	
-			_motor >> i;
-			if(i.size()==0){i="fail";}
-			std::cout<<"we read "<<i<<std::endl;
-			try{
-				return boost::lexical_cast<int>(i);
-			}
-			catch(boost::bad_lexical_cast& blc){
-			  std::cout << "Exception in readPort" << blc.what()<< " this is the reason" <<i<< "VOILA" << std::endl;
-			 // scanf("%d",&testin);
-			  _readcorrectly=false;
-			}
-		}
+	else if(i>=cp->getRoto().size()){
+		std::cout <<"All position and object in the camera vision have been found"<<std::endl;
 	}
 	else{
-		if(_motor.rdbuf()->in_avail() >0){
-			_motor >> i;
-			if(i.size()==0){i="fail";}
-			try{
-				return boost::lexical_cast<int>(i);
+		std::cout <<"No idea what happened"<<std::endl;
+	}
+	
+	
+
+	
+}
+
+
+
+void search_callback(const std_msgs::Bool::ConstPtr& boolean){
+	std::cout << "Starting search" << std::endl;
+	search_status=boolean->data;
+	//Put flagy back to true at the end of the searching state
+	if(boolean->data==false){
+		flagy=true;
+	}
+}
+
+
+
+
+void saveCloud(const sensor_msgs::PointCloud2ConstPtr& cloudy, pcl::PointCloud<PointType>::Ptr cloud){
+	 pcl::fromROSMsg(*cloudy, *cloud); 
+	 frame=cloudy->header.frame_id;
+}
+
+
+
+
+void bombCallBack(const ros::TimerEvent&, ros::Time& timestamp, ros::NodeHandle& my_node, Main<PointType, Descriptor >* main, ros::Publisher& bb_pub, ros::Publisher& pose_pub, pcl::PointCloud<PointType>::Ptr cloud){
+	if( ros::Time::now()-timestamp>ros::Duration(10)){
+		std::cout<<"************************************* Opent TLD did NOT found a Model********************************"<<std::endl;
+		
+		/*Preprocessing here...*/
+		
+		stalker::passThrough<PointType>(cloud, cloud, "z", 0.8, 3.5);
+		stalker::statisticalOutilerRemoval<PointType>(cloud, cloud, 50, 1.0);
+		
+		main->doWork(cloud);
+		
+		//if(main->foundObject()){
+		
+			/*** BOUNDING BOX****/
+			//stalker::square square=cp->getBoundingBox();
+			//bb_pub.publish<stalker::square>(square);
+			
+			/****POSE****/
+			//TODO For now it assumed that the model is centered at the begining. Need the either automatise the process or to calculate the first pose.
+			//geometry_msgs::PoseStamped pose_stamped;
+			
+			//pose_stamped.header.frame_id=frame;
+			
+			//pose_stamped.pose.position.x=0;
+			//pose_stamped.pose.position.y=0;
+			//pose_stamped.pose.position.z=0;
+			
+
+			//pose_stamped.pose.orientation.x=0;
+			//pose_stamped.pose.orientation.y=0;
+			//pose_stamped.pose.orientation.z=0;
+			//pose_stamped.pose.orientation.w=1;
+			
+			//TODO What if multiples objects ?
+			//stalker::calculatePose(cp->getRoto()[0], pose_stamped.pose ,pose_stamped.pose );
+			
+			//pose_stamped.header.stamp=ros::Time::now();
+			
+			//pose_pub.publish<geometry_msgs::PoseStamped>(pose_stamped);
+		//}
+		
+	}
+	
+	
+}
+
+void mainCall(const sensor_msgs::PointCloud2ConstPtr& cloudy, ros::Time& timestamp, Main<PointType, Descriptor >* main, ros::Publisher& pose_pub, ros::ServiceClient& client, tf::TransformListener* listener, std::string& to){
+	
+	std::cout<<"************************************* Got an image from the main source********************************"<<std::endl;
+	if(search_status==true && flagy==true){
+		std::cout<<"************************************* We need to search said Mother Brain********************************"<<std::endl;
+
+		if(main->gotModel()){
+			std::cout<<"Got model"<<std::endl;
+			pcl::PointCloud<PointType>::Ptr _scene(new pcl::PointCloud<PointType>() );
+			_scene->is_dense=false;
+			pcl::fromROSMsg(*cloudy, *_scene);
+			
+			//Resize valid only for OpenTLD
+			/*stalker::resizeCloud<PointType>(main->getObject(), _scene);
+			
+			stalker::center<PointType>(main->getObject(), "x");
+			stalker::center<PointType>(main->getObject(), "y");
+			stalker::center<PointType>(main->getObject(), "z");*/
+			
+			//TODO BUG
+			/*stalker::voirPCL<PointType>(main->getObject(), _scene);
+			
+			sensor_msgs::PointCloud2Ptr pc2(new sensor_msgs::PointCloud2());
+			pcl::toROSMsg(*_scene, *pc2);*/
+			
+			/*sensor_msgs::PointCloud2 pc2;
+			pcl::toROSMsg(*cloud_filtered, pc2);*/
+			
+			main->doWork(cloudy);
+			
+			
+			if(main->foundObject()){
+			//publish the new bouding box
+				//pose_pub.publish<>();
+				frame=cloudy->header.frame_id;
+				service_client(client, listener, to);
 			}
-			catch(boost::bad_lexical_cast& blc){
-			  std::cout << "Exception in readPort" << blc.what() << std::endl;
-	  		 // scanf("%d",&testin);
-	  		  _readcorrectly=false;
-			}
+			
 		}
+		
+		timestamp=ros::Time::now();
 	}
 	
 }
 
-/**************************Mise à jour des vitesse*******************************************/
-/*Speeds must be in rpm at that point*/
-inline void SerialPortControl::update(int speedRwheel, int speedLwheel){
-	if(_verbose==true){
-		std::cout<<"ON FAIT DES TRUCS COOLS AUX MOTEURS..."<<std::endl;
+
+/*
+ * 
+ * 
+ * MAINtemplate <typename T, typename DescriptorType>
+ * 
+ * 
+ */
+
+int main (int argc, char **argv){
+	ros::init(argc, argv, "Stalker_global");
+	ros::NodeHandle my_node;
+	ros::NodeHandle priv_node("~");
+
+	
+	
+	//Timer, Subscriber, Publisher description
+	ros::Timer _imlost;
+	ros::Subscriber pointcloud_sub;
+	ros::Subscriber model_sub;
+	ros::Subscriber pc_filtered_sub;
+	ros::Subscriber tracker2d_sub;
+	ros::Subscriber trackerfullcloud;
+	ros::Subscriber searching_state;
+	
+	
+	ros::Publisher pose_pub;
+	ros::Publisher newBB_pub;
+	
+	tf::TransformListener listener(ros::Duration(10));
+	
+	//Service
+	ros::ServiceServer service = my_node.advertiseService("/getObject", getPose);
+	ros::ServiceClient client = my_node.serviceClient<stalker::sentobject>("/sentobject");
+	ROS_INFO("Ready to give the pose");
+	
+	ros::Timer bomb;
+	ros::Time timeStamp=ros::Time::now();
+	
+	pcl::PointCloud<PointType>::Ptr cloudy_save;
+	
+	Main<PointType, Descriptor > main;
+	
+	main.setPipeline(cp);
+	ROS_INFO("Going all in");
+	/*******PARAMETERS****************/
+	
+	std::string path2model="/home/malcolm/ros_ws/hydro_ws/catkin_ws/src/Stalker/src/Test/milk.pcd";
+	std::string where2read="/camera/depth/points_xyzrgb";
+	std::string to;
+	priv_node.param<std::string>("base_frame_id", to, "base_link");
+	//priv_node.param<std::string>("/model", path2model, "none");
+	ROS_INFO("Going for the variables");
+	//main.setResolution(true);
+	/* SPIN IMAGE*/
+	//cp->setPostProcICPThresh(1e-7);
+	cp->getObject()->setRadiusDescriptorsEffective(0.05);
+	cp->getScene()->setRadiusDescriptorsEffective(0.05);
+	cp->getObject()->setSamplingSizeEffective(0.01);
+	cp->getScene()->setSamplingSizeEffective(0.01);
+	ROS_INFO("Did all the variables");
+	/*SHOT*/	
+	/*cp->setPostProcICPThresh(1e-7);name
+	//cp->getObject()->setRadiusDescriptorsEffective(0.03);
+	//cp->getScene()->setRadiusDescriptorsEffective(0.05);
+	cp->getObject()->setSamplingSizeEffective(0.005);
+	cp->getScene()->setSamplingSizeEffective(0.005);*/
+	
+	//cp->setAlwaysSeeBest();
+	//cp->useGeometricConsistency();
+	
+	/*****************************************/
+	
+	/***********MODEL****************/
+	if(path2model.compare("none")==0){
+		model_sub = my_node.subscribe<sensor_msgs::PointCloud2> ("/model", 1, &Main<PointType, Descriptor >::loadModel, &main);
 	}
-	_targetSRW=speedRwheel;
-	_targetSLW=speedLwheel;	
+	else{
+		std::cout << "Loading MODEL"<<std::endl;
+		pcl::PointCloud<PointType>::Ptr model_pc (new pcl::PointCloud<PointType>);
+		pcl::io::loadPCDFile (path2model, *model_pc);
+		main.loadModel(model_pc);
+	}
+	ROS_INFO("Loaded the model");
 	
-	//TO REMOVE
-	//writeSpeed(speedRwheel);
-	//Write the target speeds
 	
-	writeTargetSRW(speedRwheel);
-	writeTargetSLW(speedLwheel);
 	
+	/***********Mother Brain Subscriber*********/
+	searching_state = my_node.subscribe<std_msgs::Bool> ("/search_state", 1, search_callback);
+
+	/***********CAMERA IMAGE*********/
+	pointcloud_sub = my_node.subscribe<sensor_msgs::PointCloud2> (where2read, 1, boost::bind(mainCall, _1, timeStamp, &main, pose_pub, client, &listener, to) );
+
+	
+	//Function to usually track the cloud when there is two source and you want to combined them.
+	//bomb=my_node.createTimer(ros::Duration(10), boost::bind(bombCallBack, _1, timeStamp, my_node, &main, newBB_pub, pose_pub, cloudy_save));
+	
+	//trackerfullcloud = my_node.subscribe<sensor_msgs::PointCloud2> ("camera/depth/points_xyzrgb", 1, boost::bind(saveCloud, _1,cloudy_save));
+	
+
+	while(ros::ok()){		
+		
+		
+		ros::spinOnce();
+	}
+	
+	std::cout << "Wot"<<std::endl;
+	//delete(cp);
+
 }
-
-
-#endif
