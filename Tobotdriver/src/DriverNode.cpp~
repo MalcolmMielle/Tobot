@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 	Scribe scribe(my_node, "/cmd_vel", platform);
 	Poete poete(my_node, "/odom");
 	Lifter lift(my_node, priv_node);
-	Filter filt();
+	Filter filt;
 	
 	tf::TransformBroadcaster odom_broadcaster;
 	nav_msgs::Odometry nav;

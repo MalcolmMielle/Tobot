@@ -64,7 +64,6 @@ int main(int argc, char **argv)
 			nav=platform.getOdom();
 			filt.add(nav);
 			nav=filt.filtering();
-			
 			poete.publish(nav);
 			publishTransform(nav, odom_broadcaster);
 		}

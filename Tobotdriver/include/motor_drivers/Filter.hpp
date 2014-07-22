@@ -49,6 +49,8 @@ public:
 		sum.pose.pose.orientation.z=sum.pose.pose.orientation.z/filter.size();
 		sum.pose.pose.orientation.w=sum.pose.pose.orientation.w/filter.size();
 		
+		std::cout<<"filtering results "<< sum;
+
 		return sum;
 	}
 

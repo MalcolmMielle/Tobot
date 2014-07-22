@@ -6,7 +6,7 @@
   <xacro:property name="GROUND_CLEARANCE" value="0.0938" />
   <xacro:property name="width" value="0.2102" />
   <xacro:property name="bodylen" value="0.355" />
-  <xacro:property name="wheel_w" value="0.039" />
+  <xacro:property name="wheel_l" value="0.039" />
   <xacro:property name="wheel_rad" value="0.0938" />
   <xacro:property name="plat_rad" value="0.150" />
   <xacro:property name="plat_len" value="0.005" />
@@ -51,14 +51,14 @@
   <link name="${prefix}lwheel">
     <visual>
       <geometry>
-        <cylinder length="${wheel_w}" radius="${wheel_rad}"/>
+        <cylinder length="${wheel_l}" radius="${wheel_rad}"/>
       </geometry>
       <origin rpy="-1.57075 0 0" xyz="0 0 0"/>
       <material name="black"/>
     </visual>
     <collsion>
       <geometry>
-        <cylinder length="${wheel_w}" radius="${wheel_rad}"/>
+        <cylinder length="${wheel_l}" radius="${wheel_rad}"/>
       </geometry>
       <origin rpy="-1.57075 0 0" xyz="0 0 0"/>
     </collsion>
@@ -75,14 +75,14 @@
   <link name="${prefix}rwheel">
     <visual>
       <geometry>
-        <cylinder length="${wheel_w}" radius="${wheel_rad}"/>
+        <cylinder length="${wheel_l}" radius="${wheel_rad}"/>
       </geometry>
       <origin rpy="-1.57075 0 0" xyz="0 0 0"/>
       <material name="black"/>
     </visual>
     <collsion>
       <geometry>
-        <cylinder length="${wheel_w}" radius="${wheel_rad}"/>
+        <cylinder length="${wheel_l}" radius="${wheel_rad}"/>
       </geometry>
       <origin rpy="-1.57075 0 0" xyz="0 0 0"/>
     </collsion>
@@ -117,14 +117,14 @@
   <link name="${prefix}fwheel">
     <visual>
       <geometry>
-        <cylinder length="${wheel_w}" radius="${fwheel_rad}"/>
+        <cylinder length="${wheel_l}" radius="${fwheel_rad}"/>
       </geometry>
       <origin rpy="-1.57075 0 0" xyz="0 0 0"/>
       <material name="black"/>
     </visual>
     <collsion>
       <geometry>
-        <cylinder length="${wheel_w}" radius="${fwheel_rad}"/>
+        <cylinder length="${wheel_l}" radius="${fwheel_rad}"/>
       </geometry>
       <origin rpy="-1.57075 0 0" xyz="0 0 0"/>
     </collsion>
@@ -141,14 +141,14 @@
   <link name="${prefix}bwheel">
     <visual>
       <geometry>
-        <cylinder length="${wheel_w}" radius="${fwheel_rad}"/>
+        <cylinder length="${wheel_l}" radius="${fwheel_rad}"/>
       </geometry>
       <origin rpy="-1.57075 0 0" xyz="0 0 0"/>
       <material name="black"/>
     </visual>
     <collsion>
       <geometry>
-        <cylinder length="${wheel_w}" radius="${fwheel_rad}"/>
+        <cylinder length="${wheel_l}" radius="${fwheel_rad}"/>
       </geometry>
       <origin rpy="-1.57075 0 0" xyz="0 0 0"/>
     </collsion>

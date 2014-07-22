@@ -33,6 +33,7 @@ class Robot{
 	//Robot carachetristique
 	double _radius;
 	double _wheelRadius;
+	double _gearRatio;
 	
 	//Odometry stuff
 	nav_msgs::Odometry _odomRead; //Odometry of the robot
@@ -44,12 +45,14 @@ class Robot{
 	
 	Robot(ros::NodeHandle ao_nh) : _motorControl1(7500, ao_nh), _speed(0), _angularSpeed(0),_radius(1), _verbose(false), _pnode(ao_nh){
 		_pnode.param<double>("WheelRadius", _wheelRadius, 0.08);
-		_pnode.param<double>("WRadius", _radius, 0.26);
+		_pnode.param<double>("Radius", _radius, 0.26);
+		_pnode.param<double>("GearRatio", _gearRatio, 0.3);
 	};
 	
 	Robot(ros::NodeHandle ao_nh, double r, double wr) : _motorControl1(7500, ao_nh), _speed(0), _angularSpeed(0), _radius(r), _wheelRadius(wr), _verbose(false), _pnode(ao_nh){
 		//_pnode.param<double>("WheelRadius", _wheelRadius, 0.08);
 		//_pnode.param<double>("WRadius", _radius, 0.26);
+		_pnode.param<double>("GearRatio", _gearRatio, 0.3);
 	};
 	
 	/*********************************
@@ -155,18 +158,25 @@ inline void Robot::odometry(){
 
 inline void Robot::robot2wheels(geometry_msgs::Twist& _twistDemand){
 	_speed=_twistDemand.linear.x;
-	_angularSpeed=_twistDemand.angular.z;	
+	_angularSpeed=_twistDemand.angular.z;
 	robot2wheels();
 }
 
 inline void Robot::robot2wheels(){	
-	double rwheel =  (((2 * _speed)/_wheelRadius) + ((_angularSpeed * _radius)/ _wheelRadius))/2 ;
-	double lwheel =  -(((2 * _speed)/_wheelRadius) - ((_angularSpeed * _radius)/ _wheelRadius))/2 ;
+	//the fuck ?
+	//double rwheel =  (((2 * _speed)/_wheelRadius) + ((_angularSpeed * _radius)/ _wheelRadius))/2 ;
+	//double lwheel =  -(((2 * _speed)/_wheelRadius) - ((_angularSpeed * _radius)/ _wheelRadius))/2 ;
+	double rwheel= (_speed+ (_angularSpeed * _radius) ) / _gearRatio;///_wheelRadius;
+	double lwheel= - (_speed - (_angularSpeed * _radius) ) / _gearRatio;///_wheelRadius;
 	if (_verbose==true){
-		std::cout<<"Command envoyée au controlleur mon capitaine. On a "<<_speed<< " "<<_angularSpeed<< " donc Roue droite "<<rpm2ms(rwheel)<<" roue gauche "<<rpm2ms(lwheel)<<std::endl;
-		std::cout << "les deux vitesses sont "<< rpm2ms(rwheel)<<" " <<rpm2ms(lwheel) << " pour "<< rwheel <<" "<<lwheel<< std::endl;
+		std::cout<<"Command envoyée au controlleur mon capitaine. On a "<<_speed<< " "<<_angularSpeed<< " donc Roue droite "<<rwheel<<" roue gauche "<<lwheel<<" avec un gear ratio de : "<< _gearRatio<<std::endl;
+		std::cout << "les deux vitesses sont "<< ms2rpm(rwheel)<<" " <<ms2rpm(lwheel) << " pour "<< rwheel <<" "<<lwheel<< std::endl;
 	}	
+	//66 comes from the reducteur INSIDE the encoder mecanism. Bitch took me forever to find out.
+	rwheel=rwheel*66;
+	lwheel=lwheel*66;
 	//Sending the new command as rpm
+	//Need to add the gear ratio !!!
 	_motorControl1.update(ms2rpm(rwheel), ms2rpm(lwheel));
 }
 
