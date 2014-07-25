@@ -172,7 +172,7 @@ inline void Robot::robot2wheels(){
 		std::cout<<"Command envoyée au controlleur mon capitaine. On a "<<_speed<< " "<<_angularSpeed<< " donc Roue droite "<<rwheel<<" roue gauche "<<lwheel<<" avec un gear ratio de : "<< _gearRatio<<std::endl;
 		std::cout << "les deux vitesses sont "<< ms2rpm(rwheel)<<" " <<ms2rpm(lwheel) << " pour "<< rwheel <<" "<<lwheel<< std::endl;
 	}	
-	//66 comes from the reducteur INSIDE the encoder mecanism. Bitch
+	//66 comes from the reducteur INSIDE the encoder mecanism. Bitch took me forever to find out.
 	rwheel=rwheel*66;
 	lwheel=lwheel*66;
 	//Sending the new command as rpm

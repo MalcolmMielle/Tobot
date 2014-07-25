@@ -85,6 +85,13 @@ class Robot{
 	double rpm2ms(double rpm){
 		return rpm*(3.1415*_wheelRadius)/60;
 	}
+	double radsec2rpm(double radsec){
+		return radsec*9.549296596425384;
+	}
+	double rpm2radsec(double rpm){
+		return rpm/9.549296596425384;
+		
+	}
 	void robot2wheels(geometry_msgs::Twist& _twistDemand);
 	void robot2wheels();	
 	void odometry();
