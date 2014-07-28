@@ -62,11 +62,12 @@ int main(int argc, char **argv)
 		//if we read correctly
 		if(platform.getControl().getReadState()){
 			nav=platform.getOdom();
-			filt.add(nav);
-			nav=filt.filtering();
-			
-			poete.publish(nav);
-			publishTransform(nav, odom_broadcaster);
+			if(platform.getControl().getReadState()==true){
+				//filt.add(nav);
+				//nav=filt.filtering();
+				poete.publish(nav);
+				publishTransform(nav, odom_broadcaster);
+			}
 		}
 		ros::spinOnce();
 		loop_rate.sleep();

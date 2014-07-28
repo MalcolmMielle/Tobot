@@ -44,14 +44,14 @@ class Robot{
 	public:
 	
 	Robot(ros::NodeHandle ao_nh) : _motorControl1(7500, ao_nh), _speed(0), _angularSpeed(0),_radius(1), _verbose(false), _pnode(ao_nh){
-		_pnode.param<double>("WheelRadius", _wheelRadius, 0.08);
-		_pnode.param<double>("Radius", _radius, 0.26);
-		_pnode.param<double>("GearRatio", _gearRatio, 0.3);
+		_pnode.param<double>("WheelRadius", _wheelRadius, 0.075);
+		_pnode.param<double>("Radius", _radius, 0.30);
+		_pnode.param<double>("GearRatio", _gearRatio, 0.0454545);
 	};
 	
 	Robot(ros::NodeHandle ao_nh, double r, double wr) : _motorControl1(7500, ao_nh), _speed(0), _angularSpeed(0), _radius(r), _wheelRadius(wr), _verbose(false), _pnode(ao_nh){
 		//_pnode.param<double>("WheelRadius", _wheelRadius, 0.08);
-		//_pnode.param<double>("WRadius", _radius, 0.26);
+		//_pnode.param<double>("WRadius", _radius, 0.30);
 		_pnode.param<double>("GearRatio", _gearRatio, 0.0454545);
 	};
 	
@@ -115,13 +115,36 @@ inline void Robot::odometry(){
 	//Prepare de reading by stating that we are in a correct reading mode. if the reading fail for X reason then the state willl be false afterward.
 	_motorControl1.setReadState();
 	//_motorControl1.updateMeasurement();
+	if(_verbose==true){
+		std::cout<< "reading SLW..."<<std::endl;
+	}
 	double SLW=_motorControl1.readRealSLW();
+	if(_verbose==true){
+		std::cout<< "reading Lencoder..."<<std::endl;
+	}
 	double posLW=_motorControl1.readLencoder();
+	//posLW=posLW/(66*3);
+	//TODO take care this come from the inervsion
+	posLW=-posLW;
 	
+	if(_verbose==true){
+		std::cout<< "reading TickNumber..."<<std::endl;
+	}
 	double TICKNUM=_motorControl1.getTickNumber();
-	
+	if(_verbose==true){
+		std::cout<< "reading SRW..."<<std::endl;
+	}
 	double SRW=_motorControl1.readRealSRW();
+	if(_verbose==true){
+		std::cout<< "reading Rencoder..."<<std::endl;
+	}
 	double posRW=_motorControl1.readRencoder();
+	//;posRW=posRW/(66*3);
+
+	posLW=posLW/1000;
+	posRW=posRW/1000;
+	TICKNUM=TICKNUM/1000;
+
 
 //	double SRW=SLW; //TESTING!!
 //	double posRW=posLW;
@@ -131,35 +154,47 @@ inline void Robot::odometry(){
 	ROS_INFO("the speed is");
 	std::cout << SRW <<" "<< SLW<<std::endl;
 	
-	if(_verbose==true){
-		std::cout<< "We measured everything and so posx"<<posRW<< " speedl "<<SLW<<std::endl;
+	
+	if(_motorControl1.getReadState()==true){
+		//TODO GearRatio
+		_odomRead.twist.twist.linear.x = _odomRead.twist.twist.linear.y = _odomRead.twist.twist.linear.z = _odomRead.twist.twist.angular.x = _odomRead.twist.twist.angular.y = _odomRead.twist.twist.angular.z=0;
+		//calcul of speed
+		double Speed_x=_wheelRadius*( (SRW + SLW)/2);
+		double Angle=(_wheelRadius/_radius)*(SRW-SLW );
+		
+		Speed_x=Speed_x;
+		Angle=Angle;
+		
+		
+		if(Speed_x>0.001 || Speed_x<-0.001){
+			_odomRead.twist.twist.linear.x=Speed_x;
+		}
+		if(Angle>0.001 || Angle<-0.001){
+			_odomRead.twist.twist.angular.z=Angle;
+		}
+	
+	
+		//Calcul of position
+		double angle=2*PI*(_wheelRadius/_radius)*( (posLW-posRW)/TICKNUM);
+	
+		if(_verbose==true){
+			std::cout<< "We measured everything and it's "<<_motorControl1.getReadState()<< " and so posx is "<<posRW<<" and so posy is "<<posLW<< " speedl "<<SLW<< " tick num " << TICKNUM << " rseult " << _wheelRadius*cos(angle)*(posLW+posRW)*(PI/(TICKNUM)) << "whell radius "<< _wheelRadius << " angle " << angle << " PI " << PI<<" tick over tick "<<  (posLW-posRW)/TICKNUM<<std::endl;
+		}
+	
+		
+		_odomRead.pose.pose.position.x=_wheelRadius*cos(angle)*(posLW+posRW)*(PI/(TICKNUM));
+		_odomRead.pose.pose.position.y=_wheelRadius*sin(angle)*(posLW+posRW)*(PI/(TICKNUM));
+	
+		Quaternion quat=Quaternion(0,0,angle*PI/180);
+		_odomRead.pose.pose.orientation.x=quat.getX();
+		_odomRead.pose.pose.orientation.y=quat.getY();
+		_odomRead.pose.pose.orientation.z=quat.getZ();
+		_odomRead.pose.pose.orientation.w=quat.getW();
+	
+		_odomRead.header.stamp=ros::Time::now();
+		_odomRead.header.frame_id="odom"; //Frame of the pose
+		_odomRead.child_frame_id="odom"; //Frame of the twist
 	}
-	
-	_odomRead.twist.twist.linear.x = _odomRead.twist.twist.linear.y = _odomRead.twist.twist.linear.z = _odomRead.twist.twist.angular.x = _odomRead.twist.twist.angular.y = _odomRead.twist.twist.angular.z=0;
-	//calcul of speed
-	double Speed_x=_wheelRadius*( (SRW + SLW)/2);
-	double Angle=(_wheelRadius/_radius)*(SRW-SLW );
-	if(Speed_x>0.001 || Speed_x<-0.001){
-		_odomRead.twist.twist.linear.x=Speed_x;
-	}
-	if(Angle>0.001 || Angle<-0.001){
-		_odomRead.twist.twist.angular.z=Angle;
-	}
-	
-	//Calcul of position
-	double angle=2*PI*(_wheelRadius/_radius)*( (posLW-posRW)/TICKNUM);
-	_odomRead.pose.pose.position.x=_wheelRadius*cos(angle)*(posLW+posRW)*(PI/(TICKNUM));
-	_odomRead.pose.pose.position.y=_wheelRadius*sin(angle)*(posLW+posRW)*(PI/(TICKNUM));
-	
-	Quaternion quat=Quaternion(0,0,angle);
-	_odomRead.pose.pose.orientation.x=quat.getX();
-	_odomRead.pose.pose.orientation.y=quat.getY();
-	_odomRead.pose.pose.orientation.z=quat.getZ();
-	_odomRead.pose.pose.orientation.w=quat.getW();
-	
-	_odomRead.header.stamp=ros::Time::now();
-	_odomRead.header.frame_id="odom"; //Frame of the pose
-	_odomRead.child_frame_id="odom"; //Frame of the twist
 }
 
 
@@ -178,10 +213,19 @@ inline void Robot::robot2wheels(){
 	
 	//Calcule the rpm from the rad sec formula :
 	double rwheel=( (_radius*_angularSpeed)/(_wheelRadius*2) ) + ( _speed / _wheelRadius);
-	double lwheel= - ( (_radius*_angularSpeed)/(_wheelRadius*2) ) + ( _speed / _wheelRadius);
+	//sign inverted because the motor is inverted
+	double lwheel= ( (_radius*_angularSpeed)/(_wheelRadius*2) ) - ( _speed / _wheelRadius);
 	
-	rwheel=rwheel/_gearRatio;
-	lwheel=lwheel/_gearRatio;
+	//Cheat
+	//Calcule the rpm from the rad sec formula :
+	//double rwheel=( (_radius*_angularSpeed)/(_wheelRadius*2) ) + (3* ( _speed / _wheelRadius));
+	//sign inverted because the motor is inverted
+	//double lwheel= ( (_radius*_angularSpeed)/(_wheelRadius*2) ) - (3* ( _speed / _wheelRadius));
+	
+	//To test diameter of the robot => distance in meter per sec
+	//66 comes from the reducteur INSIDE the encoder mecanism. Bitch took me forever to find out.
+	rwheel=rwheel*66*3;
+	lwheel=lwheel*66*3;
 	if (_verbose==true){
 		std::cout<<"Command envoyée au controlleur mon capitaine. On a "<<_speed<< " "<<_angularSpeed<< " donc Roue droite "<<rwheel<<" roue gauche "<<lwheel<<" avec un gear ratio de : "<< _gearRatio<<std::endl;
 		std::cout << "les deux vitesses sont "<< radsec2rpm(rwheel)<<" " <<radsec2rpm(lwheel) << " pour "<< rwheel <<" "<<lwheel<< std::endl;
@@ -190,7 +234,63 @@ inline void Robot::robot2wheels(){
 
 	//Sending the new command as rpm
 	//Need to add the gear ratio !!!
-	_motorControl1.update(radsec2rpm(rwheel), radsec2rpm(lwheel));
+	double rw=0;
+	double lw=0;
+	try{
+		if (radsec2rpm(rwheel)>7500){
+			throw std::invalid_argument("rwheel too big");
+		}
+		else{
+			try{
+				if (radsec2rpm(rwheel)<-7500){
+					throw std::invalid_argument("rwheel too small");
+				}
+				else{
+					rw=radsec2rpm(rwheel);
+				}
+			}
+			catch(std::exception const& e){
+				std::cerr << "Erreur in speed command : " << e.what() << radsec2rpm(rwheel) << std::endl;
+				//TODO change by a variablke
+				rw=-7500;
+			}
+		}
+	}
+	catch(std::exception const& e){
+		std::cerr << "Erreur in speed command : " << e.what() << radsec2rpm(rwheel) << std::endl;
+		//TODO change by a variablke
+		rw=7500;
+	}
+	
+	
+	try{
+		if (radsec2rpm(lwheel)>7500){
+			throw std::invalid_argument("lwheel too big");
+		}
+		else{
+			try{
+				if (radsec2rpm(lwheel)<-7500){
+					throw std::invalid_argument("lwheel too small");
+				}
+				else{
+					lw=radsec2rpm(lwheel);
+				}
+			}
+			catch(std::exception const& e){
+				std::cerr << "Erreur in speed command : " << e.what() << radsec2rpm(lwheel) << std::endl;
+				//TODO change by a variablke
+				lw=-7500;
+			}
+		}
+	}
+	catch(std::exception const& e){
+		std::cerr << "Erreur in speed command : " << e.what() << radsec2rpm(lwheel) << std::endl;
+		//TODO change by a variablke
+		lw=7500;
+	}
+	
+	
+	_motorControl1.update(rw, lw);
 }
 
 

@@ -56,7 +56,8 @@ class SerialPortControl{
 		_pnode.param<std::string>("NodeleftWheel", _LWHEEL, "1");
 		_pnode.param<std::string>("NodeleftRheel", _RWHEEL, "2");
 		_pnode.param<std::string>("NodeLifter", _LIFTER, "3");
-		_pnode.param<double>("TICKNUM", _nTick, 500000);
+		_pnode.param<double>("TICKNUM", _nTick, 200000);
+		_pnode.param<double>("TICKNUMLIFT", _nTickLift, 500000);
 		//_LWHEEL="1";
 		//_RWHEEL="1";
 		//std::string PORT ="/dev/ttyUSB0";
@@ -137,12 +138,21 @@ class SerialPortControl{
 			exit(1);
 		}
 		
+
 		//setMax Min speed
-		writeDisable(); //Stop the motor in case the robot was still moving
-		writeEnable();
-		writeHome(); //Set the initial position to zero ;)
+		//writeDisable(); //Stop the motor in case the robot was still moving
+
+		//writeEnable();
+		std::string s("V0\r");
+		writePort(s); //to stop the motor
+
+		
+
 		writeMaxSpeed(maxspeed);
+
 		writeMinSpeed(-maxspeed);
+		writeHome(); //Set the initial position to zero ;)
+
 
 	}
 	
@@ -351,16 +361,25 @@ class SerialPortControl{
 		  _readcorrectly=false;
 		}
 	}
-	void writeMove(){
-		std::string s="M\n";
+	void writeMoveLeftWheel(){
+		std::string s=_LWHEEL+"M\n";
+		writePort(s);
+	}
+	void writeMoveRightWheel(){
+		std::string s=_RWHEEL+"M\n";
+		writePort(s);
+	}
+	void writeMoveLifter(){
+		std::string s=_LIFTER+"M\n";
 		writePort(s);
 	}
 	/**************************************************
 	Basic serial operations
 	**************************************************/
 	
+	void emptyBuffer();
 	void writePort(std::string& str);
-	int readPort();
+	std::string readPort();
 
 	/**************************************************
 	Updates
@@ -375,85 +394,248 @@ FONCTIONS
 /********************************Read values in the controller**************************************/
 
 inline int SerialPortControl::readLencoder(){
+	emptyBuffer();
 	std::string yo("POS\n");
 	yo=_LWHEEL+yo;
 	writePort(yo);
-	return readPort();
+	std::string result=readPort();
+	if (strcmp("fail", result.c_str() )!= 0){
+		try{
+			return boost::lexical_cast<int>(result);
+		}
+		catch(boost::bad_lexical_cast& blc){
+		  std::cout << "Exception in readPort" << blc.what()<< " this is the reason " <<result<< " VOILA" << std::endl;
+		 // scanf("%d",&testin);
+		  _readcorrectly=false;
+		}
+	}
+	else{
+		return 0;
+		_readcorrectly=false;
+	}
 }
 
 inline int SerialPortControl::readRencoder(){
+	emptyBuffer();
 	std::string yo("POS\n");
 	yo=_RWHEEL+yo;
 	writePort(yo);
-	return readPort();
+	std::string result=readPort();
+	if (strcmp("fail", result.c_str())!= 0){
+		try{
+			return boost::lexical_cast<int>(result);
+		}
+		catch(boost::bad_lexical_cast& blc){
+		  std::cout << "Exception in readPort" << blc.what()<< " this is the reason " <<result<< " VOILA" << std::endl;
+		 // scanf("%d",&testin);
+		  _readcorrectly=false;
+		}
+	}
+	else{
+		return 0;
+		_readcorrectly=false;
+	}
 }
 
 inline int SerialPortControl::readLiftencoder(){
+	emptyBuffer();
 	std::string yo("POS\n");
 	yo=_LIFTER+yo;
 	writePort(yo);
-	return readPort();
+	std::string result=readPort();
+	if (strcmp("fail", result.c_str())!= 0){
+		try{
+			return boost::lexical_cast<int>(result);
+		}
+		catch(boost::bad_lexical_cast& blc){
+		  std::cout << "Exception in readPort" << blc.what()<< " this is the reason " <<result<< " VOILA" << std::endl;
+		 // scanf("%d",&testin);
+		  _readcorrectly=false;
+		}
+	}
+	else{
+		return 0;
+		_readcorrectly=false;
+	}
 }
 
 inline int SerialPortControl::readEncoderResolution(){
+	emptyBuffer();
 	std::string yo("GENCRES\n");
 	yo=_LWHEEL+yo;
 	writePort(yo);
-	return readPort();
+	std::string result=readPort();
+	if (strcmp("fail", result.c_str())!= 0){
+		try{
+			return boost::lexical_cast<int>(result);
+		}
+		catch(boost::bad_lexical_cast& blc){
+		  std::cout << "Exception in readPort" << blc.what()<< " this is the reason " <<result<< " VOILA" << std::endl;
+		 // scanf("%d",&testin);
+		  _readcorrectly=false;
+		}
+	}
+	else{
+		return 0;
+		_readcorrectly=false;
+	}
 	
 }
 
 inline int SerialPortControl::readEncoderResolutionLift(){
+	emptyBuffer();
 	std::string yo("GENCRES\n");
 	yo=_LIFTER+yo;
 	writePort(yo);
-	return readPort();
+	std::string result=readPort();
+	if (strcmp("fail", result.c_str())!= 0){
+		try{
+			return boost::lexical_cast<int>(result);
+		}
+		catch(boost::bad_lexical_cast& blc){
+		  std::cout << "Exception in readPort" << blc.what()<< " this is the reason " <<result<< " VOILA" << std::endl;
+		 // scanf("%d",&testin);
+		  _readcorrectly=false;
+		}
+	}
+	else{
+		return 0;
+		_readcorrectly=false;
+	}
 	
 }
 
 
 inline int SerialPortControl::readTargetSRW(){
+	emptyBuffer();
 	std::string speed2("GV\n");
 	speed2=_RWHEEL+speed2;
 	writePort(speed2);
-	return readPort();
+	std::string result=readPort();
+	if (strcmp("fail", result.c_str())!= 0){
+		try{
+			return boost::lexical_cast<int>(result);
+		}
+		catch(boost::bad_lexical_cast& blc){
+		  std::cout << "Exception in readPort" << blc.what()<< " this is the reason " <<result<< " VOILA" << std::endl;
+		 // scanf("%d",&testin);
+		  _readcorrectly=false;
+		}
+	}
+	else{
+		return 0;
+		_readcorrectly=false;
+	}
 }
 
 inline int SerialPortControl::readTargetSLW(){
+	emptyBuffer();
 	std::string speed2("GV\n");
 	speed2=_LWHEEL+speed2;
 	writePort(speed2);
-	return readPort();
+	std::string result=readPort();
+	if (strcmp("fail", result.c_str())!= 0){
+		try{
+			return boost::lexical_cast<int>(result);
+		}
+		catch(boost::bad_lexical_cast& blc){
+		  std::cout << "Exception in readPort" << blc.what()<< " this is the reason " <<result<< " VOILA" << std::endl;
+		 // scanf("%d",&testin);
+		  _readcorrectly=false;
+		}
+	}
+	else{
+		return 0;
+		_readcorrectly=false;
+	}
 }
 
 inline int SerialPortControl::readTargetSLift(){
+	emptyBuffer();
 	std::string speed2("GV\n");
 	speed2=_LIFTER+speed2;
 	writePort(speed2);
-	return readPort();
+	std::string result=readPort();
+	if (strcmp("fail", result.c_str())!= 0){
+		try{
+			return boost::lexical_cast<int>(result);
+		}
+		catch(boost::bad_lexical_cast& blc){
+		  std::cout << "Exception in readPort" << blc.what()<< " this is the reason " <<result<< " VOILA" << std::endl;
+		 // scanf("%d",&testin);
+		  _readcorrectly=false;
+		}
+	}
+	else{
+		return 0;
+		_readcorrectly=false;
+	}		
 }
 
 
 inline int SerialPortControl::readRealSRW(){	
+	emptyBuffer();
 	std::string speed2("GN\n");
 	speed2=_RWHEEL+speed2;
 	writePort(speed2);
-	return readPort();
+	std::string result=readPort();
+	if (strcmp("fail", result.c_str())!= 0){
+		try{
+			return boost::lexical_cast<int>(result);
+		}
+		catch(boost::bad_lexical_cast& blc){
+		  std::cout << "Exception in readPort" << blc.what()<< " this is the reason " <<result<< " VOILA" << std::endl;
+		 // scanf("%d",&testin);
+		  _readcorrectly=false;
+		}
+	}
+	else{
+		return 0;
+		_readcorrectly=false;
+	}
 }
 
 inline int SerialPortControl::readRealSLW(){	
+	emptyBuffer();
 	std::string speed2("GN\n");
 	speed2=_LWHEEL+speed2;
 	writePort(speed2);
-	return readPort();
+	std::string result=readPort();
+	if (strcmp("fail", result.c_str())!= 0){
+		try{
+			return boost::lexical_cast<int>(result);
+		}
+		catch(boost::bad_lexical_cast& blc){
+		  std::cout << "Exception in readPort" << blc.what()<< " this is the reason " <<result<< " VOILA" << std::endl;
+		 // scanf("%d",&testin);
+		  _readcorrectly=false;
+		}
+	}
+	else{
+		return 0;
+	}
 
 }
 
 inline int SerialPortControl::readRealSLift(){	
+	emptyBuffer();
 	std::string speed2("GN\n");
 	speed2=_LIFTER+speed2;
 	writePort(speed2);
-	return readPort();
+	std::string result=readPort();
+	if (strcmp("fail", result.c_str())!= 0){
+		try{
+			return boost::lexical_cast<int>(result);
+		}
+		catch(boost::bad_lexical_cast& blc){
+		  std::cout << "Exception in readPort" << blc.what()<< " this is the reason " <<result<< " VOILA" << std::endl;
+		 // scanf("%d",&testin);
+		  _readcorrectly=false;
+		}
+	}
+	else{
+		return 0;
+	}
 
 }
 
@@ -461,31 +643,37 @@ inline int SerialPortControl::readRealSLift(){
 
 inline void SerialPortControl::writeEnable(){
 	std::string enable("en\n");
-	SerialPortControl::writePort(enable);
+	//SerialPortControl::writePort(enable);
+	//std::cout << "did we succesed : " << readPort() <<std::endl;
 }
 
 inline void SerialPortControl::writeDisable(){
 	std::string enable("di\n");
 	SerialPortControl::writePort(enable);
+	//std::cout << "did we succesed : " << readPort() <<std::endl;
 }
 
 inline void SerialPortControl::writeGoEncoderIndex(){
 	std::string enable("GOIX\n");
 	SerialPortControl::writePort(enable);
+	//std::cout << "did we succesed : " << readPort() <<std::endl;
 }
 inline void SerialPortControl::writeHome(){
 	std::string enable("HO\n");
 	SerialPortControl::writePort(enable);
+	//std::cout << "did we succesed : " << readPort() <<std::endl;
 }
 inline void SerialPortControl::writeAcc(int acc){
 	std::string accc=boost::lexical_cast<std::string>(acc);
 	std::string enable("AC"+accc+"\n");
 	SerialPortControl::writePort(enable);
+	//std::cout << "did we succesed : " << readPort() <<std::endl;
 }
 inline void SerialPortControl::writeDec(int dec){
 	std::string decc=boost::lexical_cast<std::string>(dec);
 	std::string enable("DEC"+decc+"\n");
 	SerialPortControl::writePort(enable);
+	//std::cout << "did we succesed : " << readPort() <<std::endl;
 }
 
 
@@ -502,42 +690,89 @@ inline void SerialPortControl::writePort(std::string& str){
 	_motor << str;//lpBufferToWrite;
 	std::cout << "wrote the demand "<<str.c_str()<<" written " << std::endl;
 	if(_verbose==true){
-		std::cout << "wrote the demand "<<str.c_str()<<" written " << std::endl;
+		//std::cout << "wrote the demand "<<str.c_str()<<" written " << std::endl;
 	}
 }
 
-inline int SerialPortControl::readPort(){
-	std::string i;
+inline std::string SerialPortControl::readPort(){
+	std::string i("");
 	if(_verbose==true){
+		while(_motor.rdbuf()->in_avail() <=0){
+			//std::cout<<"waiting for something to read"<<std::endl;
+		}
 		if(_motor.rdbuf()->in_avail() >0){	
+			
+			/*char next_byte;
+			_motor.get(next_byte);
+			std::cerr << "the byte "<< next_byte<<std::endl;
+			
+			i=next_byte;
+			std::string buf;
+			buf=next_byte;
+			
+
+			while(strcmp("\n" , buf.c_str() ) != 0){
+		
+				_motor.get(next_byte);  //HERE I RECEIVE THE FIRST ANSWER
+				//std::cerr << "the byte "<< next_byte << " with "<<str.compare(&next_byte) <<std::endl;
+				i+=next_byte;
+				buf=next_byte;
+				std::cout<< "In the end "<< i << " and "<<buf<< " done "<<std::endl;
+				}
+			std::cout<<"OUT"<<std::endl;
+			*/
+			
 			_motor >> i;
-			if(i.size()==0){i="fail";}
+			if(i.size()==0){i="fail";_readcorrectly=false;}
 			std::cout<<"we read "<<i<<std::endl;
-			try{
-				return boost::lexical_cast<int>(i);
-			}
-			catch(boost::bad_lexical_cast& blc){
-			  std::cout << "Exception in readPort" << blc.what()<< " this is the reason" <<i<< "VOILA" << std::endl;
-			 // scanf("%d",&testin);
-			  _readcorrectly=false;
-			}
+			return i;
 		}
 	}
 	else{
+		while(_motor.rdbuf()->in_avail() <=0){
+		}
 		if(_motor.rdbuf()->in_avail() >0){
+			
+			/*char next_byte;
+			_motor.get(next_byte);
+			std::cerr << "the byte "<< next_byte<<std::endl;
+			
+			i=next_byte;
+			std::string buf;
+			buf=next_byte;
+			
+
+			while(strcmp("\n" , buf.c_str() ) != 0){
+		
+				_motor.get(next_byte);  //HERE I RECEIVE THE FIRST ANSWER
+				//std::cerr << "the byte "<< next_byte << " with "<<str.compare(&next_byte) <<std::endl;
+				i+=next_byte;
+				buf=next_byte;
+				std::cout<< "In the end "<< i << " and "<<buf<< " done "<<std::endl;
+				}
+			std::cout<<"OUT"<<std::endl;
+			*/
+			
 			_motor >> i;
-			if(i.size()==0){i="fail";}
-			try{
-				return boost::lexical_cast<int>(i);
-			}
-			catch(boost::bad_lexical_cast& blc){
-			  std::cout << "Exception in readPort" << blc.what() << std::endl;
-	  		 // scanf("%d",&testin);
-	  		  _readcorrectly=false;
-			}
+			if(i.size()==0){i="fail";_readcorrectly=false;}
+			std::cout<<"we read "<<i<<std::endl;
+			return i;
+
 		}
 	}
-	
+	std::cout<<"nothing to read"<<std::endl;
+	_readcorrectly=false;
+}
+
+inline void SerialPortControl::emptyBuffer(){
+	std::cout<<"emptying the buffer"<<std::endl;
+	while(_motor.rdbuf()->in_avail() >0){
+		char next_byte;
+		_motor.get(next_byte);
+		std::cerr << next_byte;
+	}
+	std::cout<<"OUT"<<std::endl;
+	 		
 }
 
 /**************************Mise à jour des vitesse*******************************************/

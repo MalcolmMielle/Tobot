@@ -32,12 +32,19 @@ int main(int argc, char **argv)
 	ros::Rate loop_rate(10);
 
 	ros::NodeHandle priv_node("~");
-
+	std::cout << "init Robot"<<std::endl;
 	Robot platform(priv_node);
+	
+	std::cout << "init Scrible"<<std::endl;
 	Scribe scribe(my_node, "/cmd_vel", platform);
+	
+	std::cout << "init Poete"<<std::endl;
 	Poete poete(my_node, "/odom");
+	
+	std::cout << "init Lift"<<std::endl;
 	Lifter lift(my_node, priv_node);
 	
+	std::cout << "init tf"<<std::endl;
 	tf::TransformBroadcaster odom_broadcaster;
 	
 	int flag=0;

@@ -17,27 +17,33 @@ BOOST_AUTO_TEST_CASE(trying)
 
 	
 	SerialPortControl spaa(9600,n);
-	std::cout << "ENCODER ERESOL " <<spaa.readEncoderResolution() << std::endl;
-	spaa.writeHome();
+	spaa.emptyBuffer();
+	//std::cout << "ENCODER ERESOL " <<spaa.readEncoderResolution() << std::endl;
+	//spaa.writeHome();
 	std::string y;
 	while(1){
 		std::cout<<"Debut"<<std::endl;
 		//std::cin >> str;
 		std::cin >> y;
-		if(strcmp("vitesse", str.c_str())== 0){
+		/*if(strcmp("vitesse", str.c_str())== 0){
 			spaa.readRealSRW();
 		}
 		else if(y=="yo"){
 			std::cout << "we areeeeee at "<<spaa.readLencoder()<<std::endl;
 		}
-		else{		
+		else{*/
+				
 			//str=str+"\n";
 			//spaa.writePoseRelativeL(y);
 			//spaa.writeMove();
 			//spaa.readLencoder();
-			y=y+"\n";
+			y=y+"\r";
 			spaa.writePort(y);
-		}
+			
+			std::cin >> y;
+			if(strcmp("y", y.c_str())== 0){
+			spaa.readPort();}
+		
 		//std::cout<<"endddd "<<spaa.readRealSLW()<<std::endl;
 	}
 

@@ -25,7 +25,7 @@ public :
 	
 	/*The lifting platform constructor. priv_node give the parameters to the stream and high_object is the actual hight of the object in meter and max is the maximum distance covered by the mechanism in meter*/
 	Lift_platform(ros::NodeHandle priv_node, double hight_object, double max) : _stream(7500, priv_node), _hight(hight_object), _maxDistance(max){
-		_stream.writeHome();
+		_stream.writeHomeLifter();
 	}
 	
 	/*Mutators*/
@@ -56,14 +56,16 @@ inline void Lift_platform::up()
 {
 
 	//Calcul of the way up.
-	int up_value=_hight*_stream.getTickNumberLift()/_maxDistance;
-	
+	double up_value=_hight*_stream.getTickNumberLift()/_maxDistance;
+	std::cout<<"the tick value is "<<up_value<< " with "<<_stream.getTickNumberLift()<<std::endl;
 	_stream.writePoseAbsoluteLifter(up_value);
+	_stream.writeMoveLifter();
 }
 
 inline void Lift_platform::down()
 {
 	_stream.writePoseAbsoluteLifter(0); //Going to home position define at the initialization
+	_stream.writeMoveLifter();
 }
 
 #endif

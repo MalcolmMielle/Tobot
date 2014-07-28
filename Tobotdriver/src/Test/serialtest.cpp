@@ -21,5 +21,5 @@ BOOST_AUTO_TEST_CASE(trying)
 	//sp.setVerbose();
 	sp.writeHome();
 	sp.writePoseRelativeR(2000);
-	sp.writeMove();
+	sp.writeMoveRightWheel();
 }

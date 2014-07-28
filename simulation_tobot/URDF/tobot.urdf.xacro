@@ -4,10 +4,10 @@
   <!-- Constant for the xacro model -->
 
   <xacro:property name="GROUND_CLEARANCE" value="0.0938" />
-  <xacro:property name="width" value="0.2102" />
+  <xacro:property name="width" value="0.30" />
   <xacro:property name="bodylen" value="0.355" />
   <xacro:property name="wheel_l" value="0.039" />
-  <xacro:property name="wheel_rad" value="0.0938" />
+  <xacro:property name="wheel_rad" value="0.0750" />
   <xacro:property name="plat_rad" value="0.150" />
   <xacro:property name="plat_len" value="0.005" />
   <xacro:property name="HIGH_PLATFORM" value="0.15" />
@@ -196,7 +196,7 @@
   <joint name="${prefix}camera_link" type="fixed">
     <parent link="${prefix}base_link"/>
     <child link="${prefix}camera_link"/>
-    <origin xyz="${width} 0 ${GROUND_CLEARANCE-bodylen+posz_camera} " rpy="${-PI/2} 0 ${-PI/2}"/>
+    <origin xyz="${width} 0 ${GROUND_CLEARANCE-bodylen+posz_camera} " rpy="0 0 0"/>
   </joint>
   
 </robot>

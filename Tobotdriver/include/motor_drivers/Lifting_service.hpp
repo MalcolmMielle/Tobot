@@ -59,7 +59,7 @@ class Lifter{
 	Lifter(ros::NodeHandle node, ros::NodeHandle priv_node) : platform(priv_node, 0 ,0) {
 		pose_pub =node.advertise<std_msgs::Bool>("pose_pub", 1000);
 		priv_node.param<double>("hightobject", hightobject, 10);
-		priv_node.param<double>("maxTick",maxdistance, 15);
+		priv_node.param<double>("maxTick",maxdistance, 5);
 		//platform(priv_node, hightobject, maxdistance);
 		platform.setHight(hightobject);
 		platform.setMaxDistance(maxdistance);
