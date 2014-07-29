@@ -5,7 +5,7 @@ robot_radius: 0.30
 inflation_radius: 0.55
 
 #observation_sources: laser_scan_sensor point_cloud2_sensor
-observation_sources: point_cloud2_sensor
+#observation_sources: point_cloud2_sensor
 
 #laser_scan_sensor: {sensor_frame: laser, data_type: LaserScan, topic: topic_name, marking: true, clearing: true}
 
