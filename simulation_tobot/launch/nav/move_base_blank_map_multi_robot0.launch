@@ -1,0 +1,17 @@
+<launch>
+  <!-- Run the map server with a blank map -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find simulation_tobot)/maps/blank_map.yaml"/>
+    
+  
+
+  <!-- Run a static transform between /odom and /map -->
+  <group ns="robot0">
+  <param name="tf_prefix" value="robot0" />
+  <node pkg="tf" type="static_transform_publisher" name="odom_map_broadcaster" args="0 0 0 0 0 0 map robot0/odom 100" />
+  <!-- We need to load the map twice beause move_base search the map with the namespace on it-->
+  <!-- If the robot where different we would have to call multiple move_base.launch file but since they are the same, I'm just calling it multiple times with just a different namespace-->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find simulation_tobot)/maps/blank_map.yaml"/>
+  <include file="$(find simulation_tobot)/launch/nav/move_base_multi.launch" />
+  </group>
+  
+  </launch>

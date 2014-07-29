@@ -109,13 +109,14 @@ class Robot{
 	
 	void affiche(){std::cout<<"I'm the Robot of size "<<_radius<<" and wheels "<<_wheelRadius<<" my speed is "<< _speed<< " and angular speed "<<_angularSpeed<<std::endl;}
 	
-	double boundAngle(float angle1){
+	double boundAngle(double angle1){
 		while(angle1 >= 2*PI){
 			angle1=angle1-2*PI;
 		}
 		while(angle1 <0){
 			angle1=angle1+2*PI;
 		}		
+		return angle1;
 	}
 
 };
@@ -203,8 +204,8 @@ inline void Robot::odometry(){
 		// leftDelta and rightDelta = distance that the left and right wheel have moved along
 		//  the ground
 		
-		double leftDelta=2*PI*(_wheelRadius/_radius)*( (posLW - _old_posL) /TICKNUM);
-		double rightDelta=2*PI*(_wheelRadius/_radius)*( (posRW - _old_posR) /TICKNUM);
+		double leftDelta=2*PI*(_wheelRadius)*( (posLW - _old_posL) /TICKNUM);
+		double rightDelta=2*PI*(_wheelRadius)*( (posRW - _old_posR) /TICKNUM);
 		
 		_old_posL=posLW;
 		_old_posR=posRW;
@@ -214,7 +215,7 @@ inline void Robot::odometry(){
 			_y = _y + rightDelta * sin(_heading);
 			_heading = _heading;
 		} else {
-			float R = _radius * (leftDelta + rightDelta) / (2 * (rightDelta - leftDelta)),
+			double R = _radius * (leftDelta + rightDelta) / (2 * (rightDelta - leftDelta)),
 				wd = (rightDelta - leftDelta) / _radius;
 
 			_x = _x + R * sin(wd + _heading) - R * sin(_heading);
@@ -231,7 +232,7 @@ inline void Robot::odometry(){
 		_odomRead.pose.pose.position.y=_y;
 	
 		//Quaternion quat=Quaternion(0,0,angle*180/PI);
-		Quaternion quat=Quaternion(0,0,_heading);
+		Quaternion quat=Quaternion(0,0,_heading*180/PI);
 		_odomRead.pose.pose.orientation.x=quat.getX();
 		_odomRead.pose.pose.orientation.y=quat.getY();
 		_odomRead.pose.pose.orientation.z=quat.getZ();
