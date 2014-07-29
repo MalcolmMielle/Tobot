@@ -35,8 +35,8 @@ int main(int argc, char **argv)
 	ros::NodeHandle priv_node("~");
 
 	Robot platform(priv_node);
-	Scribe scribe(my_node, "/cmd_vel", platform);
-	Poete poete(my_node, "/odom");
+	Scribe scribe(my_node, "cmd_vel", platform);
+	Poete poete(my_node, "odom");
 	Lifter lift(my_node, priv_node);
 	Filter filt;
 	
