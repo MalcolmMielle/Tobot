@@ -56,7 +56,7 @@ class SerialPortControl{
 		_pnode.param<std::string>("NodeleftWheel", _LWHEEL, "1");
 		_pnode.param<std::string>("NodeleftRheel", _RWHEEL, "2");
 		_pnode.param<std::string>("NodeLifter", _LIFTER, "3");
-		_pnode.param<double>("TICKNUM", _nTick, 200000);
+		_pnode.param<double>("TICKNUM", _nTick, 600000);
 		_pnode.param<double>("TICKNUMLIFT", _nTickLift, 500000);
 		//_LWHEEL="1";
 		//_RWHEEL="1";

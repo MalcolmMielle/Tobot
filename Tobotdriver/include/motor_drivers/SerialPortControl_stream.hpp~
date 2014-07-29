@@ -151,7 +151,7 @@ class SerialPortControl{
 		writeMaxSpeed(maxspeed);
 
 		writeMinSpeed(-maxspeed);
-		//writeHome(); //Set the initial position to zero ;)
+		writeHome(); //Set the initial position to zero ;)
 
 
 	}
