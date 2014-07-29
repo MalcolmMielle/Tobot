@@ -63,6 +63,7 @@ class Lifter{
 		//platform(priv_node, hightobject, maxdistance);
 		platform.setHight(hightobject);
 		platform.setMaxDistance(maxdistance);
+		platform.reset();
 		
 		service = node.advertiseService<tobotdrivers::lifting::Request, tobotdrivers::lifting::Response>("lifting_service", boost::bind(lift, _1, _2, &platform, &pose_pub));
 	ROS_INFO("Ready to change model");
