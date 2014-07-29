@@ -160,9 +160,9 @@ inline void Robot::odometry(){
 	double posRW=_motorControl1.readRencoder();
 	//;posRW=posRW/(66*3);
 
-	posLW=posLW/1000;
-	posRW=posRW/1000;
-	TICKNUM=TICKNUM/1000;
+	//posLW=posLW/1000;
+	//posRW=posRW/1000;
+	//TICKNUM=TICKNUM/1000;
 
 
 //	double SRW=SLW; //TESTING!!
@@ -209,7 +209,7 @@ inline void Robot::odometry(){
 		_old_posL=posLW;
 		_old_posR=posRW;
 
-		if (fabs(leftDelta - rightDelta) < 100) { // basically going straight
+		if (fabs(leftDelta - rightDelta) < 1) { // basically going straight
 			_x = _x + leftDelta * cos(_heading);
 			_y = _y + rightDelta * sin(_heading);
 			_heading = _heading;
