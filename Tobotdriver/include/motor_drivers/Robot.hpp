@@ -30,6 +30,13 @@ class Robot{
 	double _speed; //Speed selon x du robot in m.s
 	double _angularSpeed; //angular speed in rad.s
 	
+	double _x;
+	double _y;
+	double _heading; //In radian !!
+	
+	double _old_posL;
+	double _old_posR;
+	
 	//Robot carachetristique
 	double _radius;
 	double _wheelRadius;
@@ -43,7 +50,7 @@ class Robot{
 
 	public:
 	
-	Robot(ros::NodeHandle ao_nh) : _motorControl1(7500, ao_nh), _speed(0), _angularSpeed(0),_radius(1), _verbose(false), _pnode(ao_nh){
+	Robot(ros::NodeHandle ao_nh) : _motorControl1(7500, ao_nh), _speed(0), _angularSpeed(0), _x(0), _y(0), _heading(0), _old_posL(0), _old_posR(0), _radius(1), _verbose(false), _pnode(ao_nh){
 		_pnode.param<double>("WheelRadius", _wheelRadius, 0.075);
 		_pnode.param<double>("Radius", _radius, 0.30);
 		_pnode.param<double>("GearRatio", _gearRatio, 0.0454545);
@@ -60,6 +67,9 @@ class Robot{
 	*********************************/
 	double getSpeed(){return _speed;}
 	double getAngularSpeed(){return _angularSpeed;}
+	double getX(){return _x;}
+	double getY(){return _y;}
+	double getHeading(){return _heading;}
 	double getRadius(){return _radius;}
 	double getWheelRadius(){return _wheelRadius;}
 	SerialPortControl& getControl(){return _motorControl1;}
@@ -98,6 +108,15 @@ class Robot{
 
 	
 	void affiche(){std::cout<<"I'm the Robot of size "<<_radius<<" and wheels "<<_wheelRadius<<" my speed is "<< _speed<< " and angular speed "<<_angularSpeed<<std::endl;}
+	
+	double boundAngle(float angle1){
+		while(angle1 >= 2*PI){
+			angle1=angle1-2*PI;
+		}
+		while(angle1 <0){
+			angle1=angle1+2*PI;
+		}		
+	}
 
 };
 
@@ -181,11 +200,38 @@ inline void Robot::odometry(){
 			std::cout<< "We measured everything and it's "<<_motorControl1.getReadState()<< " and so posx is "<<posRW<<" and so posy is "<<posLW<< " speedl "<<SLW<< " tick num " << TICKNUM << " rseult " << _wheelRadius*cos(angle)*(posLW+posRW)*(PI/(TICKNUM)) << "whell radius "<< _wheelRadius << " angle " << angle << " PI " << PI<<" tick over tick "<<  (posLW-posRW)/TICKNUM<<std::endl;
 		}
 	
+		// leftDelta and rightDelta = distance that the left and right wheel have moved along
+		//  the ground
 		
-		_odomRead.pose.pose.position.x=_wheelRadius*cos(angle)*(posLW+posRW)*(PI/(TICKNUM));
-		_odomRead.pose.pose.position.y=_wheelRadius*sin(angle)*(posLW+posRW)*(PI/(TICKNUM));
+		double leftDelta=2*PI*(_wheelRadius/_radius)*( (posLW - _old_posL) /TICKNUM);
+		double rightDelta=2*PI*(_wheelRadius/_radius)*( (posRW - _old_posR) /TICKNUM);
+		
+		_old_posL=posLW;
+		_old_posR=posRW;
+
+		if (fabs(leftDelta - rightDelta) < 100) { // basically going straight
+			_x = _x + leftDelta * cos(_heading);
+			_y = _y + rightDelta * sin(_heading);
+			_heading = _heading;
+		} else {
+			float R = _radius * (leftDelta + rightDelta) / (2 * (rightDelta - leftDelta)),
+				wd = (rightDelta - leftDelta) / _radius;
+
+			_x = _x + R * sin(wd + _heading) - R * sin(_heading);
+			_y = _y - R * cos(wd + _heading) + R * cos(_heading);
+			_heading = boundAngle(_heading + wd);
+		}
 	
-		Quaternion quat=Quaternion(0,0,angle*180/PI);
+	
+		
+		//_odomRead.pose.pose.position.x=_wheelRadius*cos(angle)*(posLW+posRW)*(PI/(TICKNUM));
+		//_odomRead.pose.pose.position.y=_wheelRadius*sin(angle)*(posLW+posRW)*(PI/(TICKNUM));
+	
+		_odomRead.pose.pose.position.x=_x;
+		_odomRead.pose.pose.position.y=_y;
+	
+		//Quaternion quat=Quaternion(0,0,angle*180/PI);
+		Quaternion quat=Quaternion(0,0,_heading);
 		_odomRead.pose.pose.orientation.x=quat.getX();
 		_odomRead.pose.pose.orientation.y=quat.getY();
 		_odomRead.pose.pose.orientation.z=quat.getZ();
