@@ -209,7 +209,7 @@ inline void Robot::odometry(){
 		_old_posL=posLW;
 		_old_posR=posRW;
 
-		if (fabs(leftDelta - rightDelta) < 1) { // basically going straight
+		if (fabs(leftDelta - rightDelta) < 1.0e-6) { // basically going straight
 			_x = _x + leftDelta * cos(_heading);
 			_y = _y + rightDelta * sin(_heading);
 			_heading = _heading;
