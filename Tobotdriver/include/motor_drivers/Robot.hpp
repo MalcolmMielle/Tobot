@@ -38,7 +38,7 @@ class Robot{
 	double _old_posR;
 	
 	//Robot carachetristique
-	double _radius;
+	double _radius; //TODO ACTUALLY IT'S THE DIAMETER !!!! So just change the name
 	double _wheelRadius;
 	double _gearRatio;
 	

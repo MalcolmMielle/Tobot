@@ -59,6 +59,9 @@ void Handler3D::tracking(cv::Rect *currBB){
 		int x_stop=currBB->width;
 		int y_stop=currBB->height;
 		int i=0;
+		
+		//TODO Make sure that the bounding box and the point cloud are in the same coordinate frame.
+		
 		for (size_t y = currBB->y; y < currBB->y+y_stop; ++y){
 			for (size_t x = currBB->x; x < currBB->x+x_stop; ++x){
 				/*cloud_filtered->points[i].x = cloud->points[x+(cloud->width)*y].x;

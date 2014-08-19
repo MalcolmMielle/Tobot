@@ -26,31 +26,6 @@ void Handler3D::tracking(cv::Rect *currBB){
 			}
 		}
 		
-		/**** DOES NOT HANDLE THE NAN****
-			x_lim=cloud->at(currBB->x,currBB->y).x;
-			x_lim_max=cloud->at(currBB->x+currBB->width-1,currBB->y+currBB->height-1).x;
-			
-			y_lim=cloud->at(currBB->x,currBB->y).y;
-			y_lim_max=cloud->at(currBB->x+currBB->width-1,currBB->y+currBB->height-1).y;
-			
-			
-		}
-		else{
-			/*****DOES NOT HABLE NAN*****
-			x_lim=cloud->points[(currBB->width-1)*currBB->y+currBB->x].x ;
-			x_lim_max=cloud->points[(currBB->width-1)*currBB->y+currBB->x+currBB->height-1].x ;
-			
-			y_lim=cloud->points[(currBB->width-1)*currBB->y+currBB->x].y ;
-			y_lim_max=cloud->points[(currBB->width-1)*currBB->y+currBB->x+currBB->height-1].y ;
-			//Cloud filtering...
-			//Find the limits
-		}*/
-		
-		//std::cout<<"Limits "<<x_lim<<" "<<y_lim<<" "<<x_lim_max<<" "<<y_lim_max;
-		//filter_pt(cloud,"x", x_lim, x_lim_max);
-		//filter_pt(cloud_filtered,"y", y_lim, y_lim_max);
-		//
-		//pcl::PointCloud<pcl::PointXYZRGBARGBA>::Ptr cloud_cut(new pcl::PointCloud<pcl::PointXYZRGBARGBA>);
 		cloud_filtered->width  = currBB->width;
 		cloud_filtered->height = currBB->height;
 		cloud_filtered->points.resize (cloud_filtered->width * cloud_filtered->height);
@@ -59,6 +34,9 @@ void Handler3D::tracking(cv::Rect *currBB){
 		int x_stop=currBB->width;
 		int y_stop=currBB->height;
 		int i=0;
+		
+		//TODO Make sure that the bounding box and the point cloud are in the same coordinate frame.
+		
 		for (size_t y = currBB->y; y < currBB->y+y_stop; ++y){
 			for (size_t x = currBB->x; x < currBB->x+x_stop; ++x){
 				/*cloud_filtered->points[i].x = cloud->points[x+(cloud->width)*y].x;
