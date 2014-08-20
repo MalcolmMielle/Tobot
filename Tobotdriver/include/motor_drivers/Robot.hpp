@@ -38,7 +38,7 @@ class Robot{
 	double _old_posR;
 	
 	//Robot carachetristique
-	double _radius; //TODO ACTUALLY IT'S THE DIAMETER !!!! So just change the name
+	double _diameter; 
 	double _wheelRadius;
 	double _gearRatio;
 	
@@ -50,15 +50,15 @@ class Robot{
 
 	public:
 	
-	Robot(ros::NodeHandle ao_nh) : _motorControl1(7500, ao_nh), _speed(0), _angularSpeed(0), _x(0), _y(0), _heading(0), _old_posL(0), _old_posR(0), _radius(1), _verbose(false), _pnode(ao_nh){
+	Robot(ros::NodeHandle ao_nh) : _motorControl1(7500, ao_nh), _speed(0), _angularSpeed(0), _x(0), _y(0), _heading(0), _old_posL(0), _old_posR(0), _diameter(1), _verbose(false), _pnode(ao_nh){
 		_pnode.param<double>("WheelRadius", _wheelRadius, 0.075);
-		_pnode.param<double>("Radius", _radius, 0.30);
+		_pnode.param<double>("Diameter", _diameter, 0.30);
 		_pnode.param<double>("GearRatio", _gearRatio, 0.0454545);
 	};
 	
-	Robot(ros::NodeHandle ao_nh, double r, double wr) : _motorControl1(7500, ao_nh), _speed(0), _angularSpeed(0), _radius(r), _wheelRadius(wr), _verbose(false), _pnode(ao_nh){
+	Robot(ros::NodeHandle ao_nh, double r, double wr) : _motorControl1(7500, ao_nh), _speed(0), _angularSpeed(0), _diameter(r), _wheelRadius(wr), _verbose(false), _pnode(ao_nh){
 		//_pnode.param<double>("WheelRadius", _wheelRadius, 0.08);
-		//_pnode.param<double>("WRadius", _radius, 0.30);
+		//_pnode.param<double>("WRadius", _diameter, 0.30);
 		_pnode.param<double>("GearRatio", _gearRatio, 0.0454545);
 	};
 	
@@ -70,12 +70,12 @@ class Robot{
 	double getX(){return _x;}
 	double getY(){return _y;}
 	double getHeading(){return _heading;}
-	double getRadius(){return _radius;}
+	double getRadius(){return _diameter;}
 	double getWheelRadius(){return _wheelRadius;}
 	SerialPortControl& getControl(){return _motorControl1;}
 	nav_msgs::Odometry& getOdom(){return _odomRead;}
 	
-	void setRadius(double d){_radius=d;}
+	void setRadius(double d){_diameter=d;}
 	void setWheelRadius(double wd){_wheelRadius=wd;}
 	
 	/************Set the speed of the two wheel left and right
@@ -107,7 +107,7 @@ class Robot{
 	void odometry();
 
 	
-	void affiche(){std::cout<<"I'm the Robot of size "<<_radius<<" and wheels "<<_wheelRadius<<" my speed is "<< _speed<< " and angular speed "<<_angularSpeed<<std::endl;}
+	void affiche(){std::cout<<"I'm the Robot of size "<<_diameter<<" and wheels "<<_wheelRadius<<" my speed is "<< _speed<< " and angular speed "<<_angularSpeed<<std::endl;}
 	
 	double boundAngle(double angle1){
 		while(angle1 >= 2*PI){
@@ -180,7 +180,7 @@ inline void Robot::odometry(){
 		_odomRead.twist.twist.linear.x = _odomRead.twist.twist.linear.y = _odomRead.twist.twist.linear.z = _odomRead.twist.twist.angular.x = _odomRead.twist.twist.angular.y = _odomRead.twist.twist.angular.z=0;
 		//calcul of speed
 		double Speed_x=_wheelRadius*( (SRW + SLW)/2);
-		double Angle=(_wheelRadius/_radius)*(SRW-SLW );
+		double Angle=(_wheelRadius/_diameter)*(SRW-SLW );
 		
 		Speed_x=Speed_x;
 		Angle=Angle;
@@ -195,7 +195,7 @@ inline void Robot::odometry(){
 	
 	
 		//Calcul of position
-		double angle=2*PI*(_wheelRadius/_radius)*( (posLW-posRW)/TICKNUM);
+		double angle=2*PI*(_wheelRadius/_diameter)*( (posLW-posRW)/TICKNUM);
 	
 		if(_verbose==true){
 			std::cout<< "We measured everything and it's "<<_motorControl1.getReadState()<< " and so posx is "<<posRW<<" and so posy is "<<posLW<< " speedl "<<SLW<< " tick num " << TICKNUM << " rseult " << _wheelRadius*cos(angle)*(posLW+posRW)*(PI/(TICKNUM)) << "whell radius "<< _wheelRadius << " angle " << angle << " PI " << PI<<" tick over tick "<<  (posLW-posRW)/TICKNUM<<std::endl;
@@ -215,8 +215,8 @@ inline void Robot::odometry(){
 			_y = _y + rightDelta * sin(_heading);
 			_heading = _heading;
 		} else {
-			double R = _radius * (leftDelta + rightDelta) / (2 * (rightDelta - leftDelta)),
-				wd = (rightDelta - leftDelta) / _radius;
+			double R = _diameter * (leftDelta + rightDelta) / (2 * (rightDelta - leftDelta)),
+				wd = (rightDelta - leftDelta) / _diameter;
 
 			_x = _x + R * sin(wd + _heading) - R * sin(_heading);
 			_y = _y - R * cos(wd + _heading) + R * cos(_heading);
@@ -253,21 +253,21 @@ inline void Robot::robot2wheels(geometry_msgs::Twist& _twistDemand){
 
 inline void Robot::robot2wheels(){	
 	//the fuck ?
-	//double rwheel =  (((2 * _speed)/_wheelRadius) + ((_angularSpeed * _radius)/ _wheelRadius))/2 ;
-	//double lwheel =  -(((2 * _speed)/_wheelRadius) - ((_angularSpeed * _radius)/ _wheelRadius))/2 ;
-	//double rwheel= (_speed+ (_angularSpeed * _radius) ) / _gearRatio;///_wheelRadius;
-	//double lwheel= - (_speed - (_angularSpeed * _radius) ) / _gearRatio;///_wheelRadius;
+	//double rwheel =  (((2 * _speed)/_wheelRadius) + ((_angularSpeed * _diameter)/ _wheelRadius))/2 ;
+	//double lwheel =  -(((2 * _speed)/_wheelRadius) - ((_angularSpeed * _diameter)/ _wheelRadius))/2 ;
+	//double rwheel= (_speed+ (_angularSpeed * _diameter) ) / _gearRatio;///_wheelRadius;
+	//double lwheel= - (_speed - (_angularSpeed * _diameter) ) / _gearRatio;///_wheelRadius;
 	
 	//Calcule the rpm from the rad sec formula :
-	double rwheel=( (_radius*_angularSpeed)/(_wheelRadius*2) ) + ( _speed / _wheelRadius);
+	double rwheel=( (_diameter*_angularSpeed)/(_wheelRadius*2) ) + ( _speed / _wheelRadius);
 	//sign inverted because the motor is inverted
-	double lwheel= ( (_radius*_angularSpeed)/(_wheelRadius*2) ) - ( _speed / _wheelRadius);
+	double lwheel= ( (_diameter*_angularSpeed)/(_wheelRadius*2) ) - ( _speed / _wheelRadius);
 	
 	//Cheat
 	//Calcule the rpm from the rad sec formula :
-	//double rwheel=( (_radius*_angularSpeed)/(_wheelRadius*2) ) + (3* ( _speed / _wheelRadius));
+	//double rwheel=( (_diameter*_angularSpeed)/(_wheelRadius*2) ) + (3* ( _speed / _wheelRadius));
 	//sign inverted because the motor is inverted
-	//double lwheel= ( (_radius*_angularSpeed)/(_wheelRadius*2) ) - (3* ( _speed / _wheelRadius));
+	//double lwheel= ( (_diameter*_angularSpeed)/(_wheelRadius*2) ) - (3* ( _speed / _wheelRadius));
 	
 	//To test diameter of the robot => distance in meter per sec
 	//66 comes from the reducteur INSIDE the encoder mecanism. Bitch took me forever to find out.
