@@ -38,7 +38,7 @@ class Robot{
 	double _old_posR;
 	
 	//Robot carachetristique
-	double _diameter; //TODO ACTUALLY IT'S THE DIAMETER !!!! So just change the name
+	double _diameter; 
 	double _wheelRadius;
 	double _gearRatio;
 	
@@ -271,8 +271,8 @@ inline void Robot::robot2wheels(){
 	
 	//To test diameter of the robot => distance in meter per sec
 	//66 comes from the reducteur INSIDE the encoder mecanism. Bitch took me forever to find out.
-	rwheel=rwheel*66*3;
-	lwheel=lwheel*66*3;
+	rwheel=rwheel/_gearRatio;
+	lwheel=lwheel/_gearRatio;
 	if (_verbose==true){
 		std::cout<<"Command envoyée au controlleur mon capitaine. On a "<<_speed<< " "<<_angularSpeed<< " donc Roue droite "<<rwheel<<" roue gauche "<<lwheel<<" avec un gear ratio de : "<< _gearRatio<<std::endl;
 		std::cout << "les deux vitesses sont "<< radsec2rpm(rwheel)<<" " <<radsec2rpm(lwheel) << " pour "<< rwheel <<" "<<lwheel<< std::endl;
@@ -284,7 +284,7 @@ inline void Robot::robot2wheels(){
 	double rw=0;
 	double lw=0;
 	try{
-		if (radsec2rpm(rwheel)>7500){
+		if (radsec2rpm(rwheel)>7500){//TODO change those limit values
 			throw std::invalid_argument("rwheel too big");
 		}
 		else{

@@ -53,13 +53,13 @@ class Robot{
 	Robot(ros::NodeHandle ao_nh) : _motorControl1(7500, ao_nh), _speed(0), _angularSpeed(0), _x(0), _y(0), _heading(0), _old_posL(0), _old_posR(0), _diameter(1), _verbose(false), _pnode(ao_nh){
 		_pnode.param<double>("WheelRadius", _wheelRadius, 0.075);
 		_pnode.param<double>("Diameter", _diameter, 0.30);
-		_pnode.param<double>("GearRatio", _gearRatio, 0.0454545);
+		_pnode.param<double>("GearRatio", _gearRatio, 0.005050505);
 	};
 	
 	Robot(ros::NodeHandle ao_nh, double r, double wr) : _motorControl1(7500, ao_nh), _speed(0), _angularSpeed(0), _diameter(r), _wheelRadius(wr), _verbose(false), _pnode(ao_nh){
 		//_pnode.param<double>("WheelRadius", _wheelRadius, 0.08);
 		//_pnode.param<double>("WRadius", _diameter, 0.30);
-		_pnode.param<double>("GearRatio", _gearRatio, 0.0454545);
+		_pnode.param<double>("GearRatio", _gearRatio, 0.005050505);
 	};
 	
 	/*********************************
@@ -271,8 +271,8 @@ inline void Robot::robot2wheels(){
 	
 	//To test diameter of the robot => distance in meter per sec
 	//66 comes from the reducteur INSIDE the encoder mecanism. Bitch took me forever to find out.
-	rwheel=rwheel*66*3;
-	lwheel=lwheel*66*3;
+	rwheel=rwheel/_gearRatio;
+	lwheel=lwheel/_gearRatio;
 	if (_verbose==true){
 		std::cout<<"Command envoyée au controlleur mon capitaine. On a "<<_speed<< " "<<_angularSpeed<< " donc Roue droite "<<rwheel<<" roue gauche "<<lwheel<<" avec un gear ratio de : "<< _gearRatio<<std::endl;
 		std::cout << "les deux vitesses sont "<< radsec2rpm(rwheel)<<" " <<radsec2rpm(lwheel) << " pour "<< rwheel <<" "<<lwheel<< std::endl;
