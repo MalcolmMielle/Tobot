@@ -284,7 +284,7 @@ inline void Robot::robot2wheels(){
 	double rw=0;
 	double lw=0;
 	try{
-		if (radsec2rpm(rwheel)>7500){
+		if (radsec2rpm(rwheel)>7500){//TODO change those limit values
 			throw std::invalid_argument("rwheel too big");
 		}
 		else{
