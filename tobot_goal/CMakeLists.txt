@@ -7,6 +7,7 @@ project(tobot_goal)
 find_package(catkin REQUIRED COMPONENTS
   actionlib
   actionlib_msgs
+  move_base_msgs
   message_generation
   pcl_conversions
   roscpp
